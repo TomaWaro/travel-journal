@@ -1,0 +1,10 @@
+.next
+node_modules
+.vercel
+.env
+.env.local
+.env.production
+data/uploads
+data/travel-journal.json
+.agent
+.DS_Store
