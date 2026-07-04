@@ -14,9 +14,6 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="site-nav" aria-label="Navigation principale">
-          <Link className="site-nav-link" href="/">
-            Home
-          </Link>
           <span className="site-nav-pill">Quasi-public journey</span>
         </nav>
       </div>
