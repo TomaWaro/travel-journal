@@ -63,6 +63,7 @@ create table if not exists route_legs (
   title text not null,
   origin_label text not null,
   destination_label text not null,
+  waypoints jsonb not null default '[]'::jsonb,
   travel_mode text not null,
   raw_google_maps_url text,
   planned_path jsonb not null default '[]'::jsonb

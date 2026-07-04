@@ -38,6 +38,33 @@ function extensionFromFile(file: File): string {
   return parts.length > 1 ? `.${parts.at(-1)}` : "";
 }
 
+function assetFromUploadedFields(tripId: string, formData: FormData): Asset | null {
+  const assetId = String(formData.get("uploadedAssetId") ?? "");
+  const assetPath = String(formData.get("uploadedAssetPath") ?? "");
+  const assetUrl = String(formData.get("uploadedAssetUrl") ?? "");
+
+  if (!assetId || !assetPath || !assetUrl) {
+    return null;
+  }
+
+  if (!assetPath.startsWith(`trips/${tripId}/`)) {
+    throw new Error("Uploaded asset does not belong to this trip");
+  }
+
+  return {
+    id: assetId,
+    tripId,
+    storage: "blob",
+    path: assetPath,
+    url: assetUrl,
+    mimeType: String(formData.get("uploadedAssetMimeType") ?? "application/octet-stream"),
+    sizeBytes: formData.get("uploadedAssetSizeBytes")
+      ? Number(formData.get("uploadedAssetSizeBytes"))
+      : null,
+    uploadedAt: new Date().toISOString()
+  };
+}
+
 async function persistAsset(tripId: string, file: File): Promise<Asset> {
   const assetId = randomUUID();
 
@@ -57,6 +84,10 @@ async function persistAsset(tripId: string, file: File): Promise<Asset> {
       sizeBytes: file.size,
       uploadedAt: new Date().toISOString()
     };
+  }
+
+  if (process.env.VERCEL === "1") {
+    throw new Error("Configure Vercel Blob before uploading media in production.");
   }
 
   await mkdir(path.join(process.cwd(), "data", "uploads"), { recursive: true });
@@ -85,11 +116,11 @@ export async function POST(request: Request, { params }: RouteProps) {
     const formData = await request.formData();
     const uploaded = formData.get("file");
     const file = uploaded instanceof File && uploaded.size > 0 ? uploaded : null;
-    const asset = file ? await persistAsset(tripId, file) : null;
+    const asset = file ? await persistAsset(tripId, file) : assetFromUploadedFields(tripId, formData);
     const moment = await addMoment({
       tripId,
       memberId: dashboard.access.member.id,
-      type: inferMomentType(file),
+      type: file ? inferMomentType(file) : ((String(formData.get("uploadedAssetType") ?? "text") as MomentType)),
       caption: String(formData.get("caption") ?? ""),
       body: String(formData.get("body") ?? ""),
       dayDate: String(formData.get("dayDate") ?? new Date().toISOString().slice(0, 10)),

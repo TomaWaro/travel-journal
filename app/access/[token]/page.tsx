@@ -60,7 +60,12 @@ export default async function AccessPage({ params, searchParams }: PageProps) {
 
       <section className="dashboard-grid" style={{ marginTop: 24 }}>
         <div className="grid">
-          <CapturePanel publicUrl={publicUrl} token={token} tripId={selectedTrip.trip.id} />
+          <CapturePanel
+            blobUploadsEnabled={appEnv.blobConfigured}
+            publicUrl={publicUrl}
+            token={token}
+            tripId={selectedTrip.trip.id}
+          />
           <MapPanel
             legs={selectedTrip.legs}
             moments={selectedTrip.moments}

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { listPublishedTrips } from "@/lib/store";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const trips = await listPublishedTrips();
 
@@ -24,10 +26,10 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="hero-banner">
-          <strong>Mode demo active</strong>
+          <strong>Mode adaptable</strong>
           <span>
-            Le repo tourne avec un store local seed. Les points Neon, Blob et Redis sont prepares
-            dans le code mais restent a brancher sur Vercel.
+            Sans base configuree, l&apos;app tourne sur le seed local. Avec Neon, Blob et Redis, elle
+            bascule automatiquement sur le mode Vercel.
           </span>
         </div>
       </section>

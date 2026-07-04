@@ -3,6 +3,11 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { buildTripDays, clampDateToTrip } from "@/lib/date";
 import { buildDraftStory } from "@/lib/draft";
+import {
+  clearCachedActiveTrackSession,
+  getCachedActiveTrackSessionId,
+  setCachedActiveTrackSession
+} from "@/lib/tracking-cache";
 import type {
   AccessContext,
   AppState,
@@ -336,6 +341,32 @@ export async function addMoment(input: CreateMomentInput): Promise<Moment> {
 
 export async function startTrackSession(tripId: string, memberId: string): Promise<TrackSession> {
   const state = await readState();
+  const cachedSessionId = await getCachedActiveTrackSessionId(tripId, memberId);
+
+  if (cachedSessionId) {
+    const cachedSession = state.trackSessions.find(
+      (candidate) => candidate.id === cachedSessionId && candidate.status === "active"
+    );
+
+    if (cachedSession) {
+      return cachedSession;
+    }
+  }
+
+  const existingSession = state.trackSessions
+    .filter(
+      (candidate) =>
+        candidate.tripId === tripId &&
+        candidate.memberId === memberId &&
+        candidate.status === "active"
+    )
+    .sort((left, right) => new Date(right.startedAt).getTime() - new Date(left.startedAt).getTime())[0];
+
+  if (existingSession) {
+    await setCachedActiveTrackSession(existingSession);
+    return existingSession;
+  }
+
   const session: TrackSession = {
     id: randomUUID(),
     tripId,
@@ -347,6 +378,7 @@ export async function startTrackSession(tripId: string, memberId: string): Promi
 
   state.trackSessions.push(session);
   await writeState(state);
+  await setCachedActiveTrackSession(session);
 
   return session;
 }
@@ -391,6 +423,7 @@ export async function stopTrackSession(sessionId: string): Promise<TrackSession>
   session.status = "completed";
   session.endedAt = new Date().toISOString();
   await writeState(state);
+  await clearCachedActiveTrackSession(session.tripId, session.memberId);
 
   return session;
 }

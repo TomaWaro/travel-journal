@@ -43,7 +43,7 @@ export const appEnv = {
   mapStyleUrl:
     process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://demotiles.maplibre.org/style.json",
   ownerAccessToken: process.env.OWNER_ACCESS_TOKEN ?? "owner-demo-token",
-  useFileStore: process.env.USE_FILE_STORE !== "false",
+  useFileStore: process.env.USE_FILE_STORE === "true" || !process.env.DATABASE_URL,
   postgresConfigured: Boolean(process.env.DATABASE_URL),
   redisConfigured: Boolean(
     process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN

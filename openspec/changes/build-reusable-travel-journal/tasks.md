@@ -21,7 +21,7 @@
 
 - [x] 4.1 Build trip management screens for creating trips, editing settings, and managing route legs
 - [x] 4.2 Implement mobile capture flows for photo, video, text, and audio moments
-- [ ] 4.3 Implement direct media upload to Blob and linked moment persistence in Postgres
+- [x] 4.3 Implement direct media upload to Blob and linked moment persistence in Postgres
 - [x] 4.4 Implement Google Maps itinerary link import with best-effort parsing and manual correction fallback
 - [x] 4.5 Implement GPS track session start, sampling, stop, and persistence flows for active trips
 
