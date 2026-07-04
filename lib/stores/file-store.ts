@@ -521,6 +521,34 @@ export async function generateDraft(tripId: string, dayDate: string | null): Pro
   return draft;
 }
 
+export async function updateDraft(
+  draftId: string,
+  patch: Partial<Pick<DraftStory, "title" | "summary" | "body">>
+): Promise<DraftStory> {
+  const state = await readState();
+  const draft = state.draftStories.find((candidate) => candidate.id === draftId);
+
+  if (!draft) {
+    throw new Error("Draft not found");
+  }
+
+  if (typeof patch.title === "string") {
+    draft.title = patch.title.trim();
+  }
+
+  if (typeof patch.summary === "string") {
+    draft.summary = patch.summary.trim();
+  }
+
+  if (typeof patch.body === "string") {
+    draft.body = patch.body.trim();
+  }
+
+  await writeState(state);
+
+  return draft;
+}
+
 export async function publishDraft(draftId: string): Promise<PublishedStory> {
   const state = await readState();
   const draft = state.draftStories.find((candidate) => candidate.id === draftId);

@@ -2,19 +2,27 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { DraftStory, PublishedStory, Trip, TripDay } from "@/lib/types";
+import { formatDateLabel } from "@/lib/date";
+import type { DraftStory, Moment, PublishedStory, Trip, TripDay } from "@/lib/types";
 
 type Props = {
   token: string;
   trip: Trip;
   days: TripDay[];
   drafts: DraftStory[];
+  moments: Moment[];
   stories: PublishedStory[];
 };
 
-export function EditorialPanel({ token, trip, days, drafts, stories }: Props) {
+export function EditorialPanel({ token, trip, days, drafts, moments, stories }: Props) {
   const router = useRouter();
   const [message, setMessage] = useState<string>("");
+  const [savingDraftId, setSavingDraftId] = useState<string | null>(null);
+  const daysWithContent = days.filter((day) =>
+    moments.some((moment) => moment.dayDate === day.date) ||
+    drafts.some((draft) => draft.dayDate === day.date) ||
+    stories.some((story) => story.slug.includes(day.date.replaceAll("-", "")))
+  );
 
   async function generate(dayDate: string | null) {
     const response = await fetch(`/api/trips/${trip.id}/drafts`, {
@@ -74,65 +82,172 @@ export function EditorialPanel({ token, trip, days, drafts, stories }: Props) {
     router.refresh();
   }
 
+  async function saveDraft(draftId: string, formData: FormData) {
+    setSavingDraftId(draftId);
+    setMessage("");
+
+    try {
+      const response = await fetch(`/api/drafts/${draftId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": token
+        },
+        body: JSON.stringify({
+          title: formData.get("title"),
+          summary: formData.get("summary"),
+          body: formData.get("body")
+        })
+      });
+      const payload = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        setMessage(payload.error ?? "Impossible d'enregistrer le brouillon.");
+        return;
+      }
+
+      setMessage("Brouillon mis a jour.");
+      router.refresh();
+    } finally {
+      setSavingDraftId(null);
+    }
+  }
+
   return (
     <section className="panel">
-      <div className="panel-heading">
+      <div className="panel-heading workspace-panel-heading">
         <div>
           <p className="eyebrow">Editorial</p>
-          <h2>Generer, relire, publier</h2>
+          <h2>Relire et publier les recits</h2>
+          <p>
+            Le principe est simple : tu generes un brouillon, tu modifies le titre, le resume et
+            le recit si besoin, puis tu publies. Tant qu&apos;un brouillon n&apos;est pas publie,
+            il n&apos;apparait pas sur la page publique.
+          </p>
         </div>
       </div>
 
-      <div className="editorial-grid">
-        <div className="stack">
-          <h3>Generation manuelle</h3>
+      <div className="editorial-stack">
+        <section className="editorial-block">
+          <div className="editorial-block-head">
+            <div>
+              <p className="eyebrow">Etape 1</p>
+              <h3>Generer un brouillon</h3>
+              <p>Cree un recap global ou un recap pour une journee qui contient deja des moments.</p>
+            </div>
+          </div>
           <button className="primary-button" onClick={() => generate(null)} type="button">
             Generer un recap voyage
           </button>
-          <div className="tag-row">
-            {days.map((day) => (
-              <button className="mini-button" key={day.date} onClick={() => generate(day.date)} type="button">
-                {day.date}
-              </button>
+          <div className="editorial-day-grid">
+            {daysWithContent.length === 0 ? (
+              <div className="empty-state">
+                <strong>Aucune journee exploitable pour l&apos;instant.</strong>
+                <p>Ajoute d&apos;abord des moments dans `Capture`.</p>
+              </div>
+            ) : null}
+            {daysWithContent.map((day) => {
+              const momentCount = moments.filter((moment) => moment.dayDate === day.date).length;
+
+              return (
+                <button
+                  className="editorial-day-button"
+                  key={day.date}
+                  onClick={() => generate(day.date)}
+                  type="button"
+                >
+                  <strong>{formatDateLabel(day.date)}</strong>
+                  <span>{momentCount} moment(s)</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="editorial-block">
+          <div className="editorial-block-head">
+            <div>
+              <p className="eyebrow">Etape 2</p>
+              <h3>Modifier le brouillon</h3>
+              <p>
+                Ici tu peux corriger le texte genere avant de le rendre public. C&apos;est
+                l&apos;ecran d&apos;edition du recit.
+              </p>
+            </div>
+          </div>
+          <div className="editorial-card-list">
+            {drafts.length === 0 ? (
+              <div className="empty-state">
+                <strong>Aucun brouillon en attente.</strong>
+                <p>Genere d&apos;abord un recap pour relire avant publication.</p>
+              </div>
+            ) : null}
+            {drafts.map((draft) => (
+              <form
+                className="editorial-card editorial-draft-form"
+                key={draft.id}
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  await saveDraft(draft.id, new FormData(event.currentTarget));
+                }}
+              >
+                <div className="editorial-card-copy">
+                  <p>{draft.dayDate ? formatDateLabel(draft.dayDate) : "Recap global du voyage"}</p>
+                </div>
+                <label className="field">
+                  <span>Titre</span>
+                  <input defaultValue={draft.title} name="title" required type="text" />
+                </label>
+                <label className="field">
+                  <span>Resume</span>
+                  <textarea defaultValue={draft.summary} name="summary" required rows={3} />
+                </label>
+                <label className="field">
+                  <span>Recit</span>
+                  <textarea defaultValue={draft.body} name="body" required rows={10} />
+                </label>
+                <div className="button-row">
+                  <button className="ghost-button" disabled={savingDraftId === draft.id} type="submit">
+                    {savingDraftId === draft.id ? "Enregistrement..." : "Enregistrer le brouillon"}
+                  </button>
+                  <button className="primary-button" onClick={() => publish(draft.id)} type="button">
+                    Publier
+                  </button>
+                </div>
+              </form>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div className="stack">
-          <h3>Brouillons</h3>
-          <ul className="compact-list">
-            {drafts.length === 0 ? <li>Aucun brouillon pour l&apos;instant.</li> : null}
-            {drafts.map((draft) => (
-              <li key={draft.id}>
-                <div>
-                  <strong>{draft.title}</strong>
-                  <span>{draft.summary}</span>
-                </div>
-                <button className="mini-button" onClick={() => publish(draft.id)} type="button">
-                  Publier
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="stack">
-          <h3>Publie</h3>
-          <ul className="compact-list">
-            {stories.length === 0 ? <li>Aucun post public pour l&apos;instant.</li> : null}
+        <section className="editorial-block">
+          <div className="editorial-block-head">
+            <div>
+              <p className="eyebrow">Etape 3</p>
+              <h3>Posts deja publies</h3>
+              <p>Ceux-ci sont deja visibles sur le site public. Tu peux les retirer si besoin.</p>
+            </div>
+          </div>
+          <div className="editorial-card-list">
+            {stories.length === 0 ? (
+              <div className="empty-state">
+                <strong>Aucun post public.</strong>
+                <p>Publie un brouillon pour voir apparaitre un recit sur la page publique.</p>
+              </div>
+            ) : null}
             {stories.map((story) => (
-              <li key={story.id}>
-                <div>
+              <article className="editorial-card" key={story.id}>
+                <div className="editorial-card-copy">
                   <strong>{story.title}</strong>
                   <span>/posts/{story.slug}</span>
+                  <p>{new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(story.publishedAt))}</p>
                 </div>
                 <button className="mini-button" onClick={() => unpublish(story.id)} type="button">
                   Retirer
                 </button>
-              </li>
+              </article>
             ))}
-          </ul>
-        </div>
+          </div>
+        </section>
       </div>
 
       {message ? <p className="status-line">{message}</p> : null}

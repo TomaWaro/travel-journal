@@ -1342,6 +1342,136 @@ main.shell {
   gap: 14px;
 }
 
+.editorial-flow {
+  display: grid;
+  gap: 18px;
+}
+
+.editorial-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.editorial-block {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.editorial-block-head {
+  display: grid;
+  gap: 8px;
+}
+
+.editorial-block-head h3 {
+  margin: 0;
+}
+
+.editorial-step {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.editorial-step-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.editorial-step-head h3,
+.editorial-card-copy strong {
+  margin: 0;
+}
+
+.editorial-step-head p,
+.editorial-card-copy p {
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+}
+
+.editorial-step-index {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sunset), var(--terracotta));
+  color: var(--cream);
+  font-weight: 700;
+}
+
+.editorial-day-grid,
+.editorial-card-list {
+  display: grid;
+  gap: 12px;
+}
+
+.editorial-day-button,
+.editorial-card {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.editorial-day-button {
+  appearance: none;
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.editorial-day-button:hover,
+.editorial-card:hover {
+  transform: translateY(-1px);
+}
+
+.editorial-day-button span {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.editorial-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.editorial-card .primary-button,
+.editorial-card .ghost-button,
+.editorial-card .mini-button {
+  width: fit-content;
+}
+
+.editorial-draft-form .field textarea[name="body"] {
+  min-height: 260px;
+}
+
+.editorial-card-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.editorial-card-copy span {
+  color: var(--ink-soft);
+  word-break: break-word;
+}
+
 .loading-cover {
   display: grid;
   gap: 16px;

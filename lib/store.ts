@@ -74,6 +74,13 @@ export async function generateDraft(tripId: string, dayDate: string | null) {
   return getStore().generateDraft(tripId, dayDate);
 }
 
+export async function updateDraft(
+  draftId: string,
+  patch: Partial<Pick<Parameters<typeof postgresStore.updateDraft>[1], "title" | "summary" | "body">>
+) {
+  return getStore().updateDraft(draftId, patch);
+}
+
 export async function publishDraft(draftId: string) {
   return getStore().publishDraft(draftId);
 }

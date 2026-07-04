@@ -1043,6 +1043,38 @@ export async function generateDraft(tripId: string, dayDate: string | null): Pro
   });
 }
 
+export async function updateDraft(
+  draftId: string,
+  patch: Partial<Pick<DraftStory, "title" | "summary" | "body">>
+): Promise<DraftStory> {
+  return withTransaction(async (client) => {
+    const draftRow = await queryOne(client, "select * from draft_stories where id = $1", [draftId]);
+
+    if (!draftRow) {
+      throw new Error("Draft not found");
+    }
+
+    const draft = mapDraftStory(draftRow);
+    const nextDraft: DraftStory = {
+      ...draft,
+      title: typeof patch.title === "string" ? patch.title.trim() : draft.title,
+      summary: typeof patch.summary === "string" ? patch.summary.trim() : draft.summary,
+      body: typeof patch.body === "string" ? patch.body.trim() : draft.body
+    };
+
+    await client.query(
+      `update draft_stories
+       set title = $2,
+           summary = $3,
+           body = $4
+       where id = $1`,
+      [draftId, nextDraft.title, nextDraft.summary, nextDraft.body]
+    );
+
+    return nextDraft;
+  });
+}
+
 export async function publishDraft(draftId: string): Promise<PublishedStory> {
   return withTransaction(async (client) => {
     const draftRow = await queryOne(

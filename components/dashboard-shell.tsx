@@ -293,6 +293,7 @@ export function DashboardShell({
             <EditorialPanel
               days={selectedTrip.days}
               drafts={selectedTrip.drafts}
+              moments={selectedTrip.moments}
               stories={selectedTrip.stories}
               token={token}
               trip={selectedTrip.trip}

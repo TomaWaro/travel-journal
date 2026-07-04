@@ -117,9 +117,6 @@ export default async function PublicTripPage({ params }: PageProps) {
               {routeLocations[0] ? <LocationBadge>{routeLocations[0]}</LocationBadge> : null}
             </div>
             <div className="hero-actions">
-              <Link className="ghost-button" href="/">
-                Retour a l&apos;accueil
-              </Link>
               <a className="primary-button" href="#trip-comments">
                 Reagir au voyage
               </a>
