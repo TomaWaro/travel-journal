@@ -10,11 +10,31 @@ type Props = {
   members: Member[];
   drafts: DraftStory[];
   stories: PublishedStory[];
+  showEmptyDays?: boolean;
 };
 
-export function TimelinePanel({ assets, days, moments, members, drafts, stories }: Props) {
+export function TimelinePanel({
+  assets,
+  days,
+  moments,
+  members,
+  drafts,
+  stories,
+  showEmptyDays = true
+}: Props) {
   const assetMap = new Map(assets.map((asset) => [asset.id, asset]));
   const memberMap = new Map(members.map((member) => [member.id, member]));
+  const visibleDays = days.filter((day) => {
+    if (showEmptyDays) {
+      return true;
+    }
+
+    const hasMoment = moments.some((moment) => moment.dayDate === day.date);
+    const hasDraft = drafts.some((draft) => draft.dayDate === day.date);
+    const hasStory = stories.some((story) => story.slug.includes(day.date.replaceAll("-", "")));
+
+    return hasMoment || hasDraft || hasStory;
+  });
 
   return (
     <section className="panel timeline-panel">
@@ -25,7 +45,7 @@ export function TimelinePanel({ assets, days, moments, members, drafts, stories 
         </div>
       </div>
       <div className="timeline-list">
-        {days.map((day) => {
+        {visibleDays.map((day) => {
           const dayMoments = moments.filter((moment) => moment.dayDate === day.date);
           const dayDrafts = drafts.filter((draft) => draft.dayDate === day.date);
           const dayStories = stories.filter((story) => story.slug.includes(day.date.replaceAll("-", "")));
@@ -104,6 +124,12 @@ export function TimelinePanel({ assets, days, moments, members, drafts, stories 
             </TimelineItem>
           );
         })}
+        {visibleDays.length === 0 ? (
+          <div className="empty-state">
+            <strong>Aucune journee publiee pour le moment.</strong>
+            <p>La timeline apparaitra ici des qu&apos;un souvenir ou un recit sera visible.</p>
+          </div>
+        ) : null}
       </div>
     </section>
   );

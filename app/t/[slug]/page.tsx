@@ -268,6 +268,7 @@ export default async function PublicTripPage({ params }: PageProps) {
           drafts={[]}
           members={bundle.contributors}
           moments={publicMoments}
+          showEmptyDays={false}
           stories={bundle.stories}
         />
         <div id="trip-comments">
