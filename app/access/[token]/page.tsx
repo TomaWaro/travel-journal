@@ -20,11 +20,9 @@ export default async function AccessPage({ params, searchParams }: PageProps) {
   const selectedTrip =
     dashboard.trips.find((trip) => trip.trip.id === selectedTripId) ?? dashboard.trips[0];
 
-  if (!selectedTrip) {
-    notFound();
-  }
-
-  const publicUrl = new URL(`/t/${selectedTrip.trip.slug}`, appEnv.appUrl).toString();
+  const publicUrl = selectedTrip
+    ? new URL(`/t/${selectedTrip.trip.slug}`, appEnv.appUrl).toString()
+    : null;
 
   return (
     <DashboardShell

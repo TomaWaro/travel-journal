@@ -25,232 +25,26 @@
       "createdAt": "2026-07-04T08:00:00.000Z"
     }
   ],
-  "trips": [
-    {
-      "id": "trip_iberia_2026",
-      "workspaceId": "ws_family",
-      "ownerMemberId": "mem_tom",
-      "slug": "ete-2026-espagne",
-      "title": "Ete 2026 · Lyon, Lunel, Espagne, Aix",
-      "summary": "Carnet de route familial, quasi-public, pense pour le partage rapide et la publication manuelle.",
-      "startDate": "2026-07-04",
-      "endDate": "2026-07-25",
-      "visibility": "quasi-public",
-      "mapPrivacy": "delayed",
-      "mapDelayMinutes": 30,
-      "published": true,
-      "createdAt": "2026-07-04T08:00:00.000Z"
-    }
-  ],
-  "contributors": [
-    {
-      "tripId": "trip_iberia_2026",
-      "memberId": "mem_tom",
-      "role": "owner"
-    },
-    {
-      "tripId": "trip_iberia_2026",
-      "memberId": "mem_son",
-      "role": "contributor"
-    }
-  ],
+  "trips": [],
+  "contributors": [],
   "accessLinks": [
     {
       "id": "acc_owner_demo",
       "workspaceId": "ws_family",
-      "tripId": "trip_iberia_2026",
+      "tripId": null,
       "memberId": "mem_tom",
       "role": "owner",
       "label": "Owner demo",
       "token": "owner-demo-token",
       "createdAt": "2026-07-04T08:00:00.000Z"
-    },
-    {
-      "id": "acc_son_demo",
-      "workspaceId": "ws_family",
-      "tripId": "trip_iberia_2026",
-      "memberId": "mem_son",
-      "role": "contributor",
-      "label": "Malo phone",
-      "token": "son-demo-token",
-      "createdAt": "2026-07-04T08:00:00.000Z"
     }
   ],
-  "legs": [
-    {
-      "id": "leg_lyon",
-      "tripId": "trip_iberia_2026",
-      "sequence": 1,
-      "dayDate": "2026-07-04",
-      "title": "Lyon pour la nuit",
-      "originLabel": "Paris",
-      "destinationLabel": "Lyon",
-      "waypoints": [],
-      "travelMode": "driving",
-      "rawGoogleMapsUrl": null,
-      "plannedPath": [
-        { "latitude": 48.8566, "longitude": 2.3522 },
-        { "latitude": 45.764, "longitude": 4.8357 }
-      ]
-    },
-    {
-      "id": "leg_lunel",
-      "tripId": "trip_iberia_2026",
-      "sequence": 2,
-      "dayDate": "2026-07-05",
-      "title": "Descente vers Lunel",
-      "originLabel": "Lyon",
-      "destinationLabel": "Lunel",
-      "waypoints": [],
-      "travelMode": "driving",
-      "rawGoogleMapsUrl": null,
-      "plannedPath": [
-        { "latitude": 45.764, "longitude": 4.8357 },
-        { "latitude": 43.6778, "longitude": 4.1361 }
-      ]
-    },
-    {
-      "id": "leg_espagne",
-      "tripId": "trip_iberia_2026",
-      "sequence": 3,
-      "dayDate": "2026-07-06",
-      "title": "Cap sur l'Espagne",
-      "originLabel": "Lunel",
-      "destinationLabel": "Costa Brava",
-      "waypoints": ["Barcelone"],
-      "travelMode": "driving",
-      "rawGoogleMapsUrl": null,
-      "plannedPath": [
-        { "latitude": 43.6778, "longitude": 4.1361 },
-        { "latitude": 41.3874, "longitude": 2.1686 },
-        { "latitude": 41.8481, "longitude": 3.1294 }
-      ]
-    },
-    {
-      "id": "leg_aix",
-      "tripId": "trip_iberia_2026",
-      "sequence": 4,
-      "dayDate": "2026-07-18",
-      "title": "Retour vers Aix-en-Provence",
-      "originLabel": "Costa Brava",
-      "destinationLabel": "Aix-en-Provence",
-      "waypoints": [],
-      "travelMode": "driving",
-      "rawGoogleMapsUrl": null,
-      "plannedPath": [
-        { "latitude": 41.8481, "longitude": 3.1294 },
-        { "latitude": 43.5297, "longitude": 5.4474 }
-      ]
-    }
-  ],
+  "legs": [],
   "assets": [],
-  "moments": [
-    {
-      "id": "moment_start",
-      "tripId": "trip_iberia_2026",
-      "memberId": "mem_tom",
-      "dayDate": "2026-07-04",
-      "type": "text",
-      "status": "published",
-      "caption": "Depart ce soir",
-      "body": "Voiture chargee, premier stop a Lyon avant la longue descente vers le sud.",
-      "assetId": null,
-      "latitude": null,
-      "longitude": null,
-      "createdAt": "2026-07-04T18:30:00.000Z"
-    },
-    {
-      "id": "moment_lunel",
-      "tripId": "trip_iberia_2026",
-      "memberId": "mem_son",
-      "dayDate": "2026-07-05",
-      "type": "text",
-      "status": "draft",
-      "caption": "Pause a Lunel",
-      "body": "Derniere halte francaise avant l'Espagne.",
-      "assetId": null,
-      "latitude": 43.6778,
-      "longitude": 4.1361,
-      "createdAt": "2026-07-05T16:15:00.000Z"
-    },
-    {
-      "id": "moment_spain",
-      "tripId": "trip_iberia_2026",
-      "memberId": "mem_tom",
-      "dayDate": "2026-07-06",
-      "type": "text",
-      "status": "draft",
-      "caption": "Frontiere franchie",
-      "body": "On bascule enfin en Espagne. La carte va commencer a raconter le voyage en continu.",
-      "assetId": null,
-      "latitude": 42.4637,
-      "longitude": 3.1716,
-      "createdAt": "2026-07-06T11:20:00.000Z"
-    }
-  ],
-  "trackSessions": [
-    {
-      "id": "track_drive_demo",
-      "tripId": "trip_iberia_2026",
-      "memberId": "mem_tom",
-      "status": "completed",
-      "startedAt": "2026-07-05T09:00:00.000Z",
-      "endedAt": "2026-07-05T16:30:00.000Z"
-    }
-  ],
-  "trackPoints": [
-    {
-      "id": "track_point_1",
-      "trackSessionId": "track_drive_demo",
-      "tripId": "trip_iberia_2026",
-      "recordedAt": "2026-07-05T09:30:00.000Z",
-      "latitude": 45.5,
-      "longitude": 4.6,
-      "accuracyMeters": 16
-    },
-    {
-      "id": "track_point_2",
-      "trackSessionId": "track_drive_demo",
-      "tripId": "trip_iberia_2026",
-      "recordedAt": "2026-07-05T12:15:00.000Z",
-      "latitude": 44.6,
-      "longitude": 4.2,
-      "accuracyMeters": 12
-    },
-    {
-      "id": "track_point_3",
-      "trackSessionId": "track_drive_demo",
-      "tripId": "trip_iberia_2026",
-      "recordedAt": "2026-07-05T16:10:00.000Z",
-      "latitude": 43.6778,
-      "longitude": 4.1361,
-      "accuracyMeters": 8
-    }
-  ],
-  "draftStories": [
-    {
-      "id": "seeded-draft",
-      "tripId": "trip_iberia_2026",
-      "dayDate": "2026-07-04",
-      "title": "Depart vers Lyon",
-      "summary": "Premier soir de route, voiture pleine et rythme encore leger avant la grande descente.",
-      "body": "La premiere etape est volontairement simple: prendre la route, dormir a Lyon, et se mettre dans le tempo du voyage.\n\nCe post est publie pour servir de point de depart au carnet.",
-      "sourceMomentIds": ["moment_start"],
-      "sourceTrackSessionIds": [],
-      "createdAt": "2026-07-04T20:30:00.000Z"
-    }
-  ],
-  "publishedStories": [
-    {
-      "id": "story_day_1",
-      "tripId": "trip_iberia_2026",
-      "draftId": "seeded-draft",
-      "slug": "depart-vers-lyon",
-      "title": "Depart vers Lyon",
-      "summary": "Premier soir de route, voiture pleine et rythme encore leger avant la grande descente.",
-      "body": "La premiere etape est volontairement simple: prendre la route, dormir a Lyon, et se mettre dans le tempo du voyage.\n\nCe post est publie pour servir de point de depart au carnet.",
-      "publishedAt": "2026-07-04T21:00:00.000Z"
-    }
-  ],
+  "moments": [],
+  "trackSessions": [],
+  "trackPoints": [],
+  "draftStories": [],
+  "publishedStories": [],
   "comments": []
 }

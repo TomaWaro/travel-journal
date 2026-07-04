@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CapturePanel } from "@/components/capture-panel";
 import { EditorialPanel } from "@/components/editorial-panel";
 import { MapPanel } from "@/components/map-panel";
@@ -11,8 +12,8 @@ import type { DashboardView, TripBundle } from "@/lib/types";
 
 type Props = {
   dashboard: DashboardView;
-  selectedTrip: TripBundle;
-  publicUrl: string;
+  selectedTrip: TripBundle | null;
+  publicUrl: string | null;
   token: string;
   blobUploadsEnabled: boolean;
 };
@@ -33,7 +34,10 @@ export function DashboardShell({
   token,
   blobUploadsEnabled
 }: Props) {
-  const publishedMoments = selectedTrip.moments.filter((moment) => moment.status === "published").length;
+  const router = useRouter();
+  const publishedMoments = selectedTrip
+    ? selectedTrip.moments.filter((moment) => moment.status === "published").length
+    : 0;
   const tabs = useMemo(() => {
     const base: Array<{ key: TabKey; label: string }> = [
       { key: "capture", label: "Capture" },
@@ -53,6 +57,122 @@ export function DashboardShell({
     return base;
   }, [dashboard.role]);
   const [activeTab, setActiveTab] = useState<TabKey>("capture");
+  const [createMessage, setCreateMessage] = useState("");
+
+  if (!selectedTrip) {
+    return (
+      <main className="shell">
+        <section className="hero hero-cover workspace-hero">
+          <div className="hero-copy">
+            <p className="eyebrow">{dashboard.role}</p>
+            <h1>{dashboard.access.workspace.name}</h1>
+            <p>Le carnet est vide. Cree le premier voyage pour repartir proprement de zero.</p>
+          </div>
+        </section>
+
+        <section className="workspace-shell">
+          {dashboard.role === "owner" ? (
+            <section className="panel">
+              <div className="panel-heading workspace-panel-heading">
+                <div>
+                  <p className="eyebrow">Nouveau depart</p>
+                  <h2>Creer le premier voyage</h2>
+                </div>
+              </div>
+              <form
+                className="workspace-form-shell"
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  const formData = new FormData(event.currentTarget);
+                  setCreateMessage("");
+                  const response = await fetch("/api/trips", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "x-access-token": token
+                    },
+                    body: JSON.stringify({
+                      title: formData.get("title"),
+                      summary: formData.get("summary"),
+                      startDate: formData.get("startDate"),
+                      endDate: formData.get("endDate"),
+                      visibility: formData.get("visibility"),
+                      mapPrivacy: formData.get("mapPrivacy"),
+                      mapDelayMinutes: Number(formData.get("mapDelayMinutes"))
+                    })
+                  });
+                  const payload = (await response.json()) as { error?: string };
+
+                  if (!response.ok) {
+                    setCreateMessage(payload.error ?? "Impossible de creer le voyage.");
+                    return;
+                  }
+
+                  router.refresh();
+                }}
+              >
+                <label className="field">
+                  <span>Titre</span>
+                  <input name="title" placeholder="Ex: Road trip ete 2026" required type="text" />
+                </label>
+                <label className="field">
+                  <span>Resume</span>
+                  <textarea
+                    name="summary"
+                    placeholder="Quelques lignes pour decrire le voyage"
+                    required
+                    rows={4}
+                  />
+                </label>
+                <label className="field">
+                  <span>Date de debut</span>
+                  <input name="startDate" required type="date" />
+                </label>
+                <label className="field">
+                  <span>Date de fin</span>
+                  <input name="endDate" required type="date" />
+                </label>
+                <label className="field">
+                  <span>Visibilite</span>
+                  <select defaultValue="quasi-public" name="visibility">
+                    <option value="private">Prive</option>
+                    <option value="quasi-public">Quasi-public</option>
+                  </select>
+                </label>
+                <label className="field">
+                  <span>Mode carte</span>
+                  <select defaultValue="delayed" name="mapPrivacy">
+                    <option value="delayed">Position retardee</option>
+                    <option value="completed-only">Segments termines</option>
+                  </select>
+                </label>
+                <label className="field">
+                  <span>Delai carte (minutes)</span>
+                  <input defaultValue={30} min={0} name="mapDelayMinutes" type="number" />
+                </label>
+                <button className="primary-button" type="submit">
+                  Creer le voyage
+                </button>
+              </form>
+              {createMessage ? <p className="status-line">{createMessage}</p> : null}
+            </section>
+          ) : (
+            <section className="panel">
+              <div className="panel-heading workspace-panel-heading">
+                <div>
+                  <p className="eyebrow">Aucun voyage</p>
+                  <h2>Le carnet n&apos;a pas encore ete initialise</h2>
+                </div>
+              </div>
+              <p>Le owner doit d&apos;abord creer un voyage avant que tu puisses contribuer.</p>
+            </section>
+          )}
+        </section>
+      </main>
+    );
+  }
+
+  const resolvedPublicUrl = publicUrl ?? "/";
 
   return (
     <main className="shell">
@@ -87,9 +207,11 @@ export function DashboardShell({
               {bundle.trip.title}
             </Link>
           ))}
-          <a className="ghost-button" href={publicUrl}>
-            Voir la page publique
-          </a>
+          {publicUrl ? (
+            <a className="ghost-button" href={publicUrl}>
+              Voir la page publique
+            </a>
+          ) : null}
         </div>
       </section>
 
@@ -113,7 +235,7 @@ export function DashboardShell({
           {activeTab === "capture" ? (
             <CapturePanel
               blobUploadsEnabled={blobUploadsEnabled}
-              publicUrl={publicUrl}
+              publicUrl={resolvedPublicUrl}
               token={token}
               tripId={selectedTrip.trip.id}
             />
