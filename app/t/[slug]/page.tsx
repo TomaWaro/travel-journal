@@ -105,10 +105,11 @@ export default async function PublicTripPage({ params }: PageProps) {
 
   return (
     <main className="shell">
-      <AnimatedSection className="cover-hero">
-        <section className="hero hero-cover">
+      <AnimatedSection className="landing-stage" delay={60}>
+        <section className="hero hero-cover hero-launch hero-trip">
+          <div className="hero-noise" aria-hidden="true" />
           <div className="hero-copy">
-            <p className="eyebrow">Magazine cover</p>
+            <p className="eyebrow">Travel issue</p>
             <h1>{bundle.trip.title}</h1>
             <p>{bundle.trip.summary}</p>
             <div className="cover-meta-row">
@@ -128,10 +129,14 @@ export default async function PublicTripPage({ params }: PageProps) {
               <span className="metric-chip">{bundle.stories.length} recit(s)</span>
               <span className="metric-chip">{tripComments.length} reaction(s)</span>
             </div>
+            <div className="scroll-cue">
+              <span className="scroll-cue-line" aria-hidden="true" />
+              <span>Entrer dans le carnet</span>
+            </div>
           </div>
           <aside className="hero-visual">
             <div
-              className="cover-image"
+              className="cover-image cover-image-immersive"
               style={
                 leadImage
                   ? {
@@ -146,30 +151,45 @@ export default async function PublicTripPage({ params }: PageProps) {
                 <p>{bundle.trip.visibility === "quasi-public" ? "Page quasi-publique" : "Page publique"}</p>
               </div>
             </div>
+            <div className="floating-cards">
+              <div className="floating-card floating-card-primary">
+                <span className="eyebrow">Live edition</span>
+                <strong>{bundle.trip.mapPrivacy === "delayed" ? "Trajet differe" : "Etapes terminees"}</strong>
+                <p>{bundle.trip.mapDelayMinutes} min de delai quand le suivi public est actif.</p>
+              </div>
+            </div>
           </aside>
-          <div className="hero-banner">
-            <div>
-              <strong>Timeline</strong>
-              <span>Chaque etape laisse une trace visuelle dans le carnet.</span>
-            </div>
-            <div>
-              <strong>Carte</strong>
-              <span>Le trajet public reste lisible sans exposer l&apos;espace admin.</span>
-            </div>
-            <div>
-              <strong>Commentaires</strong>
-              <span>Le public peut reagir directement, sans compte.</span>
+          <div className="marquee-shell" aria-hidden="true">
+            <div className="marquee-track">
+              {(routeLocations.length > 0 ? routeLocations : ["Route", "Voyage", "Mer"]).map((location) => (
+                <span key={location}>{location}</span>
+              ))}
+              {(routeLocations.length > 0 ? routeLocations : ["Route", "Voyage", "Mer"]).map((location) => (
+                <span key={`${location}-dup`}>{location}</span>
+              ))}
             </div>
           </div>
         </section>
       </AnimatedSection>
 
-      <AnimatedSection className="grid trip-storyline">
-        <section className="editorial-lead">
+      <AnimatedSection className="trip-experience" delay={120}>
+        <section className="trip-storyline-grid">
+          <aside className="chapter-rail">
+            <span className="eyebrow">Chapitres</span>
+            <div className="chapter-rail-list">
+              <a href="#trip-itinerary">Itineraire</a>
+              <a href="#trip-gallery">Galerie</a>
+              <a href="#trip-map">Carte</a>
+              <a href="#trip-stories">Recits</a>
+              <a href="#trip-comments">Commentaires</a>
+            </div>
+          </aside>
+          <div className="trip-storyline">
+        <section className="editorial-lead immersive-panel" id="trip-itinerary">
           <div className="section-intro">
             <div>
               <p className="eyebrow">Apercu</p>
-              <h2>Une couverture vivante du trajet</h2>
+              <h2>Une narration par etapes, comme un reel editorial.</h2>
             </div>
           </div>
           <div className="itinerary-strip">
@@ -180,7 +200,7 @@ export default async function PublicTripPage({ params }: PageProps) {
               </div>
             ) : null}
             {itinerary.map((stop) => (
-              <div className="itinerary-chip" key={stop.id}>
+              <div className="itinerary-chip itinerary-chip-glow" key={stop.id}>
                 <DateBadge>{stop.date}</DateBadge>
                 <strong>{stop.title}</strong>
                 <span>{stop.location}</span>
@@ -189,11 +209,11 @@ export default async function PublicTripPage({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="panel">
+        <section className="panel panel-cinematic" id="trip-gallery">
           <div className="section-intro">
             <div>
               <p className="eyebrow">Galerie</p>
-              <h2>Les images qui racontent la route</h2>
+              <h2>Les images prennent le lead.</h2>
             </div>
           </div>
           <PhotoGrid
@@ -207,6 +227,7 @@ export default async function PublicTripPage({ params }: PageProps) {
           />
         </section>
 
+        <div id="trip-map">
         <MapPanel
           legs={bundle.legs}
           moments={publicMoments}
@@ -214,12 +235,13 @@ export default async function PublicTripPage({ params }: PageProps) {
           trackPoints={publicTrackPoints}
           trip={bundle.trip}
         />
+        </div>
 
-        <section className="panel">
+        <section className="panel panel-cinematic" id="trip-stories">
           <div className="section-intro">
             <div>
               <p className="eyebrow">Recits</p>
-              <h2>Le voyage en chapitres</h2>
+              <h2>Le voyage en chapitres visuels</h2>
             </div>
           </div>
           <div className="article-rail">
@@ -251,6 +273,8 @@ export default async function PublicTripPage({ params }: PageProps) {
         <div id="trip-comments">
           <PublicCommentsPanel comments={tripComments} tripId={bundle.trip.id} />
         </div>
+          </div>
+        </section>
       </AnimatedSection>
     </main>
   );

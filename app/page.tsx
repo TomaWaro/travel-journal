@@ -58,17 +58,22 @@ export default async function HomePage() {
       .slice(0, 2)
       .map((moment) => ({ bundle, moment }))
   );
+  const marqueeLocations = Array.from(
+    new Set(trips.flatMap((bundle) => getTripLocations(bundle)))
+  ).slice(0, 10);
 
   return (
     <main className="shell">
-      <AnimatedSection className="cover-hero">
-        <section className="hero hero-cover">
+      <AnimatedSection className="landing-stage" delay={80}>
+        <section className="hero hero-cover hero-launch">
+          <div className="hero-noise" aria-hidden="true" />
           <div className="hero-copy">
-            <p className="eyebrow">Editorial Travel Journal</p>
-            <h1>Le voyage devient un magazine vivant.</h1>
+            <p className="eyebrow">Summer issue 2026</p>
+            <h1>Un journal de voyage qui se scrolle comme une edition vivante.</h1>
             <p>
-              Une couverture, des etapes, des images fortes, une timeline, des recits publies et
-              des commentaires publics. Le tout avec une vraie presence editoriale.
+              Plus proche d&apos;un feed premium, d&apos;une couverture de magazine et d&apos;un
+              carnet visuel que d&apos;un site de posts. Chaque etape est traitee comme un moment
+              a ressentir, pas juste a lire.
             </p>
             <div className="cover-meta-row">
               {featuredTrip ? <DateBadge>{formatDateLabel(featuredTrip.trip.startDate)}</DateBadge> : null}
@@ -91,10 +96,14 @@ export default async function HomePage() {
               <span className="metric-chip">{publishedStories} post(s) publics</span>
               <span className="metric-chip">{publishedMoments} souvenir(s) captures</span>
             </div>
+            <div className="scroll-cue">
+              <span className="scroll-cue-line" aria-hidden="true" />
+              <span>Scroll pour entrer dans le carnet</span>
+            </div>
           </div>
           <aside className="hero-visual">
             <div
-              className="cover-image"
+              className="cover-image cover-image-immersive"
               style={
                 coverUrl
                   ? {
@@ -109,30 +118,30 @@ export default async function HomePage() {
                 <p>{featuredTrip?.trip.summary ?? "Le prochain carnet commencera ici."}</p>
               </div>
             </div>
-            <div className="sunset-strip">
-              {coverLocations.length > 0 ? (
-                coverLocations.map((location) => <span key={location}>{location}</span>)
-              ) : (
-                <>
-                  <span>Depart</span>
-                  <span>Route</span>
-                  <span>Mer</span>
-                </>
-              )}
+            <div className="floating-cards">
+              <div className="floating-card floating-card-primary">
+                <span className="eyebrow">Mood</span>
+                <strong>Sunset drive</strong>
+                <p>Chaleur, route, pause, bruit de ville, air marin.</p>
+              </div>
+              <div className="floating-card floating-card-secondary">
+                <span className="note-accent">Daily note</span>
+                <p>Poster le soir, capturer a chaud, relire plus tard.</p>
+              </div>
             </div>
           </aside>
-          <div className="hero-banner">
-            <div>
-              <strong>Photo-first</strong>
-              <span>La couverture donne tout de suite le ton du voyage.</span>
-            </div>
-            <div>
-              <strong>Recit maitrise</strong>
-              <span>Les posts restent valides manuellement avant publication.</span>
-            </div>
-            <div>
-              <strong>Journal partageable</strong>
-              <span>Chaque page reste lisible, belle et rapide sur mobile.</span>
+          <div className="marquee-shell" aria-hidden="true">
+            <div className="marquee-track">
+              {(marqueeLocations.length > 0 ? marqueeLocations : ["Lyon", "Lunel", "Espagne", "Aix"]).map(
+                (location) => (
+                  <span key={location}>{location}</span>
+                )
+              )}
+              {(marqueeLocations.length > 0 ? marqueeLocations : ["Lyon", "Lunel", "Espagne", "Aix"]).map(
+                (location) => (
+                  <span key={`${location}-dup`}>{location}</span>
+                )
+              )}
             </div>
           </div>
           {!hidePrivateAccessLinks ? (
@@ -145,10 +154,41 @@ export default async function HomePage() {
         </section>
       </AnimatedSection>
 
-      <AnimatedSection className="grid">
+      <AnimatedSection className="issue-summary" delay={120}>
+        <section className="immersive-panel summary-panel">
+          <div className="summary-grid">
+            <div className="section-intro">
+              <div>
+                <p className="eyebrow">This edition</p>
+                <h2>Une presentation plus proche d&apos;Instagram que d&apos;un blog.</h2>
+                <p>
+                  Couvertures visuelles, rythme fort, cartes de recits, enchainement clair, gros
+                  tap targets, hierarchie simple et scan immediate.
+                </p>
+              </div>
+            </div>
+            <div className="hero-banner summary-ribbon">
+              <div>
+                <strong>Motion-rich</strong>
+                <span>Sections qui revelent, fond vivant, cartes qui flottent.</span>
+              </div>
+              <div>
+                <strong>Photo-driven</strong>
+                <span>Les medias prennent le lead, le texte vient soutenir.</span>
+              </div>
+              <div>
+                <strong>Human</strong>
+                <span>Details manuscrits, palette chaude, composition moins rigide.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </AnimatedSection>
+
+      <AnimatedSection className="grid issue-feed" delay={140}>
         <div className="section-intro">
           <div>
-            <p className="eyebrow">Edition en cours</p>
+            <p className="eyebrow">Featured journeys</p>
             <h2>Les couvertures du voyage</h2>
             <p>
               Chaque voyage se lit comme un numero: une route, une ambiance, des recits, puis des
@@ -156,23 +196,37 @@ export default async function HomePage() {
             </p>
           </div>
         </div>
-        <div className="article-rail">
-          {trips.map((bundle) => (
-            <ArticleCard
-              date={formatDateLabel(bundle.trip.startDate)}
-              href={`/t/${bundle.trip.slug}`}
-              imageUrl={getCoverPhoto(bundle)}
-              key={bundle.trip.id}
-              location={getTripLocations(bundle)[0]}
-              stats={`${bundle.moments.length} souvenirs · ${bundle.stories.length} recits`}
-              summary={bundle.trip.summary}
-              title={bundle.trip.title}
-            />
+        <div className="immersive-feed">
+          {trips.map((bundle, index) => (
+            <div className={`feature-row ${index % 2 === 1 ? "feature-row-reverse" : ""}`} key={bundle.trip.id}>
+              <ArticleCard
+                date={formatDateLabel(bundle.trip.startDate)}
+                href={`/t/${bundle.trip.slug}`}
+                imageUrl={getCoverPhoto(bundle)}
+                location={getTripLocations(bundle)[0]}
+                stats={`${bundle.moments.length} souvenirs · ${bundle.stories.length} recits`}
+                summary={bundle.trip.summary}
+                title={bundle.trip.title}
+              />
+              <div className="feature-copy">
+                <span className="note-accent">Issue {String(index + 1).padStart(2, "0")}</span>
+                <h3>{bundle.trip.title}</h3>
+                <p>{bundle.trip.summary}</p>
+                <div className="feature-locations">
+                  {getTripLocations(bundle).map((location) => (
+                    <LocationBadge key={location}>{location}</LocationBadge>
+                  ))}
+                </div>
+                <Link className="primary-button" href={`/t/${bundle.trip.slug}`}>
+                  Entrer dans l&apos;edition
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
       </AnimatedSection>
 
-      <AnimatedSection className="home-feature-grid">
+      <AnimatedSection className="home-feature-grid" delay={180}>
         <div className="section-intro">
           <div>
             <p className="eyebrow">Journal</p>
@@ -180,7 +234,7 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="home-editorial-grid">
-          <div className="story-stack">
+          <div className="story-stack story-stack-featured">
             {latestStories.length === 0 ? (
               <div className="empty-state">
                 <strong>Les recits publics apparaitront ici.</strong>
@@ -202,7 +256,7 @@ export default async function HomePage() {
               />
             ))}
           </div>
-          <div className="timeline-preview">
+          <div className="timeline-preview timeline-preview-immersive">
             <div className="timeline-preview-head">
               <span className="eyebrow">Itineraire</span>
               <p>Un apercu du rythme du voyage, stop apres stop.</p>

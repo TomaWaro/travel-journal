@@ -95,8 +95,9 @@ export default async function StoryPage({ params }: PageProps) {
 
   return (
     <main className="shell">
-      <AnimatedSection className="cover-hero">
-        <section className="hero hero-cover article-hero">
+      <AnimatedSection className="landing-stage" delay={60}>
+        <section className="hero hero-cover article-hero hero-launch">
+          <div className="hero-noise" aria-hidden="true" />
           <div className="hero-copy">
             <p className="eyebrow">Feature story</p>
             <h1>{payload.story.title}</h1>
@@ -117,10 +118,14 @@ export default async function StoryPage({ params }: PageProps) {
               <span className="metric-chip">{storyMedia.length} media lie(s)</span>
               <span className="metric-chip">{storyComments.length} commentaire(s)</span>
             </div>
+            <div className="scroll-cue">
+              <span className="scroll-cue-line" aria-hidden="true" />
+              <span>Lire le chapitre</span>
+            </div>
           </div>
           <aside className="hero-visual">
             <div
-              className="cover-image"
+              className="cover-image cover-image-immersive"
               style={
                 coverImage
                   ? {
@@ -135,11 +140,28 @@ export default async function StoryPage({ params }: PageProps) {
                 <p>{formatDateLabel(payload.trip.startDate)} · {routeLocations.slice(0, 2).join(" · ")}</p>
               </div>
             </div>
+            <div className="floating-cards">
+              <div className="floating-card floating-card-secondary">
+                <span className="eyebrow">Reader view</span>
+                <p>Grandes images, citations, details et reactions sans friction.</p>
+              </div>
+            </div>
           </aside>
+          <div className="marquee-shell" aria-hidden="true">
+            <div className="marquee-track">
+              {(routeLocations.length > 0 ? routeLocations : ["Travel", "Diary", "Edition"]).map((location) => (
+                <span key={location}>{location}</span>
+              ))}
+              {(routeLocations.length > 0 ? routeLocations : ["Travel", "Diary", "Edition"]).map((location) => (
+                <span key={`${location}-dup`}>{location}</span>
+              ))}
+            </div>
+          </div>
         </section>
       </AnimatedSection>
 
-      <AnimatedSection className="grid article-layout">
+      <AnimatedSection className="article-stage" delay={140}>
+        <section className="article-stage-grid">
         <section className="article-prose">
           <div className="section-intro">
             <div>
@@ -148,10 +170,7 @@ export default async function StoryPage({ params }: PageProps) {
             </div>
           </div>
           <div className="story-body article-body">{payload.story.body}</div>
-          <QuoteBlock
-            cite={payload.trip.title}
-            quote={payload.story.summary}
-          />
+          <QuoteBlock cite={payload.trip.title} quote={payload.story.summary} />
         </section>
 
         <aside className="article-sidebar">
@@ -172,11 +191,19 @@ export default async function StoryPage({ params }: PageProps) {
               </div>
             </div>
           </div>
+          <div className="sidebar-card sidebar-card-note">
+            <span className="note-accent">Editor&apos;s note</span>
+            <p>
+              Ce chapitre s&apos;inscrit dans {payload.trip.title}. Les commentaires restent ouverts
+              pour garder le journal vivant.
+            </p>
+          </div>
         </aside>
+        </section>
       </AnimatedSection>
 
       {storyMedia.length > 0 ? (
-        <AnimatedSection className="panel">
+        <AnimatedSection className="panel panel-cinematic" delay={180}>
           <div className="section-intro">
             <div>
               <p className="eyebrow">Mediatheque</p>
@@ -194,7 +221,7 @@ export default async function StoryPage({ params }: PageProps) {
           />
         </AnimatedSection>
       ) : null}
-      <AnimatedSection id="story-comments">
+      <AnimatedSection id="story-comments" delay={220}>
         <PublicCommentsPanel
           comments={storyComments}
           storyId={payload.story.id}

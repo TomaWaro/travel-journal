@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Caveat, Geist, Instrument_Serif } from "next/font/
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 
 const displayFont = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         className={`${displayFont.variable} ${bodyFont.variable} ${editorialFont.variable} ${noteFont.variable}`}
       >
         <ServiceWorkerRegister />
+        <SiteHeader />
         {children}
         <SiteFooter />
       </body>
