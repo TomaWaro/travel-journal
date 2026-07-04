@@ -227,7 +227,19 @@
       "accuracyMeters": 8
     }
   ],
-  "draftStories": [],
+  "draftStories": [
+    {
+      "id": "seeded-draft",
+      "tripId": "trip_iberia_2026",
+      "dayDate": "2026-07-04",
+      "title": "Depart vers Lyon",
+      "summary": "Premier soir de route, voiture pleine et rythme encore leger avant la grande descente.",
+      "body": "La premiere etape est volontairement simple: prendre la route, dormir a Lyon, et se mettre dans le tempo du voyage.\n\nCe post est publie pour servir de point de depart au carnet.",
+      "sourceMomentIds": ["moment_start"],
+      "sourceTrackSessionIds": [],
+      "createdAt": "2026-07-04T20:30:00.000Z"
+    }
+  ],
   "publishedStories": [
     {
       "id": "story_day_1",
