@@ -8,9 +8,10 @@ type Props = {
   token: string;
   trip: Trip;
   members: Member[];
+  mode: "settings" | "legs" | "invites";
 };
 
-export function TripAdminPanel({ token, trip, members }: Props) {
+export function TripAdminPanel({ token, trip, members, mode }: Props) {
   const router = useRouter();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -30,14 +31,21 @@ export function TripAdminPanel({ token, trip, members }: Props) {
 
   return (
     <section className="panel">
-      <div className="panel-heading">
+      <div className="panel-heading workspace-panel-heading">
         <div>
           <p className="eyebrow">Edition owner</p>
-          <h2>Configurer le voyage et les acces</h2>
+          <h2>
+            {mode === "settings"
+              ? "Regler le voyage"
+              : mode === "legs"
+                ? "Ajouter une etape"
+                : "Inviter un contributeur"}
+          </h2>
         </div>
       </div>
 
-      <div className="admin-grid">
+      <div className="workspace-form-shell">
+        {mode === "settings" ? (
         <form
           className="stack"
           onSubmit={async (event) => {
@@ -98,7 +106,9 @@ export function TripAdminPanel({ token, trip, members }: Props) {
             Sauvegarder
           </button>
         </form>
+        ) : null}
 
+        {mode === "legs" ? (
         <form
           className="stack"
           onSubmit={async (event) => {
@@ -157,7 +167,9 @@ export function TripAdminPanel({ token, trip, members }: Props) {
             Ajouter le leg
           </button>
         </form>
+        ) : null}
 
+        {mode === "invites" ? (
         <form
           className="stack"
           onSubmit={async (event) => {
@@ -204,6 +216,7 @@ export function TripAdminPanel({ token, trip, members }: Props) {
             </div>
           ) : null}
         </form>
+        ) : null}
       </div>
 
       {message ? <p className="status-line">{message}</p> : null}

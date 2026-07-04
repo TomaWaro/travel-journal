@@ -1247,6 +1247,96 @@ main.shell {
   text-align: right;
 }
 
+.workspace-hero {
+  min-height: auto;
+}
+
+.workspace-shell {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 6px 2px 10px;
+  scrollbar-width: none;
+}
+
+.workspace-tab {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.54);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.workspace-tab.active {
+  background: linear-gradient(135deg, var(--sunset), var(--terracotta));
+  border-color: transparent;
+  color: var(--cream);
+  box-shadow: 0 16px 28px rgba(201, 104, 68, 0.22);
+}
+
+.workspace-tab:hover {
+  transform: translateY(-1px);
+}
+
+.workspace-panel {
+  display: grid;
+}
+
+.workspace-panel .panel,
+.workspace-panel .timeline-panel,
+.workspace-panel .map-panel {
+  min-width: 0;
+}
+
+.workspace-panel .panel h2,
+.workspace-panel .timeline-panel h2,
+.workspace-panel .map-panel h2 {
+  font-size: clamp(1.45rem, 2vw, 2.2rem);
+  line-height: 1;
+}
+
+.workspace-panel .hero-actions,
+.workspace-panel .button-row {
+  gap: 10px;
+}
+
+.workspace-panel .field input,
+.workspace-panel .field textarea,
+.workspace-panel .field select {
+  min-height: 52px;
+}
+
+.workspace-panel-heading {
+  margin-bottom: 16px;
+}
+
+.workspace-form-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.workspace-form-shell form {
+  display: grid;
+  gap: 14px;
+}
+
 .loading-cover {
   display: grid;
   gap: 16px;
