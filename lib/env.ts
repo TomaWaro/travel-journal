@@ -1,5 +1,45 @@
+function withProtocol(value?: string) {
+  if (!value) {
+    return undefined;
+  }
+
+  return value.startsWith("http://") || value.startsWith("https://")
+    ? value
+    : `https://${value}`;
+}
+
+function resolveAppUrl() {
+  const explicitAppUrl = withProtocol(process.env.NEXT_PUBLIC_APP_URL);
+
+  if (explicitAppUrl) {
+    return explicitAppUrl;
+  }
+
+  const productionUrl = withProtocol(
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ??
+      process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
+  );
+
+  if (
+    (process.env.VERCEL_ENV === "production" ||
+      process.env.NEXT_PUBLIC_VERCEL_ENV === "production") &&
+    productionUrl
+  ) {
+    return productionUrl;
+  }
+
+  return (
+    withProtocol(
+      process.env.VERCEL_BRANCH_URL ?? process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL
+    ) ??
+    withProtocol(process.env.VERCEL_URL ?? process.env.NEXT_PUBLIC_VERCEL_URL) ??
+    productionUrl ??
+    "http://localhost:3000"
+  );
+}
+
 export const appEnv = {
-  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  appUrl: resolveAppUrl(),
   mapStyleUrl:
     process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://demotiles.maplibre.org/style.json",
   ownerAccessToken: process.env.OWNER_ACCESS_TOKEN ?? "owner-demo-token",
