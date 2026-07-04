@@ -90,6 +90,7 @@ export default async function PublicTripPage({ params }: PageProps) {
           </div>
         </section>
         <TimelinePanel
+          assets={bundle.assets}
           days={bundle.days}
           drafts={[]}
           members={bundle.contributors}

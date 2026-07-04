@@ -74,6 +74,7 @@ export default async function AccessPage({ params, searchParams }: PageProps) {
             trip={selectedTrip.trip}
           />
           <TimelinePanel
+            assets={selectedTrip.assets}
             days={selectedTrip.days}
             drafts={selectedTrip.drafts}
             members={selectedTrip.contributors}

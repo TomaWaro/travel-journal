@@ -1,7 +1,8 @@
 import { formatDateLabel } from "@/lib/date";
-import type { DraftStory, Member, Moment, PublishedStory, TripDay } from "@/lib/types";
+import type { Asset, DraftStory, Member, Moment, PublishedStory, TripDay } from "@/lib/types";
 
 type Props = {
+  assets: Asset[];
   days: TripDay[];
   moments: Moment[];
   members: Member[];
@@ -9,7 +10,8 @@ type Props = {
   stories: PublishedStory[];
 };
 
-export function TimelinePanel({ days, moments, members, drafts, stories }: Props) {
+export function TimelinePanel({ assets, days, moments, members, drafts, stories }: Props) {
+  const assetMap = new Map(assets.map((asset) => [asset.id, asset]));
   const memberMap = new Map(members.map((member) => [member.id, member]));
 
   return (
@@ -34,14 +36,34 @@ export function TimelinePanel({ days, moments, members, drafts, stories }: Props
               </div>
               <ul className="compact-list">
                 {dayMoments.length === 0 ? <li>Aucun moment capture pour le moment.</li> : null}
-                {dayMoments.map((moment) => (
-                  <li key={moment.id}>
-                    <strong>{moment.caption || moment.type}</strong>
-                    <span>
-                      {memberMap.get(moment.memberId)?.name ?? "Contributeur"} · {moment.status}
-                    </span>
-                  </li>
-                ))}
+                {dayMoments.map((moment) => {
+                  const asset = moment.assetId ? assetMap.get(moment.assetId) : null;
+
+                  return (
+                    <li className="moment-item" key={moment.id}>
+                      <div className="moment-copy">
+                        <strong>{moment.caption || moment.type}</strong>
+                        <span>
+                          {memberMap.get(moment.memberId)?.name ?? "Contributeur"} · {moment.status}
+                        </span>
+                        {moment.body ? <p>{moment.body}</p> : null}
+                      </div>
+                      {asset ? (
+                        <div className="moment-media">
+                          {moment.type === "photo" ? (
+                            <img alt={moment.caption || "Moment photo"} loading="lazy" src={asset.url} />
+                          ) : null}
+                          {moment.type === "video" ? (
+                            <video controls playsInline preload="metadata" src={asset.url} />
+                          ) : null}
+                          {moment.type === "audio" ? (
+                            <audio controls preload="metadata" src={asset.url} />
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
               {dayDrafts.length > 0 ? (
                 <div className="tag-row">

@@ -251,12 +251,44 @@ main.shell {
 }
 
 .compact-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
+  display: grid;
+  gap: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.moment-item {
+  display: grid;
+  gap: 12px;
+}
+
+.moment-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.moment-copy p {
+  margin: 0;
+  color: var(--text);
+}
+
+.moment-media {
+  display: grid;
+  gap: 10px;
+}
+
+.moment-media img,
+.moment-media video {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(6, 15, 24, 0.65);
+}
+
+.moment-media audio {
+  width: 100%;
 }
 
 .compact-list li:last-child {
