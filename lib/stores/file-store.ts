@@ -26,26 +26,51 @@ const dataDirectory = path.join(/* turbopackIgnore: true */ process.cwd(), "data
 const seedPath = path.join(dataDirectory, "seed.travel-journal.json");
 const statePath = path.join(dataDirectory, "travel-journal.json");
 
-async function ensureStateFile(): Promise<void> {
-  try {
-    await readFile(statePath, "utf8");
-  } catch {
-    const seed = await readFile(seedPath, "utf8");
-    await mkdir(path.join(dataDirectory, "uploads"), { recursive: true });
-    await writeFile(statePath, seed, "utf8");
-  }
+function isMissingFileError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    "code" in error &&
+    (error.code === "ENOENT" || error.code === "ENOTDIR")
+  );
+}
+
+function isReadonlyDeploymentError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    "code" in error &&
+    (error.code === "EROFS" || error.code === "EPERM" || error.code === "EACCES")
+  );
+}
+
+function getReadonlyStorageMessage(): string {
+  return "Writable local storage is not available on Vercel. Configure Postgres, Redis, and Blob before using write features in production.";
 }
 
 async function readState(): Promise<AppState> {
-  await ensureStateFile();
-  const json = await readFile(statePath, "utf8");
+  try {
+    const json = await readFile(statePath, "utf8");
+    return JSON.parse(json) as AppState;
+  } catch (error) {
+    if (!isMissingFileError(error)) {
+      throw error;
+    }
 
-  return JSON.parse(json) as AppState;
+    const json = await readFile(seedPath, "utf8");
+    return JSON.parse(json) as AppState;
+  }
 }
 
 async function writeState(state: AppState): Promise<void> {
-  await mkdir(path.join(dataDirectory, "uploads"), { recursive: true });
-  await writeFile(statePath, JSON.stringify(state, null, 2), "utf8");
+  try {
+    await mkdir(path.join(dataDirectory, "uploads"), { recursive: true });
+    await writeFile(statePath, JSON.stringify(state, null, 2), "utf8");
+  } catch (error) {
+    if (isReadonlyDeploymentError(error)) {
+      throw new Error(getReadonlyStorageMessage());
+    }
+
+    throw error;
+  }
 }
 
 function buildTripBundle(state: AppState, trip: Trip): TripBundle {
