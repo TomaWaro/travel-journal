@@ -1,6 +1,6 @@
 ## 1. Project Setup
 
-- [ ] 1.1 Create a dedicated GitHub repository under `TomaWaro` for the travel journal app and connect it to a new Vercel project
+- [x] 1.1 Create a dedicated GitHub repository under `TomaWaro` for the travel journal app and connect it to a new Vercel project
 - [x] 1.2 Scaffold a Next.js application with App Router, mobile-first layout, and PWA support
 - [x] 1.3 Add baseline project tooling for linting, formatting, environment management, and deployment configuration
 
