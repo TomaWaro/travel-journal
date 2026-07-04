@@ -1,4 +1,10 @@
 import { randomUUID } from "node:crypto";
+import {
+  getConfiguredOwnerAccessToken,
+  isConfiguredOwnerAccessToken,
+  isDemoAccessToken,
+  isProductionDeployment
+} from "@/lib/access";
 import { buildTripDays, clampDateToTrip } from "@/lib/date";
 import { buildDraftStory } from "@/lib/draft";
 import { ensurePostgresReady, getPostgresPool, toSqlDate } from "@/lib/postgres";
@@ -334,6 +340,43 @@ async function loadTripBundle(db: Queryable, trip: Trip): Promise<TripBundle> {
 }
 
 async function resolveAccessContext(db: Queryable, token: string): Promise<AccessContext | null> {
+  if (isConfiguredOwnerAccessToken(token)) {
+    const workspaceRow = await queryOne(
+      db,
+      "select * from workspaces order by created_at asc limit 1"
+    );
+
+    if (!workspaceRow) {
+      return null;
+    }
+
+    const workspace = mapWorkspace(workspaceRow);
+    const member = await getMemberById(db, workspace.ownerMemberId);
+
+    if (!member) {
+      return null;
+    }
+
+    return {
+      accessLink: {
+        id: "configured-owner-access",
+        workspaceId: workspace.id,
+        tripId: null,
+        memberId: member.id,
+        role: "owner",
+        label: "Configured owner access",
+        token: getConfiguredOwnerAccessToken() ?? "",
+        createdAt: workspace.createdAt
+      },
+      member,
+      workspace
+    };
+  }
+
+  if (isProductionDeployment() && isDemoAccessToken(token)) {
+    return null;
+  }
+
   const accessLinkRow = await queryOne(db, "select * from access_links where token = $1", [token]);
 
   if (!accessLinkRow) {

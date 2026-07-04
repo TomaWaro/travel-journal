@@ -1,6 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  getConfiguredOwnerAccessToken,
+  isConfiguredOwnerAccessToken,
+  isDemoAccessToken,
+  isProductionDeployment
+} from "@/lib/access";
 import { buildTripDays, clampDateToTrip } from "@/lib/date";
 import { buildDraftStory } from "@/lib/draft";
 import {
@@ -105,7 +111,48 @@ function buildTripBundle(state: AppState, trip: Trip): TripBundle {
   };
 }
 
+function resolveConfiguredOwnerAccessContext(state: AppState): AccessContext | null {
+  if (!getConfiguredOwnerAccessToken()) {
+    return null;
+  }
+
+  const workspace = state.workspaces[0];
+
+  if (!workspace) {
+    return null;
+  }
+
+  const member = state.members.find((candidate) => candidate.id === workspace.ownerMemberId);
+
+  if (!member) {
+    return null;
+  }
+
+  return {
+    accessLink: {
+      id: "configured-owner-access",
+      workspaceId: workspace.id,
+      tripId: null,
+      memberId: member.id,
+      role: "owner",
+      label: "Configured owner access",
+      token: getConfiguredOwnerAccessToken() ?? "",
+      createdAt: workspace.createdAt
+    },
+    member,
+    workspace
+  };
+}
+
 function resolveAccessContext(state: AppState, token: string): AccessContext | null {
+  if (isConfiguredOwnerAccessToken(token)) {
+    return resolveConfiguredOwnerAccessContext(state);
+  }
+
+  if (isProductionDeployment() && isDemoAccessToken(token)) {
+    return null;
+  }
+
   const accessLink = state.accessLinks.find((candidate) => candidate.token === token);
 
   if (!accessLink) {

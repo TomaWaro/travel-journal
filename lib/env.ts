@@ -1,3 +1,5 @@
+import { getConfiguredOwnerAccessToken, isProductionDeployment } from "@/lib/access";
+
 function withProtocol(value?: string) {
   if (!value) {
     return undefined;
@@ -42,7 +44,8 @@ export const appEnv = {
   appUrl: resolveAppUrl(),
   mapStyleUrl:
     process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://demotiles.maplibre.org/style.json",
-  ownerAccessToken: process.env.OWNER_ACCESS_TOKEN ?? "owner-demo-token",
+  ownerAccessToken:
+    getConfiguredOwnerAccessToken() ?? (isProductionDeployment() ? "" : "owner-demo-token"),
   useFileStore: process.env.USE_FILE_STORE === "true" || !process.env.DATABASE_URL,
   postgresConfigured: Boolean(process.env.DATABASE_URL),
   redisConfigured: Boolean(

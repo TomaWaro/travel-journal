@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { shouldHidePrivateAccessLinks } from "@/lib/access";
 import { listPublishedTrips } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const trips = await listPublishedTrips();
+  const hidePrivateAccessLinks = shouldHidePrivateAccessLinks();
 
   return (
     <main className="shell">
@@ -17,19 +19,22 @@ export default async function HomePage() {
             produit est pense pour ce voyage, puis pour les suivants.
           </p>
         </div>
-        <div className="hero-actions">
-          <Link className="primary-button" href="/access/owner-demo-token">
-            Ouvrir le dashboard owner
-          </Link>
-          <Link className="secondary-button" href="/access/son-demo-token">
-            Voir le mode contributeur
-          </Link>
-        </div>
+        {!hidePrivateAccessLinks ? (
+          <div className="hero-actions">
+            <Link className="primary-button" href="/access/owner-demo-token">
+              Ouvrir le dashboard owner
+            </Link>
+            <Link className="secondary-button" href="/access/son-demo-token">
+              Voir le mode contributeur
+            </Link>
+          </div>
+        ) : null}
         <div className="hero-banner">
-          <strong>Mode adaptable</strong>
+          <strong>{hidePrivateAccessLinks ? "Mode public" : "Mode adaptable"}</strong>
           <span>
-            Sans base configuree, l&apos;app tourne sur le seed local. Avec Neon, Blob et Redis, elle
-            bascule automatiquement sur le mode Vercel.
+            {hidePrivateAccessLinks
+              ? "Cette page ne montre que le voyage public. Les surfaces privees de contribution et d'administration ne sont pas exposees ici."
+              : "Sans base configuree, l&apos;app tourne sur le seed local. Avec Neon, Blob et Redis, elle bascule automatiquement sur le mode Vercel."}
           </span>
         </div>
       </section>

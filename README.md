@@ -21,6 +21,8 @@ Demo access links:
 
 - Owner dashboard: `/access/owner-demo-token`
 - Contributor dashboard: `/access/son-demo-token`
+
+In production, set a private `OWNER_ACCESS_TOKEN` and use `/access/<that-secret-token>` for administration. The public homepage does not expose private dashboard links in production, and demo tokens are rejected there.
 - Public trip page: `/t/ete-2026-espagne`
 
 ## External Setup
