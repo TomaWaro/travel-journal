@@ -291,6 +291,32 @@ main.shell {
   width: 100%;
 }
 
+.comment-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.comment-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(6, 15, 24, 0.45);
+}
+
+.comment-card p {
+  margin: 0;
+}
+
+.comment-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
 .compact-list li:last-child {
   border-bottom: 0;
   padding-bottom: 0;

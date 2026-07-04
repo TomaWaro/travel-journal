@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPanel } from "@/components/map-panel";
+import { PublicCommentsPanel } from "@/components/public-comments-panel";
 import { TimelinePanel } from "@/components/timeline-panel";
 import { appEnv } from "@/lib/env";
 import { filterPublicMoments, filterPublicTrackPoints } from "@/lib/public-view";
@@ -46,6 +47,7 @@ export default async function PublicTripPage({ params }: PageProps) {
     bundle.trackPoints,
     bundle.trackSessions
   );
+  const tripComments = bundle.comments.filter((comment) => comment.storyId === null);
 
   return (
     <main className="shell">
@@ -97,6 +99,7 @@ export default async function PublicTripPage({ params }: PageProps) {
           moments={publicMoments}
           stories={bundle.stories}
         />
+        <PublicCommentsPanel comments={tripComments} tripId={bundle.trip.id} />
       </section>
     </main>
   );

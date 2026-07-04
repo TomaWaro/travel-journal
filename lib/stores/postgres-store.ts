@@ -19,11 +19,13 @@ import type {
   Asset,
   CreateLegInput,
   CreateMomentInput,
+  CreatePublicCommentInput,
   CreateTripInput,
   DashboardView,
   DraftStory,
   Member,
   Moment,
+  PublicComment,
   PublishedStory,
   RouteLeg,
   TrackPoint,
@@ -225,6 +227,17 @@ function mapPublishedStory(row: SqlRow): PublishedStory {
   };
 }
 
+function mapPublicComment(row: SqlRow): PublicComment {
+  return {
+    id: String(row.id),
+    tripId: String(row.trip_id),
+    storyId: row.story_id ? String(row.story_id) : null,
+    authorName: String(row.author_name),
+    body: String(row.body),
+    createdAt: toIsoTimestamp(row.created_at)
+  };
+}
+
 async function queryRows(db: Queryable, text: string, values: unknown[] = []): Promise<SqlRow[]> {
   const result = await db.query(text, values);
   return result.rows as SqlRow[];
@@ -324,6 +337,11 @@ async function loadTripBundle(db: Queryable, trip: Trip): Promise<TripBundle> {
     "select * from published_stories where trip_id = $1 order by published_at desc",
     [trip.id]
   );
+  const commentRows = await queryRows(
+    db,
+    "select * from public_comments where trip_id = $1 order by created_at desc",
+    [trip.id]
+  );
 
   return {
     trip,
@@ -335,7 +353,8 @@ async function loadTripBundle(db: Queryable, trip: Trip): Promise<TripBundle> {
     trackSessions: trackSessionRows.map(mapTrackSession),
     trackPoints: trackPointRows.map(mapTrackPoint),
     drafts: draftRows.map(mapDraftStory),
-    stories: storyRows.map(mapPublishedStory)
+    stories: storyRows.map(mapPublishedStory),
+    comments: commentRows.map(mapPublicComment)
   };
 }
 
@@ -1095,5 +1114,66 @@ export async function getAsset(assetId: string): Promise<Asset | null> {
   return withReadyPool(async (db) => {
     const row = await queryOne(db, "select * from assets where id = $1", [assetId]);
     return row ? mapAsset(row) : null;
+  });
+}
+
+function sanitizeCommentValue(value: string, maxLength: number): string {
+  return value.trim().replace(/\s+/g, " ").slice(0, maxLength);
+}
+
+export async function addPublicComment(input: CreatePublicCommentInput): Promise<PublicComment> {
+  return withTransaction(async (client) => {
+    const trip = await getTripById(client, input.tripId);
+
+    if (!trip || !trip.published) {
+      throw new Error("Trip not found");
+    }
+
+    if (input.storyId) {
+      const storyRow = await queryOne(
+        client,
+        "select * from published_stories where id = $1 and trip_id = $2",
+        [input.storyId, input.tripId]
+      );
+
+      if (!storyRow) {
+        throw new Error("Story not found");
+      }
+    }
+
+    const authorName = sanitizeCommentValue(input.authorName, 50);
+    const body = input.body.trim().slice(0, 1200);
+
+    if (!authorName) {
+      throw new Error("Le nom est requis.");
+    }
+
+    if (!body) {
+      throw new Error("Le commentaire est requis.");
+    }
+
+    const comment: PublicComment = {
+      id: randomUUID(),
+      tripId: input.tripId,
+      storyId: input.storyId,
+      authorName,
+      body,
+      createdAt: new Date().toISOString()
+    };
+
+    await client.query(
+      `insert into public_comments (id, trip_id, story_id, author_name, body, created_at)
+       values ($1, $2, $3, $4, $5, $6)`,
+      [
+        comment.id,
+        comment.tripId,
+        comment.storyId,
+        comment.authorName,
+        comment.body,
+        comment.createdAt
+      ]
+    );
+
+    return comment;
   });
 }

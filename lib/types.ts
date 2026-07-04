@@ -143,6 +143,15 @@ export interface PublishedStory {
   publishedAt: string;
 }
 
+export interface PublicComment {
+  id: string;
+  tripId: string;
+  storyId: string | null;
+  authorName: string;
+  body: string;
+  createdAt: string;
+}
+
 export interface AppState {
   version: number;
   workspaces: Workspace[];
@@ -157,6 +166,7 @@ export interface AppState {
   trackPoints: TrackPoint[];
   draftStories: DraftStory[];
   publishedStories: PublishedStory[];
+  comments: PublicComment[];
 }
 
 export interface TripDay {
@@ -181,6 +191,7 @@ export interface TripBundle {
   trackPoints: TrackPoint[];
   drafts: DraftStory[];
   stories: PublishedStory[];
+  comments: PublicComment[];
 }
 
 export interface DashboardView {
@@ -221,4 +232,11 @@ export interface CreateMomentInput {
   latitude: number | null;
   longitude: number | null;
   asset: Asset | null;
+}
+
+export interface CreatePublicCommentInput {
+  tripId: string;
+  storyId: string | null;
+  authorName: string;
+  body: string;
 }

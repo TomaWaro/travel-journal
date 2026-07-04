@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PublicCommentsPanel } from "@/components/public-comments-panel";
 import { appEnv } from "@/lib/env";
 import { getPublishedStoryBySlug } from "@/lib/store";
 
@@ -35,6 +36,10 @@ export default async function StoryPage({ params }: PageProps) {
     notFound();
   }
 
+  const storyComments = payload.bundle.comments.filter(
+    (comment) => comment.storyId === payload.story.id
+  );
+
   return (
     <main className="shell">
       <section className="hero">
@@ -53,6 +58,13 @@ export default async function StoryPage({ params }: PageProps) {
       <section className="panel" style={{ marginTop: 24 }}>
         <p className="eyebrow">Recit</p>
         <div className="story-body">{payload.story.body}</div>
+      </section>
+      <section style={{ marginTop: 24 }}>
+        <PublicCommentsPanel
+          comments={storyComments}
+          storyId={payload.story.id}
+          tripId={payload.trip.id}
+        />
       </section>
     </main>
   );

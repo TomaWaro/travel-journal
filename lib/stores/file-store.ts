@@ -20,11 +20,13 @@ import type {
   Asset,
   CreateLegInput,
   CreateMomentInput,
+  CreatePublicCommentInput,
   CreateTripInput,
   DashboardView,
   DraftStory,
   Member,
   Moment,
+  PublicComment,
   PublishedStory,
   RouteLeg,
   TrackPoint,
@@ -58,16 +60,21 @@ function getReadonlyStorageMessage(): string {
 }
 
 async function readState(): Promise<AppState> {
+  const normalizeState = (parsed: AppState): AppState => ({
+    ...parsed,
+    comments: parsed.comments ?? []
+  });
+
   try {
     const json = await readFile(statePath, "utf8");
-    return JSON.parse(json) as AppState;
+    return normalizeState(JSON.parse(json) as AppState);
   } catch (error) {
     if (!isMissingFileError(error)) {
       throw error;
     }
 
     const json = await readFile(seedPath, "utf8");
-    return JSON.parse(json) as AppState;
+    return normalizeState(JSON.parse(json) as AppState);
   }
 }
 
@@ -107,7 +114,10 @@ function buildTripBundle(state: AppState, trip: Trip): TripBundle {
       .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()),
     stories: state.publishedStories
       .filter((story) => story.tripId === trip.id)
-      .sort((left, right) => new Date(right.publishedAt).getTime() - new Date(left.publishedAt).getTime())
+      .sort((left, right) => new Date(right.publishedAt).getTime() - new Date(left.publishedAt).getTime()),
+    comments: (state.comments ?? [])
+      .filter((comment) => comment.tripId === trip.id)
+      .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
   };
 }
 
@@ -559,6 +569,54 @@ export async function getAsset(assetId: string): Promise<Asset | null> {
   const state = await readState();
 
   return state.assets.find((asset) => asset.id === assetId) ?? null;
+}
+
+function sanitizeCommentValue(value: string, maxLength: number): string {
+  return value.trim().replace(/\s+/g, " ").slice(0, maxLength);
+}
+
+export async function addPublicComment(input: CreatePublicCommentInput): Promise<PublicComment> {
+  const state = await readState();
+  const trip = state.trips.find((candidate) => candidate.id === input.tripId && candidate.published);
+
+  if (!trip) {
+    throw new Error("Trip not found");
+  }
+
+  if (input.storyId) {
+    const story = state.publishedStories.find(
+      (candidate) => candidate.id === input.storyId && candidate.tripId === input.tripId
+    );
+
+    if (!story) {
+      throw new Error("Story not found");
+    }
+  }
+
+  const authorName = sanitizeCommentValue(input.authorName, 50);
+  const body = input.body.trim().slice(0, 1200);
+
+  if (!authorName) {
+    throw new Error("Le nom est requis.");
+  }
+
+  if (!body) {
+    throw new Error("Le commentaire est requis.");
+  }
+
+  const comment: PublicComment = {
+    id: randomUUID(),
+    tripId: input.tripId,
+    storyId: input.storyId,
+    authorName,
+    body,
+    createdAt: new Date().toISOString()
+  };
+
+  state.comments.unshift(comment);
+  await writeState(state);
+
+  return comment;
 }
 
 export function localAssetPath(asset: Asset): string {

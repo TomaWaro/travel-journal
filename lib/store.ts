@@ -49,6 +49,10 @@ export async function addMoment(input: Parameters<typeof postgresStore.addMoment
   return getStore().addMoment(input);
 }
 
+export async function addPublicComment(input: Parameters<typeof postgresStore.addPublicComment>[0]) {
+  return getStore().addPublicComment(input);
+}
+
 export async function startTrackSession(tripId: string, memberId: string) {
   return getStore().startTrackSession(tripId, memberId);
 }
