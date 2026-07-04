@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { formatDateLabel } from "@/lib/date";
 import type { Asset, DraftStory, Member, Moment, PublishedStory, TripDay } from "@/lib/types";
 
@@ -51,7 +52,13 @@ export function TimelinePanel({ assets, days, moments, members, drafts, stories 
                       {asset ? (
                         <div className="moment-media">
                           {moment.type === "photo" ? (
-                            <img alt={moment.caption || "Moment photo"} loading="lazy" src={asset.url} />
+                            <Image
+                              alt={moment.caption || "Moment photo"}
+                              height={960}
+                              loading="lazy"
+                              src={asset.url}
+                              width={1280}
+                            />
                           ) : null}
                           {moment.type === "video" ? (
                             <video controls playsInline preload="metadata" src={asset.url} />
