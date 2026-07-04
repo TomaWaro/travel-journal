@@ -1,6 +1,6 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
+import { uploadPresigned } from "@vercel/blob/client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -93,7 +93,7 @@ export function CapturePanel({ blobUploadsEnabled, token, tripId, publicUrl }: P
   async function uploadAsset(file: File): Promise<UploadedAsset> {
     const assetId = crypto.randomUUID();
     const pathname = `trips/${tripId}/${assetId}-${sanitizeFilename(file.name)}`;
-    const blob = await upload(pathname, file, {
+    const blob = await uploadPresigned(pathname, file, {
       access: "public",
       contentType: file.type || undefined,
       handleUploadUrl: `/api/trips/${tripId}/moments/upload`,

@@ -1,4 +1,8 @@
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { issueSignedToken } from "@vercel/blob";
+import {
+  handleUploadPresigned,
+  type HandleUploadPresignedBody
+} from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { requireDashboardAccess, requireTripAccess } from "@/lib/server-access";
 
@@ -10,26 +14,40 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request, { params }: RouteProps) {
   try {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    if (!process.env.BLOB_WEBHOOK_PUBLIC_KEY) {
       throw new Error("Vercel Blob is not configured.");
     }
 
     const { tripId } = await params;
-    const dashboard = await requireDashboardAccess(request, ["owner", "contributor"]);
-    requireTripAccess(dashboard, tripId);
-    const body = (await request.json()) as HandleUploadBody;
-    const jsonResponse = await handleUpload({
+    const body = (await request.json()) as HandleUploadPresignedBody;
+    const jsonResponse = await handleUploadPresigned({
       body,
       request,
-      onBeforeGenerateToken: async (pathname) => {
+      getSignedToken: async (pathname) => {
+        const dashboard = await requireDashboardAccess(request, ["owner", "contributor"]);
+        requireTripAccess(dashboard, tripId);
+
         if (!pathname.startsWith(`trips/${tripId}/`)) {
           throw new Error("Invalid upload destination.");
         }
 
+        const validUntil = Date.now() + 60 * 60 * 1000;
+
         return {
-          allowedContentTypes: ["image/*", "video/*", "audio/*"],
-          maximumSizeInBytes: 1024 * 1024 * 512,
-          addRandomSuffix: false
+          token: await issueSignedToken({
+            pathname,
+            operations: ["put"],
+            allowedContentTypes: ["image/*", "video/*", "audio/*"],
+            maximumSizeInBytes: 1024 * 1024 * 512,
+            validUntil
+          }),
+          urlOptions: {
+            allowedContentTypes: ["image/*", "video/*", "audio/*"],
+            maximumSizeInBytes: 1024 * 1024 * 512,
+            validUntil,
+            addRandomSuffix: false,
+            allowOverwrite: false
+          }
         };
       }
     });

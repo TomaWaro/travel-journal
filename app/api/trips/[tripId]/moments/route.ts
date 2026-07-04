@@ -68,7 +68,7 @@ function assetFromUploadedFields(tripId: string, formData: FormData): Asset | nu
 async function persistAsset(tripId: string, file: File): Promise<Asset> {
   const assetId = randomUUID();
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
     const blob = await put(`trips/${tripId}/${assetId}-${file.name}`, file, {
       access: "public",
       addRandomSuffix: false

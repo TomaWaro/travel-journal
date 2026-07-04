@@ -30,7 +30,7 @@ The app is coded to be deployable to Vercel, but the following steps are still e
 - Create a GitHub repository under `TomaWaro`
 - Connect the repository to a Vercel project
 - Add a Neon Postgres integration to inject `DATABASE_URL`
-- Add a public Vercel Blob store to inject `BLOB_READ_WRITE_TOKEN`
+- Add a public Vercel Blob store
 - Add an Upstash Redis integration to inject `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
 - Set `NEXT_PUBLIC_APP_URL` to the production domain
 
@@ -41,6 +41,10 @@ Once `DATABASE_URL` is present, the app automatically runs its SQL migration and
 - Default mode: local JSON file in `data/travel-journal.json`
 - Production mode: enable `DATABASE_URL`, `BLOB_READ_WRITE_TOKEN`, and Redis credentials
 - Force local mode even with Postgres configured: set `USE_FILE_STORE=true`
+
+For Blob, Vercel can expose either:
+- `BLOB_READ_WRITE_TOKEN` for the classic token flow
+- or `BLOB_STORE_ID` plus `BLOB_WEBHOOK_PUBLIC_KEY` for the newer OIDC + presigned upload flow
 
 ## Operator Workflow
 
