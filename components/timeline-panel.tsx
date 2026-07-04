@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { TimelineItem } from "@/components/timeline-item";
 import { formatDateLabel } from "@/lib/date";
 import type { Asset, DraftStory, Member, Moment, PublishedStory, TripDay } from "@/lib/types";
 
@@ -16,27 +17,37 @@ export function TimelinePanel({ assets, days, moments, members, drafts, stories 
   const memberMap = new Map(members.map((member) => [member.id, member]));
 
   return (
-    <section className="panel">
-      <div className="panel-heading">
+    <section className="panel timeline-panel">
+      <div className="section-intro">
         <div>
           <p className="eyebrow">Timeline</p>
-          <h2>Jours, moments et brouillons</h2>
+          <h2>Le trajet jour apres jour</h2>
         </div>
       </div>
-      <div className="timeline-grid">
+      <div className="timeline-list">
         {days.map((day) => {
           const dayMoments = moments.filter((moment) => moment.dayDate === day.date);
           const dayDrafts = drafts.filter((draft) => draft.dayDate === day.date);
           const dayStories = stories.filter((story) => story.slug.includes(day.date.replaceAll("-", "")));
+          const primaryMoment = dayMoments[0];
+          const primaryLocation =
+            primaryMoment?.latitude !== null && primaryMoment?.longitude !== null ? "Moment geolocalise" : undefined;
 
           return (
-            <article className="day-card" key={day.date}>
-              <div className="day-card-head">
-                <h3>{formatDateLabel(day.date)}</h3>
-                <span>{dayMoments.length} moment(s)</span>
-              </div>
-              <ul className="compact-list">
-                {dayMoments.length === 0 ? <li>Aucun moment capture pour le moment.</li> : null}
+            <TimelineItem
+              date={formatDateLabel(day.date)}
+              key={day.date}
+              location={primaryLocation}
+              note={`${dayMoments.length} moment(s) · ${dayStories.length} recit(s)`}
+              title={primaryMoment?.caption || dayStories[0]?.title || "Une nouvelle journee de route"}
+            >
+              <ul className="compact-list timeline-moments">
+                {dayMoments.length === 0 ? (
+                  <li className="empty-state compact-empty">
+                    <strong>Aucun moment capture.</strong>
+                    <p>La journee apparaîtra ici des qu&apos;un souvenir sera publie.</p>
+                  </li>
+                ) : null}
                 {dayMoments.map((moment) => {
                   const asset = moment.assetId ? assetMap.get(moment.assetId) : null;
 
@@ -90,7 +101,7 @@ export function TimelinePanel({ assets, days, moments, members, drafts, stories 
                   ))}
                 </div>
               ) : null}
-            </article>
+            </TimelineItem>
           );
         })}
       </div>

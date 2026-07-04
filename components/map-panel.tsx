@@ -168,7 +168,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
 
   return (
     <section className="panel map-panel">
-      <div className="panel-heading">
+      <div className="section-intro">
         <div>
           <p className="eyebrow">Carte</p>
           <h2>{title}</h2>

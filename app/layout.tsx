@@ -1,16 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Space_Grotesk } from "next/font/google";
+import { Bricolage_Grotesque, Caveat, Geist, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
+import { SiteFooter } from "@/components/site-footer";
 
-const displayFont = Fraunces({
+const displayFont = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-display"
 });
 
-const bodyFont = Space_Grotesk({
+const bodyFont = Geist({
   subsets: ["latin"],
   variable: "--font-body"
+});
+
+const editorialFont = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-editorial",
+  weight: "400"
+});
+
+const noteFont = Caveat({
+  subsets: ["latin"],
+  variable: "--font-note",
+  weight: ["500", "700"]
 });
 
 export const metadata: Metadata = {
@@ -28,9 +41,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr">
-      <body className={`${displayFont.variable} ${bodyFont.variable}`}>
+      <body
+        className={`${displayFont.variable} ${bodyFont.variable} ${editorialFont.variable} ${noteFont.variable}`}
+      >
         <ServiceWorkerRegister />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

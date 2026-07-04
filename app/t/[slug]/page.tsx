@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AnimatedSection } from "@/components/animated-section";
+import { ArticleCard } from "@/components/article-card";
+import { DateBadge, LocationBadge } from "@/components/editorial-badges";
 import { MapPanel } from "@/components/map-panel";
+import { PhotoGrid } from "@/components/photo-grid";
 import { PublicCommentsPanel } from "@/components/public-comments-panel";
 import { TimelinePanel } from "@/components/timeline-panel";
 import { appEnv } from "@/lib/env";
+import { formatDateLabel } from "@/lib/date";
 import { filterPublicMoments, filterPublicTrackPoints } from "@/lib/public-view";
 import { getPublicTripBySlug } from "@/lib/store";
 import type { Asset, Moment } from "@/lib/types";
@@ -87,63 +91,122 @@ export default async function PublicTripPage({ params }: PageProps) {
     }
   }
 
+  const leadImage = mediaMoments.find(({ moment }) => moment.type === "photo")?.asset.url ?? null;
+  const routeLocations = Array.from(
+    new Set(bundle.legs.flatMap((leg) => [leg.originLabel, leg.destinationLabel]).filter(Boolean))
+  );
+  const itinerary = bundle.legs.slice(0, 6).map((leg) => ({
+    id: leg.id,
+    date: leg.dayDate ? formatDateLabel(leg.dayDate) : "Etape libre",
+    title: leg.title,
+    location: `${leg.originLabel} → ${leg.destinationLabel}`,
+    note: leg.travelMode === "driving" ? "Sur la route" : "En mouvement"
+  }));
+
   return (
     <main className="shell">
-      <section className="hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Quasi-public trip</p>
-          <h1>{bundle.trip.title}</h1>
-          <p>{bundle.trip.summary}</p>
-        </div>
-        <div className="hero-actions">
-          <Link className="ghost-button" href="/">
-            Retour a l&apos;accueil
-          </Link>
-          <a className="ghost-button" href="#trip-comments">
-            Reagir au voyage
-          </a>
-        </div>
-        <div className="hero-metrics">
-          <span className="metric-chip">{publicMoments.length} moment(s) publies</span>
-          <span className="metric-chip">{bundle.stories.length} post(s)</span>
-          <span className="metric-chip">{tripComments.length} commentaire(s)</span>
-        </div>
-      </section>
-
-      <section className="grid" style={{ marginTop: 24 }}>
-        {galleryItems.length > 0 ? (
-          <section className="panel">
-            <div className="panel-heading">
-              <div>
-                <p className="eyebrow">Galerie</p>
-                <h2>Moments a voir</h2>
+      <AnimatedSection className="cover-hero">
+        <section className="hero hero-cover">
+          <div className="hero-copy">
+            <p className="eyebrow">Magazine cover</p>
+            <h1>{bundle.trip.title}</h1>
+            <p>{bundle.trip.summary}</p>
+            <div className="cover-meta-row">
+              <DateBadge>{formatDateLabel(bundle.trip.startDate)}</DateBadge>
+              {routeLocations[0] ? <LocationBadge>{routeLocations[0]}</LocationBadge> : null}
+            </div>
+            <div className="hero-actions">
+              <Link className="ghost-button" href="/">
+                Retour a l&apos;accueil
+              </Link>
+              <a className="primary-button" href="#trip-comments">
+                Reagir au voyage
+              </a>
+            </div>
+            <div className="hero-metrics">
+              <span className="metric-chip">{publicMoments.length} souvenir(s)</span>
+              <span className="metric-chip">{bundle.stories.length} recit(s)</span>
+              <span className="metric-chip">{tripComments.length} reaction(s)</span>
+            </div>
+          </div>
+          <aside className="hero-visual">
+            <div
+              className="cover-image"
+              style={
+                leadImage
+                  ? {
+                      backgroundImage: `linear-gradient(180deg, rgba(16, 27, 43, 0.06), rgba(16, 27, 43, 0.28)), url(${leadImage})`
+                    }
+                  : undefined
+              }
+            >
+              <div className="cover-image-note">
+                <span className="note-accent">Carnet d&apos;ete</span>
+                <strong>{routeLocations.slice(0, 3).join(" · ") || "Route a suivre"}</strong>
+                <p>{bundle.trip.visibility === "quasi-public" ? "Page quasi-publique" : "Page publique"}</p>
               </div>
             </div>
-            <div className="media-gallery">
-              {galleryItems.map(({ asset, moment }) => (
-                <article className="gallery-card" key={moment.id}>
-                  {moment.type === "photo" ? (
-                    <Image
-                      alt={moment.caption || "Photo du voyage"}
-                      height={960}
-                      loading="lazy"
-                      src={asset.url}
-                      width={1280}
-                    />
-                  ) : moment.type === "video" ? (
-                    <video controls playsInline preload="metadata" src={asset.url} />
-                  ) : (
-                    <audio controls preload="metadata" src={asset.url} />
-                  )}
-                  <div className="gallery-copy">
-                    <strong>{moment.caption || moment.type}</strong>
-                    {moment.body ? <p>{moment.body}</p> : null}
-                  </div>
-                </article>
-              ))}
+          </aside>
+          <div className="hero-banner">
+            <div>
+              <strong>Timeline</strong>
+              <span>Chaque etape laisse une trace visuelle dans le carnet.</span>
             </div>
-          </section>
-        ) : null}
+            <div>
+              <strong>Carte</strong>
+              <span>Le trajet public reste lisible sans exposer l&apos;espace admin.</span>
+            </div>
+            <div>
+              <strong>Commentaires</strong>
+              <span>Le public peut reagir directement, sans compte.</span>
+            </div>
+          </div>
+        </section>
+      </AnimatedSection>
+
+      <AnimatedSection className="grid trip-storyline">
+        <section className="editorial-lead">
+          <div className="section-intro">
+            <div>
+              <p className="eyebrow">Apercu</p>
+              <h2>Une couverture vivante du trajet</h2>
+            </div>
+          </div>
+          <div className="itinerary-strip">
+            {itinerary.length === 0 ? (
+              <div className="empty-state">
+                <strong>L&apos;itineraire apparaitra ici.</strong>
+                <p>Ajoute des etapes Google Maps pour remplir ce bandeau de voyage.</p>
+              </div>
+            ) : null}
+            {itinerary.map((stop) => (
+              <div className="itinerary-chip" key={stop.id}>
+                <DateBadge>{stop.date}</DateBadge>
+                <strong>{stop.title}</strong>
+                <span>{stop.location}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="section-intro">
+            <div>
+              <p className="eyebrow">Galerie</p>
+              <h2>Les images qui racontent la route</h2>
+            </div>
+          </div>
+          <PhotoGrid
+            items={galleryItems.map(({ asset, moment }) => ({
+              id: moment.id,
+              type: moment.type,
+              title: moment.caption || moment.type,
+              body: moment.body,
+              url: asset.url
+            }))}
+          />
+        </section>
+
         <MapPanel
           legs={bundle.legs}
           moments={publicMoments}
@@ -151,28 +214,32 @@ export default async function PublicTripPage({ params }: PageProps) {
           trackPoints={publicTrackPoints}
           trip={bundle.trip}
         />
+
         <section className="panel">
-          <div className="panel-heading">
+          <div className="section-intro">
             <div>
-              <p className="eyebrow">Stories</p>
-              <h2>Posts publies</h2>
+              <p className="eyebrow">Recits</p>
+              <h2>Le voyage en chapitres</h2>
             </div>
           </div>
-          <div className="story-grid">
+          <div className="article-rail">
             {bundle.stories.map((story) => (
-              <article className="story-card" key={story.id}>
-                <h3>{story.title}</h3>
-                <p>{story.summary}</p>
-                <div className="caption-row">
-                  <span>{storyCommentCounts.get(story.id) ?? 0} commentaire(s)</span>
-                </div>
-                <Link className="ghost-button" href={`/posts/${story.slug}`}>
-                  Lire le post
-                </Link>
-              </article>
+              <ArticleCard
+                date={new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(
+                  new Date(story.publishedAt)
+                )}
+                href={`/posts/${story.slug}`}
+                imageUrl={leadImage}
+                key={story.id}
+                location={routeLocations[0]}
+                stats={`${storyCommentCounts.get(story.id) ?? 0} commentaire(s)`}
+                summary={story.summary}
+                title={story.title}
+              />
             ))}
           </div>
         </section>
+
         <TimelinePanel
           assets={bundle.assets}
           days={bundle.days}
@@ -184,7 +251,7 @@ export default async function PublicTripPage({ params }: PageProps) {
         <div id="trip-comments">
           <PublicCommentsPanel comments={tripComments} tripId={bundle.trip.id} />
         </div>
-      </section>
+      </AnimatedSection>
     </main>
   );
 }

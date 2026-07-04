@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AnimatedSection } from "@/components/animated-section";
+import { DateBadge, LocationBadge } from "@/components/editorial-badges";
+import { PhotoGrid } from "@/components/photo-grid";
 import { PublicCommentsPanel } from "@/components/public-comments-panel";
+import { QuoteBlock } from "@/components/quote-block";
+import { formatDateLabel } from "@/lib/date";
 import { appEnv } from "@/lib/env";
 import { getPublishedStoryBySlug } from "@/lib/store";
 import type { Asset, Moment } from "@/lib/types";
@@ -81,73 +85,122 @@ export default async function StoryPage({ params }: PageProps) {
     (comment) => comment.storyId === payload.story.id
   );
   const storyMedia = getStoryMedia(payload);
+  const coverImage = storyMedia.find(({ moment }) => moment.type === "photo")?.asset.url ?? null;
+  const routeLocations = Array.from(
+    new Set(payload.bundle.legs.flatMap((leg) => [leg.originLabel, leg.destinationLabel]).filter(Boolean))
+  );
+  const publishedDate = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(
+    new Date(payload.story.publishedAt)
+  );
 
   return (
     <main className="shell">
-      <section className="hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Post public</p>
-          <h1>{payload.story.title}</h1>
-          <p>{payload.story.summary}</p>
-        </div>
-        <div className="hero-actions">
-          <Link className="ghost-button" href={`/t/${payload.trip.slug}`}>
-            Retour au voyage
-          </Link>
-          <a className="ghost-button" href="#story-comments">
-            Lire les reactions
-          </a>
-        </div>
-        <div className="hero-metrics">
-          <span className="metric-chip">{storyMedia.length} media lie(s)</span>
-          <span className="metric-chip">{storyComments.length} commentaire(s)</span>
-        </div>
-      </section>
-
-      <section className="panel" style={{ marginTop: 24 }}>
-        <p className="eyebrow">Recit</p>
-        <div className="story-body">{payload.story.body}</div>
-      </section>
-      {storyMedia.length > 0 ? (
-        <section className="panel" style={{ marginTop: 24 }}>
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Mediatheque</p>
-              <h2>Images et souvenirs lies a ce post</h2>
+      <AnimatedSection className="cover-hero">
+        <section className="hero hero-cover article-hero">
+          <div className="hero-copy">
+            <p className="eyebrow">Feature story</p>
+            <h1>{payload.story.title}</h1>
+            <p>{payload.story.summary}</p>
+            <div className="cover-meta-row">
+              <DateBadge>{publishedDate}</DateBadge>
+              {routeLocations[0] ? <LocationBadge>{routeLocations[0]}</LocationBadge> : null}
+            </div>
+            <div className="hero-actions">
+              <Link className="ghost-button" href={`/t/${payload.trip.slug}`}>
+                Retour au voyage
+              </Link>
+              <a className="primary-button" href="#story-comments">
+                Lire les reactions
+              </a>
+            </div>
+            <div className="hero-metrics">
+              <span className="metric-chip">{storyMedia.length} media lie(s)</span>
+              <span className="metric-chip">{storyComments.length} commentaire(s)</span>
             </div>
           </div>
-          <div className="media-gallery">
-            {storyMedia.map(({ asset, moment }) => (
-              <article className="gallery-card" key={moment.id}>
-                {moment.type === "photo" ? (
-                  <Image
-                    alt={moment.caption || "Photo du post"}
-                    height={960}
-                    loading="lazy"
-                    src={asset.url}
-                    width={1280}
-                  />
-                ) : moment.type === "video" ? (
-                  <video controls playsInline preload="metadata" src={asset.url} />
-                ) : (
-                  <audio controls preload="metadata" src={asset.url} />
-                )}
-                <div className="gallery-copy">
-                  <strong>{moment.caption || moment.type}</strong>
-                  {moment.body ? <p>{moment.body}</p> : null}
-                </div>
-              </article>
-            ))}
-          </div>
+          <aside className="hero-visual">
+            <div
+              className="cover-image"
+              style={
+                coverImage
+                  ? {
+                      backgroundImage: `linear-gradient(180deg, rgba(16, 27, 43, 0.06), rgba(16, 27, 43, 0.32)), url(${coverImage})`
+                    }
+                  : undefined
+              }
+            >
+              <div className="cover-image-note">
+                <span className="note-accent">Published note</span>
+                <strong>{payload.trip.title}</strong>
+                <p>{formatDateLabel(payload.trip.startDate)} · {routeLocations.slice(0, 2).join(" · ")}</p>
+              </div>
+            </div>
+          </aside>
         </section>
+      </AnimatedSection>
+
+      <AnimatedSection className="grid article-layout">
+        <section className="article-prose">
+          <div className="section-intro">
+            <div>
+              <p className="eyebrow">Recit</p>
+              <h2>Chronique du jour</h2>
+            </div>
+          </div>
+          <div className="story-body article-body">{payload.story.body}</div>
+          <QuoteBlock
+            cite={payload.trip.title}
+            quote={payload.story.summary}
+          />
+        </section>
+
+        <aside className="article-sidebar">
+          <div className="sidebar-card">
+            <span className="eyebrow">Details</span>
+            <div className="sidebar-card-list">
+              <div>
+                <span className="sidebar-label">Publication</span>
+                <strong>{publishedDate}</strong>
+              </div>
+              <div>
+                <span className="sidebar-label">Lieu</span>
+                <strong>{routeLocations.join(" · ") || payload.trip.title}</strong>
+              </div>
+              <div>
+                <span className="sidebar-label">Commentaires</span>
+                <strong>{storyComments.length}</strong>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </AnimatedSection>
+
+      {storyMedia.length > 0 ? (
+        <AnimatedSection className="panel">
+          <div className="section-intro">
+            <div>
+              <p className="eyebrow">Mediatheque</p>
+              <h2>Images, videos et traces de ce chapitre</h2>
+            </div>
+          </div>
+          <PhotoGrid
+            items={storyMedia.map(({ asset, moment }) => ({
+              id: moment.id,
+              type: moment.type,
+              title: moment.caption || "Souvenir du post",
+              body: moment.body,
+              url: asset.url
+            }))}
+          />
+        </AnimatedSection>
       ) : null}
-      <section id="story-comments" style={{ marginTop: 24 }}>
+      <AnimatedSection id="story-comments">
         <PublicCommentsPanel
           comments={storyComments}
           storyId={payload.story.id}
           tripId={payload.trip.id}
         />
-      </section>
+      </AnimatedSection>
     </main>
   );
 }

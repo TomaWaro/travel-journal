@@ -34,29 +34,27 @@ export default async function AccessPage({ params, searchParams }: PageProps) {
 
   return (
     <main className="shell">
-      <section className="hero">
-        <div className="hero-layout">
-          <div className="hero-copy">
-            <p className="eyebrow">{dashboard.role}</p>
-            <h1>{dashboard.access.workspace.name}</h1>
-            <p>
-              Connecte en tant que {dashboard.access.member.name}. Ici tu captures vite, tu suis la
-              route, puis tu transformes la matiere du voyage en pages publiques propres.
-            </p>
-            <div className="hero-metrics">
-              <span className="metric-chip">{dashboard.trips.length} voyage(s)</span>
-              <span className="metric-chip">{selectedTrip.stories.length} post(s) publie(s)</span>
-              <span className="metric-chip">{publishedMoments} moment(s) publie(s)</span>
-            </div>
+      <section className="hero hero-cover">
+        <div className="hero-copy">
+          <p className="eyebrow">{dashboard.role}</p>
+          <h1>{dashboard.access.workspace.name}</h1>
+          <p>
+            Connecte en tant que {dashboard.access.member.name}. Ici tu captures vite, tu suis la
+            route, puis tu transformes la matiere du voyage en pages publiques propres.
+          </p>
+          <div className="hero-metrics">
+            <span className="metric-chip">{dashboard.trips.length} voyage(s)</span>
+            <span className="metric-chip">{selectedTrip.stories.length} post(s) publie(s)</span>
+            <span className="metric-chip">{publishedMoments} moment(s) publie(s)</span>
           </div>
-          <aside className="hero-visual">
-            <div className="spotlight-card">
-              <p className="eyebrow">Trip selection</p>
-              <h2>{selectedTrip.trip.title}</h2>
-              <p>{selectedTrip.trip.summary}</p>
-            </div>
-          </aside>
         </div>
+        <aside className="hero-visual">
+          <div className="sidebar-card">
+            <span className="eyebrow">Trip selection</span>
+            <h2>{selectedTrip.trip.title}</h2>
+            <p>{selectedTrip.trip.summary}</p>
+          </div>
+        </aside>
         <div className="trip-nav">
           {dashboard.trips.map((bundle) => (
             <Link
@@ -72,7 +70,7 @@ export default async function AccessPage({ params, searchParams }: PageProps) {
           </a>
         </div>
         <div className="hero-banner">
-          <div>
+          <div className="hero-copy">
             <strong>Capture terrain</strong>
             <span>Moments, GPS et media en quelques gestes.</span>
           </div>

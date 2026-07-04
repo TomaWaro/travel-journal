@@ -64,8 +64,8 @@ export function PublicCommentsPanel({ comments, storyId, tripId }: Props) {
   }
 
   return (
-    <section className="panel">
-      <div className="panel-heading">
+    <section className="panel comments-panel">
+      <div className="section-intro">
         <div>
           <p className="eyebrow">Commentaires</p>
           <h2>Reagir sans compte</h2>
@@ -73,7 +73,7 @@ export function PublicCommentsPanel({ comments, storyId, tripId }: Props) {
             Un nom, un message, et c&apos;est publie tout de suite. Aucun compte necessaire.
           </p>
         </div>
-        <span>{items.length} message(s)</span>
+        <span className="comment-counter">{items.length} message(s)</span>
       </div>
 
       <form className="stack" onSubmit={handleSubmit}>
