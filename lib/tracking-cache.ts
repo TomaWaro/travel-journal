@@ -18,7 +18,7 @@ export async function getCachedActiveTrackSessionId(
   }
 
   try {
-    return (await redis.get<string>(activeTrackKey(tripId, memberId))) ?? null;
+    return (await redis.get(activeTrackKey(tripId, memberId))) ?? null;
   } catch {
     return null;
   }

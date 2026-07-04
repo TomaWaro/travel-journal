@@ -46,7 +46,8 @@ export const appEnv = {
   useFileStore: process.env.USE_FILE_STORE === "true" || !process.env.DATABASE_URL,
   postgresConfigured: Boolean(process.env.DATABASE_URL),
   redisConfigured: Boolean(
-    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) ||
+      process.env.REDIS_URL
   ),
   blobConfigured: Boolean(
     process.env.BLOB_READ_WRITE_TOKEN ||

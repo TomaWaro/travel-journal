@@ -20,7 +20,8 @@
     "next": "16.2.10",
     "pg": "latest",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "redis": "^5.8.2"
   },
   "devDependencies": {
     "@types/node": "latest",
