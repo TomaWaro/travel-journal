@@ -117,9 +117,10 @@ export default async function PublicTripPage({ params }: PageProps) {
           <h1>{bundle.trip.title}</h1>
           <p className="trip-header-summary">{bundle.trip.summary}</p>
           {currentDay ? (
-            <p className="trip-header-day">
-              Jour en cours: <strong>{formatDateLabel(currentDay.date)}</strong>
-            </p>
+            <div className="trip-header-meta">
+              <span className="date-badge">Jour en cours</span>
+              <span className="trip-header-day">{formatDateLabel(currentDay.date)}</span>
+            </div>
           ) : null}
         </section>
       </AnimatedSection>

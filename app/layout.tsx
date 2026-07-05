@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Caveat, Geist, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
-import { SiteFooter } from "@/components/site-footer";
 
 const displayFont = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -46,7 +45,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       >
         <ServiceWorkerRegister />
         {children}
-        <SiteFooter />
       </body>
     </html>
   );
