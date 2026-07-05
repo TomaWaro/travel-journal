@@ -86,7 +86,7 @@ export function TimelineItem({
         <div 
           className="timeline-item-body-wrapper"
           style={{
-            maxHeight: isCollapsed ? "0px" : "3500px",
+            maxHeight: isCollapsed ? "0px" : "9999px",
             opacity: isCollapsed ? 0 : 1,
             overflow: "hidden",
             transition: isCollapsed
