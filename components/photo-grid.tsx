@@ -68,9 +68,10 @@ export function PhotoGrid({ items }: Props) {
 
   return (
     <>
-      <div className="photo-grid">
-        {items.map((item, index) => (
-          <figure className={`photo-grid-item photo-grid-item-${(index % 5) + 1}`} key={item.id}>
+      <div className="photo-marquee">
+        <div className="photo-marquee-track">
+          {[...items, ...items].map((item, index) => (
+            <figure className="photo-strip-card" key={`${item.id}-${index}`}>
             <button
               aria-label={`Ouvrir ${item.title}`}
               className="photo-grid-trigger"
@@ -99,7 +100,8 @@ export function PhotoGrid({ items }: Props) {
               {item.body ? <p>{item.body}</p> : null}
             </figcaption>
           </figure>
-        ))}
+          ))}
+        </div>
       </div>
 
       {activeItem ? (

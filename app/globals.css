@@ -99,7 +99,7 @@ video {
 main.shell {
   width: min(1280px, calc(100vw - 24px));
   margin: 0 auto;
-  padding: calc(96px + env(safe-area-inset-top)) 0 calc(88px + env(safe-area-inset-bottom));
+  padding: calc(28px + env(safe-area-inset-top)) 0 calc(88px + env(safe-area-inset-bottom));
 }
 
 .site-header {
@@ -782,6 +782,30 @@ main.shell {
   gap: 20px;
 }
 
+.trip-header-simple {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+}
+
+.trip-header-simple h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  line-height: 0.96;
+}
+
+.trip-header-summary,
+.trip-header-day {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--ink-soft);
+}
+
+.trip-experience-simple {
+  display: grid;
+  gap: 18px;
+}
+
 .editorial-lead {
   display: grid;
   gap: 16px;
@@ -858,6 +882,36 @@ main.shell {
   gap: 14px;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-auto-rows: 90px;
+}
+
+.photo-marquee {
+  overflow: hidden;
+  margin-inline: -4px;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.photo-marquee-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: marquee 42s linear infinite;
+}
+
+.photo-marquee:hover .photo-marquee-track {
+  animation-play-state: paused;
+}
+
+.photo-strip-card {
+  position: relative;
+  width: min(78vw, 320px);
+  height: 400px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(20, 32, 50, 0.12), rgba(20, 32, 50, 0.28)),
+    rgba(255, 255, 255, 0.44);
+  box-shadow: var(--shadow-soft);
 }
 
 .photo-grid-item {
@@ -1678,7 +1732,7 @@ code {
 
 @media (max-width: 879px) {
   main.shell {
-    padding-top: calc(92px + env(safe-area-inset-top));
+    padding-top: calc(16px + env(safe-area-inset-top));
   }
 
   .site-header-inner,
@@ -1750,18 +1804,9 @@ code {
     display: none;
   }
 
-  .photo-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 240px;
-  }
-
-  .photo-grid-item-1,
-  .photo-grid-item-2,
-  .photo-grid-item-3,
-  .photo-grid-item-4,
-  .photo-grid-item-5 {
-    grid-column: span 1;
-    grid-row: span 1;
+  .photo-strip-card {
+    width: min(80vw, 270px);
+    height: 320px;
   }
 
   .photo-viewer-shell,

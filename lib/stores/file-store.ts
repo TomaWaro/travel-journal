@@ -376,7 +376,7 @@ export async function addMoment(input: CreateMomentInput): Promise<Moment> {
     memberId: input.memberId,
     dayDate: clampDateToTrip(trip, input.dayDate),
     type: input.type,
-    status: "draft",
+    status: "published",
     caption: input.caption,
     body: input.body,
     assetId: input.asset?.id ?? null,

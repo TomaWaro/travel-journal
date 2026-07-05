@@ -52,13 +52,18 @@ export function TimelinePanel({
           const primaryMoment = dayMoments[0];
           const primaryLocation =
             primaryMoment?.latitude !== null && primaryMoment?.longitude !== null ? "Moment geolocalise" : undefined;
+          const relatedStoryCount = dayStories.length;
 
           return (
             <TimelineItem
               date={formatDateLabel(day.date)}
               key={day.date}
               location={primaryLocation}
-              note={`${dayMoments.length} moment(s) · ${dayStories.length} recit(s)`}
+              note={
+                relatedStoryCount > 0
+                  ? `${dayMoments.length} moment(s) · ${relatedStoryCount} publication(s)`
+                  : `${dayMoments.length} moment(s)`
+              }
               title={primaryMoment?.caption || dayStories[0]?.title || "Une nouvelle journee de route"}
             >
               <ul className="compact-list timeline-moments">

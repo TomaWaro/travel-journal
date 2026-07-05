@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CapturePanel } from "@/components/capture-panel";
-import { EditorialPanel } from "@/components/editorial-panel";
 import { MapPanel } from "@/components/map-panel";
 import { TimelinePanel } from "@/components/timeline-panel";
 import { TripAdminPanel } from "@/components/trip-admin-panel";
@@ -24,8 +23,7 @@ type TabKey =
   | "timeline"
   | "settings"
   | "legs"
-  | "invites"
-  | "editorial";
+  | "invites";
 
 export function DashboardShell({
   dashboard,
@@ -49,8 +47,7 @@ export function DashboardShell({
       base.push(
         { key: "settings", label: "Reglages" },
         { key: "legs", label: "Itineraire" },
-        { key: "invites", label: "Invitations" },
-        { key: "editorial", label: "Edito" }
+        { key: "invites", label: "Invitations" }
       );
     }
 
@@ -186,7 +183,6 @@ export function DashboardShell({
           </p>
           <div className="hero-metrics">
             <span className="metric-chip">{dashboard.trips.length} voyage(s)</span>
-            <span className="metric-chip">{selectedTrip.stories.length} post(s) publie(s)</span>
             <span className="metric-chip">{publishedMoments} moment(s) publie(s)</span>
           </div>
         </div>
@@ -255,10 +251,10 @@ export function DashboardShell({
             <TimelinePanel
               assets={selectedTrip.assets}
               days={selectedTrip.days}
-              drafts={selectedTrip.drafts}
+              drafts={[]}
               members={selectedTrip.contributors}
               moments={selectedTrip.moments}
-              stories={selectedTrip.stories}
+              stories={[]}
             />
           ) : null}
 
@@ -289,16 +285,6 @@ export function DashboardShell({
             />
           ) : null}
 
-          {dashboard.role === "owner" && activeTab === "editorial" ? (
-            <EditorialPanel
-              days={selectedTrip.days}
-              drafts={selectedTrip.drafts}
-              moments={selectedTrip.moments}
-              stories={selectedTrip.stories}
-              token={token}
-              trip={selectedTrip.trip}
-            />
-          ) : null}
         </div>
       </section>
     </main>
