@@ -97,12 +97,19 @@ export default async function PublicTripPage({ params }: PageProps) {
   return (
     <main className="shell">
       <AnimatedSection className="landing-stage" delay={60}>
-        <section className="panel trip-header-simple">
+        <section className="panel trip-header-simple" style={{ position: "relative" }}>
           <p className="eyebrow">Carnet de route</p>
           <h1>{bundle.trip.title}</h1>
-          <p className="trip-header-summary">{bundle.trip.summary}</p>
+          
+          {bundle.trip.summary ? (
+            <div className="trip-description-tape-note">
+              <div className="washi-tape-scotch-giant" />
+              <p className="trip-header-summary">{bundle.trip.summary}</p>
+            </div>
+          ) : null}
+
           {currentDay ? (
-            <div className="trip-header-meta">
+            <div className="trip-header-meta" style={{ marginTop: "24px" }}>
               <span className="date-badge">Jour en cours</span>
               <span className="trip-header-day">{formatDateLabel(currentDay.date)}</span>
             </div>

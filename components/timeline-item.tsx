@@ -44,7 +44,7 @@ export function TimelineItem({
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "16px 24px",
+            padding: "24px 24px",
             background: isCollapsed 
               ? "linear-gradient(135deg, #f3e5d0, #e9d9c2)" 
               : "linear-gradient(135deg, #fbf3e6, #f3e5d0)",
@@ -53,18 +53,11 @@ export function TimelineItem({
             userSelect: "none"
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px", flexGrow: 1, marginRight: "16px" }}>
-            <div className="timeline-kicker" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", position: "relative" }}>
-              <div className="timeline-pinned-date">
-                <span className="push-pin">📌</span>
-                <span className="date-text">{date}</span>
-              </div>
-              {location ? <LocationBadge>{location}</LocationBadge> : null}
+          <div style={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+            <div className="timeline-pinned-date">
+              <span className="push-pin">📌</span>
+              <span className="date-text">{date}</span>
             </div>
-            <h3 style={{ margin: "4px 0 0 0", fontSize: "1.2rem", fontWeight: 700, color: "var(--ink)" }}>{title}</h3>
-            {note && !isCollapsed ? (
-              <p className="timeline-note" style={{ margin: "4px 0 0 0", fontSize: "0.82rem", color: "var(--ink-soft)" }}>{note}</p>
-            ) : null}
           </div>
           
           <div 
