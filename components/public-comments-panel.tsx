@@ -193,33 +193,6 @@ export function PublicCommentsPanel({
 
       {compact && (
         <form className="compact-form" onSubmit={handleSubmit}>
-          <div className="quick-emojis-row" style={{ display: "flex", gap: "8px", marginBottom: "12px", flexWrap: "wrap" }}>
-            {["❤️", "😂", "😮", "👏", "🔥"].map((emoji) => (
-              <button
-                key={emoji}
-                type="button"
-                onClick={() => handleEmojiClick(emoji)}
-                disabled={submitting}
-                className="quick-emoji-btn"
-                style={{
-                  background: "#ffffff",
-                  border: "1px solid rgba(20, 32, 50, 0.08)",
-                  borderRadius: "50%",
-                  width: "34px",
-                  height: "34px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.15rem",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.04)",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
           <div className="compact-form-row">
             <input
               className="compact-input-name"

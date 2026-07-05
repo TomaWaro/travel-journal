@@ -44,6 +44,40 @@ export function TimelinePanel({
     return hasMoment || hasDraft || hasStory;
   });
 
+  const [allComments, setAllComments] = useState<PublicComment[]>(comments ?? []);
+
+  useEffect(() => {
+    if (comments) {
+      setTimeout(() => {
+        setAllComments(comments);
+      }, 0);
+    }
+  }, [comments]);
+
+  const handleEmojiReact = async (momentId: string, emoji: string) => {
+    try {
+      const response = await fetch(`/api/moments/${momentId}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          authorName: "Visiteur",
+          body: emoji,
+          tripId
+        })
+      });
+      const payload = (await response.json()) as {
+        comment?: PublicComment;
+      };
+      if (response.ok && payload.comment) {
+        setAllComments((current) => [...current, payload.comment!]);
+      }
+    } catch (e) {
+      console.error("Failed to react with emoji", e);
+    }
+  };
+
   const [collapsedDays, setCollapsedDays] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -122,7 +156,14 @@ export function TimelinePanel({
                 ) : null}
                 {dayMoments.map((moment) => {
                   const asset = moment.assetId ? assetMap.get(moment.assetId) : null;
-                  const momentComments = (comments ?? []).filter((c) => c.momentId === moment.id);
+                  const momentComments = allComments.filter((c) => c.momentId === moment.id);
+                  const textComments = momentComments.filter((c) => !["❤️", "😂", "😮", "👏", "🔥"].includes(c.body));
+
+                  const emojis = ["❤️", "😂", "😮", "👏", "🔥"];
+                  const emojiCounts = emojis.reduce((acc, emo) => {
+                    acc[emo] = momentComments.filter((c) => c.body === emo).length;
+                    return acc;
+                  }, {} as Record<string, number>);
 
                   return (
                     <li className={`moment-item ${asset ? "moment-has-asset" : "moment-text-only"}`} key={moment.id}>
@@ -154,6 +195,25 @@ export function TimelinePanel({
                                 <audio controls preload="metadata" src={asset.url} />
                               ) : null}
                             </div>
+                            
+                            {/* Polaroid reaction counter stickers */}
+                            <div className="polaroid-reactions-bar">
+                              {emojis.map((emoji) => {
+                                const count = emojiCounts[emoji] || 0;
+                                return (
+                                  <button
+                                    key={emoji}
+                                    type="button"
+                                    onClick={() => handleEmojiReact(moment.id, emoji)}
+                                    className="polaroid-emoji-btn"
+                                  >
+                                    <span className="emoji-icon">{emoji}</span>
+                                    {count > 0 && <span className="emoji-count">{count}</span>}
+                                  </button>
+                                );
+                              })}
+                            </div>
+
                             <div className="moment-caption-overlay">
                               <strong>{moment.caption || moment.type}</strong>
                               <span>
@@ -175,7 +235,7 @@ export function TimelinePanel({
                       {tripId ? (
                         <div className="moment-comments-wrapper">
                           <PublicCommentsPanel
-                            comments={momentComments}
+                            comments={textComments}
                             compact
                             momentId={moment.id}
                             tripId={tripId}
