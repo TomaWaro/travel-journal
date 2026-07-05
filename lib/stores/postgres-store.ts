@@ -1258,3 +1258,27 @@ export async function addPublicComment(input: CreatePublicCommentInput): Promise
     return comment;
   });
 }
+
+export async function deletePublicComment(input: {
+  tripId: string;
+  momentId: string | null;
+  authorName: string;
+  body: string;
+}): Promise<boolean> {
+  return withTransaction(async (client) => {
+    const result = await client.query(
+      `delete from public_comments 
+       where trip_id = $1 
+         and (moment_id = $2 or (moment_id is null and $2 is null)) 
+         and author_name = $3 
+         and body = $4`,
+      [
+        input.tripId,
+        input.momentId,
+        input.authorName,
+        input.body
+      ]
+    );
+    return (result.rowCount ?? 0) > 0;
+  });
+}

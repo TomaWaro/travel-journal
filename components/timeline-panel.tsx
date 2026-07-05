@@ -54,27 +54,76 @@ export function TimelinePanel({
     }
   }, [comments]);
 
+  const [deviceId, setDeviceId] = useState<string>("");
+
+  useEffect(() => {
+    let id = localStorage.getItem("travel_journal_device_id");
+    if (!id) {
+      id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("travel_journal_device_id", id);
+    }
+    setTimeout(() => {
+      setDeviceId(id);
+    }, 0);
+  }, []);
+
   const handleEmojiReact = async (momentId: string, emoji: string) => {
+    if (!deviceId) return;
+    const reactionAuthor = `Reaction:${deviceId}`;
+
+    const momentComments = allComments.filter((c) => c.momentId === momentId);
+    const hasReacted = momentComments.some(
+      (c) => c.body === emoji && c.authorName === reactionAuthor
+    );
+
     try {
-      const response = await fetch(`/api/moments/${momentId}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          authorName: "Visiteur",
-          body: emoji,
-          tripId
-        })
-      });
-      const payload = (await response.json()) as {
-        comment?: PublicComment;
-      };
-      if (response.ok && payload.comment) {
-        setAllComments((current) => [...current, payload.comment!]);
+      if (hasReacted) {
+        // Toggle off: Delete comment from database
+        const response = await fetch(`/api/moments/${momentId}/comments`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            authorName: reactionAuthor,
+            body: emoji,
+            tripId
+          })
+        });
+        if (response.ok) {
+          setAllComments((current) =>
+            current.filter(
+              (c) =>
+                !(
+                  c.momentId === momentId &&
+                  c.body === emoji &&
+                  c.authorName === reactionAuthor
+                )
+            )
+          );
+        }
+      } else {
+        // Toggle on: Add reaction to database
+        const response = await fetch(`/api/moments/${momentId}/comments`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            authorName: reactionAuthor,
+            body: emoji,
+            tripId
+          })
+        });
+        const payload = (await response.json()) as {
+          comment?: PublicComment;
+        };
+        if (response.ok && payload.comment) {
+          setAllComments((current) => [...current, payload.comment!]);
+        }
       }
     } catch (e) {
-      console.error("Failed to react with emoji", e);
+      console.error("Failed to toggle emoji reaction:", e);
     }
   };
 
@@ -200,12 +249,19 @@ export function TimelinePanel({
                             <div className="polaroid-reactions-bar">
                               {emojis.map((emoji) => {
                                 const count = emojiCounts[emoji] || 0;
+                                const isReacted = deviceId
+                                  ? momentComments.some(
+                                      (c) =>
+                                        c.body === emoji &&
+                                        c.authorName === `Reaction:${deviceId}`
+                                    )
+                                  : false;
                                 return (
                                   <button
                                     key={emoji}
                                     type="button"
                                     onClick={() => handleEmojiReact(moment.id, emoji)}
-                                    className="polaroid-emoji-btn"
+                                    className={`polaroid-emoji-btn${isReacted ? " active-reacted" : ""}`}
                                   >
                                     <span className="emoji-icon">{emoji}</span>
                                     {count > 0 && <span className="emoji-count">{count}</span>}

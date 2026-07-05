@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addPublicComment } from "@/lib/store";
+import { addPublicComment, deletePublicComment } from "@/lib/store";
 
 type RouteProps = {
   params: Promise<{ momentId: string }>;
@@ -31,6 +31,41 @@ export async function POST(request: Request, { params }: RouteProps) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to add comment" },
+      { status: 400 }
+    );
+  }
+}
+
+export async function DELETE(request: Request, { params }: RouteProps) {
+  try {
+    const { momentId } = await params;
+    const body = (await request.json()) as {
+      authorName?: string;
+      body?: string;
+      tripId?: string;
+    };
+    const tripId = String(body.tripId ?? "");
+    const authorName = String(body.authorName ?? "");
+    const emojiBody = String(body.body ?? "");
+
+    if (!tripId) {
+      throw new Error("Trip ID is required.");
+    }
+    if (!authorName || !emojiBody) {
+      throw new Error("Author name and emoji body are required.");
+    }
+
+    const success = await deletePublicComment({
+      tripId,
+      momentId,
+      authorName,
+      body: emojiBody
+    });
+
+    return NextResponse.json({ success });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to delete reaction" },
       { status: 400 }
     );
   }

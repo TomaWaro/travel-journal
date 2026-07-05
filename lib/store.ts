@@ -53,6 +53,10 @@ export async function addPublicComment(input: Parameters<typeof postgresStore.ad
   return getStore().addPublicComment(input);
 }
 
+export async function deletePublicComment(input: Parameters<typeof postgresStore.deletePublicComment>[0]) {
+  return getStore().deletePublicComment(input);
+}
+
 export async function startTrackSession(tripId: string, memberId: string) {
   return getStore().startTrackSession(tripId, memberId);
 }

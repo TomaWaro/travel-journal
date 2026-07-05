@@ -3059,3 +3059,14 @@ code {
     font-size: 0.85rem !important;
   }
 }
+
+/* Highlight style for active user reactions (Instagram style) */
+.polaroid-emoji-btn.active-reacted {
+  background: #fff2eb !important;
+  border-color: var(--sunset) !important;
+  box-shadow: 0 4px 10px rgba(255, 133, 76, 0.12) !important;
+}
+
+.polaroid-emoji-btn.active-reacted .emoji-count {
+  color: var(--terracotta) !important;
+}

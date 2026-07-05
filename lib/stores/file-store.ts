@@ -676,6 +676,30 @@ export async function addPublicComment(input: CreatePublicCommentInput): Promise
   return comment;
 }
 
+export async function deletePublicComment(input: {
+  tripId: string;
+  momentId: string | null;
+  authorName: string;
+  body: string;
+}): Promise<boolean> {
+  const state = await readState();
+  const initialLength = state.comments.length;
+  state.comments = state.comments.filter(
+    (c) =>
+      !(
+        c.tripId === input.tripId &&
+        c.momentId === input.momentId &&
+        c.authorName === input.authorName &&
+        c.body === input.body
+      )
+  );
+  if (state.comments.length < initialLength) {
+    await writeState(state);
+    return true;
+  }
+  return false;
+}
+
 export function localAssetPath(asset: Asset): string {
   return path.join(/* turbopackIgnore: true */ process.cwd(), asset.path);
 }
