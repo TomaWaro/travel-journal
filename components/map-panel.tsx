@@ -1,7 +1,7 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Moment, RouteLeg, TrackPoint, Trip } from "@/lib/types";
 
 type Props = {
@@ -164,6 +164,44 @@ function getInitialCenter(legs: RouteLeg[], trackPoints: TrackPoint[]): [number,
 
 export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const [activeTab, setActiveTab] = useState<"moments" | "route">("moments");
+  const mapInstanceRef = useRef<any>(null);
+
+  const hasItinerary = legs.length > 0 || trackPoints.length > 0;
+  const liveTrackingUrl = legs.find((leg) => leg.rawGoogleMapsUrl)?.rawGoogleMapsUrl;
+
+  // React to tab changes and adjust layer visibilities
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) {
+      return;
+    }
+
+    const updateVisibility = () => {
+      try {
+        if (map.getLayer("planned-line")) {
+          map.setLayoutProperty("planned-line", "visibility", activeTab === "route" ? "visible" : "none");
+        }
+        if (map.getLayer("actual-line")) {
+          map.setLayoutProperty("actual-line", "visibility", activeTab === "route" ? "visible" : "none");
+        }
+        if (map.getLayer("moments-points")) {
+          map.setLayoutProperty("moments-points", "visibility", activeTab === "moments" ? "visible" : "none");
+        }
+        if (map.getLayer("moment-labels")) {
+          map.setLayoutProperty("moment-labels", "visibility", activeTab === "moments" ? "visible" : "none");
+        }
+      } catch (e) {
+        console.error("Failed to update layer visibility:", e);
+      }
+    };
+
+    if (map.isStyleLoaded()) {
+      updateVisibility();
+    } else {
+      map.once("idle", updateVisibility);
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     let disposed = false;
@@ -200,6 +238,9 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           type: "line",
           source: "journey",
           filter: ["==", ["get", "kind"], "planned"],
+          layout: {
+            visibility: "none"
+          },
           paint: {
             "line-color": "#ffd166",
             "line-width": 4,
@@ -212,6 +253,9 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           type: "line",
           source: "journey",
           filter: ["==", ["get", "kind"], "actual"],
+          layout: {
+            visibility: "none"
+          },
           paint: {
             "line-color": "#36cfc9",
             "line-width": 5
@@ -223,6 +267,9 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           type: "circle",
           source: "journey",
           filter: ["==", ["get", "kind"], "moment"],
+          layout: {
+            visibility: "visible"
+          },
           paint: {
             "circle-color": "#f18f5c",
             "circle-radius": 6,
@@ -240,7 +287,8 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
             "text-field": ["get", "label"],
             "text-size": 12,
             "text-offset": [0, 1.3],
-            "text-anchor": "top"
+            "text-anchor": "top",
+            visibility: "visible"
           },
           paint: {
             "text-color": "#132033",
@@ -248,6 +296,8 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
             "text-halo-width": 1.2
           }
         });
+
+        mapInstanceRef.current = map;
       });
 
       mapInstance = map;
@@ -260,23 +310,59 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
     return () => {
       disposed = true;
       mapInstance?.remove();
+      mapInstanceRef.current = null;
     };
   }, [legs, moments, trackPoints, trip.id]);
 
   return (
     <section className="panel map-panel">
-      <div className="section-intro">
+      <div className="section-intro map-panel-header">
         <div>
           <p className="eyebrow">Carte</p>
           <h2>{title}</h2>
         </div>
-        <p className="panel-meta">
-          {trip.mapPrivacy === "delayed"
-            ? `Mode quasi-public avec ${trip.mapDelayMinutes} min de delai`
-            : "Mode segments termines"}
-        </p>
+
+        {hasItinerary ? (
+          <div className="map-tabs">
+            <button
+              className={`map-tab-button ${activeTab === "moments" ? "active" : ""}`}
+              onClick={() => setActiveTab("moments")}
+              type="button"
+            >
+              📸 Souvenirs
+            </button>
+            <button
+              className={`map-tab-button ${activeTab === "route" ? "active" : ""}`}
+              onClick={() => setActiveTab("route")}
+              type="button"
+            >
+              🚗 Trajet & Suivi
+            </button>
+          </div>
+        ) : null}
       </div>
-      <div className="map-shell" ref={mapRef} />
+
+      <div className="map-relative-container">
+        <div className="map-shell" ref={mapRef} />
+        
+        {activeTab === "route" && liveTrackingUrl ? (
+          <div className="live-tracking-card-overlay">
+            <div className="live-card-badge">LIVE 🌐</div>
+            <div className="live-card-info">
+              <h3>Suivi Google Maps en cours</h3>
+              <p>Progression en direct, heure d&apos;arrivée estimée (ETA) et navigation.</p>
+            </div>
+            <a
+              href={liveTrackingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="primary-button live-card-action"
+            >
+              Suivre sur Google Maps ➔
+            </a>
+          </div>
+        ) : null}
+      </div>
     </section>
   );
 }
