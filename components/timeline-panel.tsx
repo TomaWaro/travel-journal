@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { TimelineItem } from "@/components/timeline-item";
 import { formatDateLabel } from "@/lib/date";
 import type { Asset, DraftStory, Member, Moment, PublishedStory, TripDay, PublicComment } from "@/lib/types";
@@ -41,6 +44,46 @@ export function TimelinePanel({
     return hasMoment || hasDraft || hasStory;
   });
 
+  const [collapsedDays, setCollapsedDays] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("collapsed_days="))
+      ?.split("=")[1];
+    
+    if (cookieValue) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(cookieValue));
+        setTimeout(() => {
+          setCollapsedDays(parsed);
+          setIsInitialized(true);
+        }, 0);
+      } catch (e) {
+        console.error("Failed to parse collapsed_days cookie", e);
+        setTimeout(() => setIsInitialized(true), 0);
+      }
+    } else {
+      setTimeout(() => setIsInitialized(true), 0);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    
+    const expires = new Date();
+    expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const cookieString = `collapsed_days=${encodeURIComponent(JSON.stringify(collapsedDays))}; expires=${expires.toUTCString()}; path=/`;
+    document.cookie = cookieString;
+  }, [collapsedDays, isInitialized]);
+
+  const toggleDayCollapse = (date: string) => {
+    setCollapsedDays((prev) =>
+      prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date]
+    );
+  };
+
   return (
     <section className="panel timeline-panel">
       <div className="section-intro">
@@ -70,6 +113,8 @@ export function TimelinePanel({
                   : `${dayMoments.length} moment(s)`
               }
               title={primaryMoment?.caption || dayStories[0]?.title || "Une nouvelle journée de route"}
+              isCollapsed={collapsedDays.includes(day.date)}
+              onToggle={() => toggleDayCollapse(day.date)}
             >
               <ul className="compact-list timeline-moments">
                 {dayMoments.length === 0 ? (
