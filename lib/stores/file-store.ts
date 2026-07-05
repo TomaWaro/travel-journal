@@ -549,6 +549,18 @@ export async function updateDraft(
   return draft;
 }
 
+export async function deleteDraft(draftId: string): Promise<void> {
+  const state = await readState();
+  const story = state.publishedStories.find((candidate) => candidate.draftId === draftId);
+
+  if (story) {
+    throw new Error("Retire d'abord la publication avant de supprimer ce brouillon.");
+  }
+
+  state.draftStories = state.draftStories.filter((candidate) => candidate.id !== draftId);
+  await writeState(state);
+}
+
 export async function publishDraft(draftId: string): Promise<PublishedStory> {
   const state = await readState();
   const draft = state.draftStories.find((candidate) => candidate.id === draftId);
@@ -557,23 +569,39 @@ export async function publishDraft(draftId: string): Promise<PublishedStory> {
     throw new Error("Draft not found");
   }
 
-  const story: PublishedStory = {
-    id: randomUUID(),
-    tripId: draft.tripId,
-    draftId: draft.id,
-    slug: `${draft.title
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")}-${draft.id.slice(0, 6)}`,
-    title: draft.title,
-    summary: draft.summary,
-    body: draft.body,
-    publishedAt: new Date().toISOString()
-  };
+  const existingStory = state.publishedStories.find((candidate) => candidate.draftId === draft.id);
+  const nextPublishedAt = new Date().toISOString();
+  const story: PublishedStory = existingStory
+    ? {
+        ...existingStory,
+        title: draft.title,
+        summary: draft.summary,
+        body: draft.body,
+        publishedAt: nextPublishedAt
+      }
+    : {
+        id: randomUUID(),
+        tripId: draft.tripId,
+        draftId: draft.id,
+        slug: `${draft.title
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")}-${draft.id.slice(0, 6)}`,
+        title: draft.title,
+        summary: draft.summary,
+        body: draft.body,
+        publishedAt: nextPublishedAt
+      };
 
-  state.publishedStories.unshift(story);
+  if (existingStory) {
+    state.publishedStories = state.publishedStories.map((candidate) =>
+      candidate.id === existingStory.id ? story : candidate
+    );
+  } else {
+    state.publishedStories.unshift(story);
+  }
   state.moments = state.moments.map((moment) => {
     if (draft.sourceMomentIds.includes(moment.id)) {
       return { ...moment, status: "published" };
@@ -636,6 +664,7 @@ export async function addPublicComment(input: CreatePublicCommentInput): Promise
     id: randomUUID(),
     tripId: input.tripId,
     storyId: input.storyId,
+    momentId: input.momentId ?? null,
     authorName,
     body,
     createdAt: new Date().toISOString()

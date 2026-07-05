@@ -232,6 +232,7 @@ function mapPublicComment(row: SqlRow): PublicComment {
     id: String(row.id),
     tripId: String(row.trip_id),
     storyId: row.story_id ? String(row.story_id) : null,
+    momentId: row.moment_id ? String(row.moment_id) : null,
     authorName: String(row.author_name),
     body: String(row.body),
     createdAt: toIsoTimestamp(row.created_at)
@@ -1075,6 +1076,18 @@ export async function updateDraft(
   });
 }
 
+export async function deleteDraft(draftId: string): Promise<void> {
+  return withTransaction(async (client) => {
+    const storyRow = await queryOne(client, "select id from published_stories where draft_id = $1", [draftId]);
+
+    if (storyRow) {
+      throw new Error("Retire d'abord la publication avant de supprimer ce brouillon.");
+    }
+
+    await client.query("delete from draft_stories where id = $1", [draftId]);
+  });
+}
+
 export async function publishDraft(draftId: string): Promise<PublishedStory> {
   return withTransaction(async (client) => {
     const draftRow = await queryOne(
@@ -1088,40 +1101,62 @@ export async function publishDraft(draftId: string): Promise<PublishedStory> {
     }
 
     const draft = mapDraftStory(draftRow);
-    const story: PublishedStory = {
-      id: randomUUID(),
-      tripId: draft.tripId,
-      draftId: draft.id,
-      slug: `${slugify(draft.title)}-${draft.id.slice(0, 6)}`,
-      title: draft.title,
-      summary: draft.summary,
-      body: draft.body,
-      publishedAt: new Date().toISOString()
-    };
+    const existingStoryRow = await queryOne(client, "select * from published_stories where draft_id = $1", [draftId]);
+    const nextPublishedAt = new Date().toISOString();
+    const story: PublishedStory = existingStoryRow
+      ? {
+          ...mapPublishedStory(existingStoryRow),
+          title: draft.title,
+          summary: draft.summary,
+          body: draft.body,
+          publishedAt: nextPublishedAt
+        }
+      : {
+          id: randomUUID(),
+          tripId: draft.tripId,
+          draftId: draft.id,
+          slug: `${slugify(draft.title)}-${draft.id.slice(0, 6)}`,
+          title: draft.title,
+          summary: draft.summary,
+          body: draft.body,
+          publishedAt: nextPublishedAt
+        };
 
-    await client.query(
-      `insert into published_stories (
-         id,
-         trip_id,
-         draft_id,
-         slug,
-         title,
-         summary,
-         body,
-         published_at
-       )
-       values ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [
-        story.id,
-        story.tripId,
-        story.draftId,
-        story.slug,
-        story.title,
-        story.summary,
-        story.body,
-        story.publishedAt
-      ]
-    );
+    if (existingStoryRow) {
+      await client.query(
+        `update published_stories
+         set title = $2,
+             summary = $3,
+             body = $4,
+             published_at = $5
+         where id = $1`,
+        [story.id, story.title, story.summary, story.body, story.publishedAt]
+      );
+    } else {
+      await client.query(
+        `insert into published_stories (
+           id,
+           trip_id,
+           draft_id,
+           slug,
+           title,
+           summary,
+           body,
+           published_at
+         )
+         values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          story.id,
+          story.tripId,
+          story.draftId,
+          story.slug,
+          story.title,
+          story.summary,
+          story.body,
+          story.publishedAt
+        ]
+      );
+    }
 
     if (draft.sourceMomentIds.length > 0) {
       await client.query(
@@ -1173,6 +1208,18 @@ export async function addPublicComment(input: CreatePublicCommentInput): Promise
       }
     }
 
+    if (input.momentId) {
+      const momentRow = await queryOne(
+        client,
+        "select * from moments where id = $1 and trip_id = $2 and status = 'published'",
+        [input.momentId, input.tripId]
+      );
+
+      if (!momentRow) {
+        throw new Error("Moment not found");
+      }
+    }
+
     const authorName = sanitizeCommentValue(input.authorName, 50);
     const body = input.body.trim().slice(0, 1200);
 
@@ -1188,18 +1235,20 @@ export async function addPublicComment(input: CreatePublicCommentInput): Promise
       id: randomUUID(),
       tripId: input.tripId,
       storyId: input.storyId,
+      momentId: input.momentId ?? null,
       authorName,
       body,
       createdAt: new Date().toISOString()
     };
 
     await client.query(
-      `insert into public_comments (id, trip_id, story_id, author_name, body, created_at)
-       values ($1, $2, $3, $4, $5, $6)`,
+      `insert into public_comments (id, trip_id, story_id, moment_id, author_name, body, created_at)
+       values ($1, $2, $3, $4, $5, $6, $7)`,
       [
         comment.id,
         comment.tripId,
         comment.storyId,
+        comment.momentId,
         comment.authorName,
         comment.body,
         comment.createdAt

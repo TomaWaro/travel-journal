@@ -147,6 +147,7 @@ export interface PublicComment {
   id: string;
   tripId: string;
   storyId: string | null;
+  momentId: string | null;
   authorName: string;
   body: string;
   createdAt: string;
@@ -237,6 +238,7 @@ export interface CreateMomentInput {
 export interface CreatePublicCommentInput {
   tripId: string;
   storyId: string | null;
+  momentId?: string | null;
   authorName: string;
   body: string;
 }

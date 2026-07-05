@@ -81,6 +81,10 @@ export async function updateDraft(
   return getStore().updateDraft(draftId, patch);
 }
 
+export async function deleteDraft(draftId: string) {
+  return getStore().deleteDraft(draftId);
+}
+
 export async function publishDraft(draftId: string) {
   return getStore().publishDraft(draftId);
 }

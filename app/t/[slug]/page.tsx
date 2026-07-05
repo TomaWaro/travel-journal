@@ -76,8 +76,13 @@ export default async function PublicTripPage({ params }: PageProps) {
     bundle.trackPoints,
     bundle.trackSessions
   );
-  const tripComments = bundle.comments.filter((comment) => comment.storyId === null);
+  const tripComments = bundle.comments.filter((comment) => comment.storyId === null && comment.momentId === null);
   const mediaMoments = getMomentAssetMap(publicMoments, bundle.assets);
+  const momentCommentMap = new Map(
+    bundle.comments
+      .filter((comment) => comment.momentId)
+      .map((comment) => [comment.momentId!, [] as typeof bundle.comments])
+  );
   const galleryItems = mediaMoments.slice(0, 8);
   const storyCommentCounts = new Map(
     bundle.comments
@@ -88,6 +93,10 @@ export default async function PublicTripPage({ params }: PageProps) {
   for (const comment of bundle.comments) {
     if (comment.storyId) {
       storyCommentCounts.set(comment.storyId, (storyCommentCounts.get(comment.storyId) ?? 0) + 1);
+    }
+
+    if (comment.momentId) {
+      momentCommentMap.set(comment.momentId, [...(momentCommentMap.get(comment.momentId) ?? []), comment]);
     }
   }
 
@@ -215,10 +224,12 @@ export default async function PublicTripPage({ params }: PageProps) {
           </div>
           <PhotoGrid
             items={galleryItems.map(({ asset, moment }) => ({
+              comments: momentCommentMap.get(moment.id) ?? [],
               id: moment.id,
               type: moment.type,
               title: moment.caption || moment.type,
               body: moment.body,
+              tripId: bundle.trip.id,
               url: asset.url
             }))}
           />

@@ -84,6 +84,11 @@ export default async function StoryPage({ params }: PageProps) {
   const storyComments = payload.bundle.comments.filter(
     (comment) => comment.storyId === payload.story.id
   );
+  const momentCommentMap = new Map(
+    payload.bundle.comments
+      .filter((comment) => comment.momentId)
+      .map((comment) => [comment.momentId!, [] as typeof payload.bundle.comments])
+  );
   const storyMedia = getStoryMedia(payload);
   const coverImage = storyMedia.find(({ moment }) => moment.type === "photo")?.asset.url ?? null;
   const routeLocations = Array.from(
@@ -92,6 +97,12 @@ export default async function StoryPage({ params }: PageProps) {
   const publishedDate = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(
     new Date(payload.story.publishedAt)
   );
+
+  for (const comment of payload.bundle.comments) {
+    if (comment.momentId) {
+      momentCommentMap.set(comment.momentId, [...(momentCommentMap.get(comment.momentId) ?? []), comment]);
+    }
+  }
 
   return (
     <main className="shell">
@@ -212,10 +223,12 @@ export default async function StoryPage({ params }: PageProps) {
           </div>
           <PhotoGrid
             items={storyMedia.map(({ asset, moment }) => ({
+              comments: momentCommentMap.get(moment.id) ?? [],
               id: moment.id,
               type: moment.type,
               title: moment.caption || "Souvenir du post",
               body: moment.body,
+              tripId: payload.trip.id,
               url: asset.url
             }))}
           />

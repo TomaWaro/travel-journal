@@ -6,7 +6,11 @@ import type { PublicComment } from "@/lib/types";
 
 type Props = {
   comments: PublicComment[];
+  compact?: boolean;
+  intro?: string;
+  momentId?: string;
   storyId?: string;
+  title?: string;
   tripId: string;
 };
 
@@ -17,7 +21,15 @@ function formatCommentDate(value: string): string {
   }).format(new Date(value));
 }
 
-export function PublicCommentsPanel({ comments, storyId, tripId }: Props) {
+export function PublicCommentsPanel({
+  comments,
+  compact = false,
+  intro = "Un nom, un message, et c'est publie tout de suite. Aucun compte necessaire.",
+  momentId,
+  storyId,
+  title = "Laisser un mot",
+  tripId
+}: Props) {
   const [items, setItems] = useState(comments);
   const [authorName, setAuthorName] = useState("");
   const [body, setBody] = useState("");
@@ -30,20 +42,22 @@ export function PublicCommentsPanel({ comments, storyId, tripId }: Props) {
     setMessage("");
 
     try {
-      const response = await fetch(
-        storyId ? `/api/published-stories/${storyId}/comments` : `/api/trips/${tripId}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            authorName,
-            body,
-            tripId
-          })
-        }
-      );
+      const endpoint = momentId
+        ? `/api/moments/${momentId}/comments`
+        : storyId
+          ? `/api/published-stories/${storyId}/comments`
+          : `/api/trips/${tripId}/comments`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          authorName,
+          body,
+          tripId
+        })
+      });
       const payload = (await response.json()) as {
         comment?: PublicComment;
         error?: string;
@@ -64,14 +78,12 @@ export function PublicCommentsPanel({ comments, storyId, tripId }: Props) {
   }
 
   return (
-    <section className="panel comments-panel">
+    <section className={`panel comments-panel${compact ? " comments-panel-compact" : ""}`}>
       <div className="section-intro">
         <div>
           <p className="eyebrow">Commentaires</p>
-          <h2>Laisser un mot</h2>
-          <p className="comment-intro">
-            Un nom, un message, et c&apos;est publie tout de suite. Aucun compte necessaire.
-          </p>
+          <h2>{title}</h2>
+          <p className="comment-intro">{intro}</p>
         </div>
         <span className="comment-counter">{items.length} message(s)</span>
       </div>

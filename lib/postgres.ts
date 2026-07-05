@@ -6,7 +6,7 @@ import type { AppState, Trip } from "@/lib/types";
 
 const migrationDirectory = path.join(process.cwd(), "db", "migrations");
 const seedPath = path.join(process.cwd(), "data", "seed.travel-journal.json");
-const migrationFiles = ["0001_initial.sql", "0002_public_comments.sql"] as const;
+const migrationFiles = ["0001_initial.sql", "0002_public_comments.sql", "0003_public_comment_moments.sql"] as const;
 
 let pool: Pool | null = null;
 let initializationPromise: Promise<void> | null = null;
@@ -304,16 +304,18 @@ async function insertSeedData(client: PoolClient, state: AppState): Promise<void
          id,
          trip_id,
          story_id,
+         moment_id,
          author_name,
          body,
          created_at
        )
-       values ($1, $2, $3, $4, $5, $6)
+       values ($1, $2, $3, $4, $5, $6, $7)
        on conflict (id) do nothing`,
       [
         comment.id,
         comment.tripId,
         comment.storyId,
+        comment.momentId ?? null,
         comment.authorName,
         comment.body,
         comment.createdAt

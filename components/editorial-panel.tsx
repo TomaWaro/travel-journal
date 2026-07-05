@@ -17,6 +17,7 @@ type Props = {
 export function EditorialPanel({ token, trip, days, drafts, moments, stories }: Props) {
   const router = useRouter();
   const [message, setMessage] = useState<string>("");
+  const publishedDraftIds = new Set(stories.map((story) => story.draftId));
   const [savingDraftId, setSavingDraftId] = useState<string | null>(null);
   const daysWithContent = days.filter((day) =>
     moments.some((moment) => moment.dayDate === day.date) ||
@@ -113,6 +114,24 @@ export function EditorialPanel({ token, trip, days, drafts, moments, stories }: 
     }
   }
 
+  async function removeDraft(draftId: string) {
+    const response = await fetch(`/api/drafts/${draftId}`, {
+      method: "DELETE",
+      headers: {
+        "x-access-token": token
+      }
+    });
+    const payload = (await response.json()) as { error?: string };
+
+    if (!response.ok) {
+      setMessage(payload.error ?? "Impossible de supprimer le brouillon.");
+      return;
+    }
+
+    setMessage("Brouillon supprime.");
+    router.refresh();
+  }
+
   return (
     <section className="panel">
       <div className="panel-heading workspace-panel-heading">
@@ -193,6 +212,11 @@ export function EditorialPanel({ token, trip, days, drafts, moments, stories }: 
               >
                 <div className="editorial-card-copy">
                   <p>{draft.dayDate ? formatDateLabel(draft.dayDate) : "Recap global du voyage"}</p>
+                  <strong>
+                    {publishedDraftIds.has(draft.id)
+                      ? "Deja publie, modifiable et republicable."
+                      : "Brouillon prive non publie."}
+                  </strong>
                 </div>
                 <label className="field">
                   <span>Titre</span>
@@ -207,11 +231,14 @@ export function EditorialPanel({ token, trip, days, drafts, moments, stories }: 
                   <textarea defaultValue={draft.body} name="body" required rows={10} />
                 </label>
                 <div className="button-row">
+                  <button className="mini-button" onClick={() => removeDraft(draft.id)} type="button">
+                    Supprimer
+                  </button>
                   <button className="ghost-button" disabled={savingDraftId === draft.id} type="submit">
                     {savingDraftId === draft.id ? "Enregistrement..." : "Enregistrer le brouillon"}
                   </button>
                   <button className="primary-button" onClick={() => publish(draft.id)} type="button">
-                    Publier
+                    {publishedDraftIds.has(draft.id) ? "Republier" : "Publier"}
                   </button>
                 </div>
               </form>
@@ -225,6 +252,7 @@ export function EditorialPanel({ token, trip, days, drafts, moments, stories }: 
               <p className="eyebrow">Etape 3</p>
               <h3>Posts deja publies</h3>
               <p>Ceux-ci sont deja visibles sur le site public. Tu peux les retirer si besoin.</p>
+              <p>Pour modifier un post deja en ligne, edite son brouillon ci-dessus puis clique sur `Republier`.</p>
             </div>
           </div>
           <div className="editorial-card-list">
