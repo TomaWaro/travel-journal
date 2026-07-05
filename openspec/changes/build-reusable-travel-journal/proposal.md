@@ -1,33 +1,41 @@
 ## Why
 
-The current need is a family travel journal for the July 2026 trip, but the product must be reusable for future trips and by other contributors without redesigning the system each time. A reusable travel app is needed now to support fast mobile capture, itinerary visibility, map-based journey tracking, and manual publication from a Vercel-hosted stack that can be maintained from a phone.
+Le besoin initial était un carnet de voyage familial réutilisable pour l’été 2026. Le produit a depuis été implémenté, testé, simplifié, puis recentré sur l’usage réel: capturer vite depuis un téléphone, publier immédiatement, montrer le voyage publiquement avec une galerie, une carte, une timeline, et ouvrir les réactions sans compte.
 
-## What Changes
+Les artefacts OpenSpec d’origine ne reflétaient plus l’état réel du produit. Ils décrivaient encore fortement un flux éditorial à brouillons manuels, alors que l’application a été simplifiée vers un modèle plus direct, plus mobile et plus public.
 
-- Create a reusable travel journal web application model centered on workspaces, trips, contributors, daily moments, route legs, GPS tracks, and published stories.
-- Support fast mobile capture of photos, videos, text notes, audio notes, and shared Google Maps itinerary links from contributor phones.
-- Add a trip map that combines planned route legs imported from Google Maps links with actual recorded track points captured from contributor devices.
-- Support manual editorial review and publish flows so generated daily posts remain drafts until explicitly validated.
-- Separate private capture data from quasi-public trip pages and shareable story pages suitable for Discord, WhatsApp, and similar channels.
-- Define a Vercel-compatible architecture using Blob for media, Redis for live state and short-lived workflows, and a relational database available through Vercel integrations for durable domain data.
-- Target deployment from a dedicated GitHub repository under `TomaWaro`, following the existing Vercel deployment style already used in the local `eva` example project.
+## What Changed
+
+- Build a reusable travel journal web application centered on workspaces, trips, contributors, route legs, moments, GPS tracks, and public comments.
+- Support phone-first capture of photos, videos, audio, text notes, Google Maps route intent, and geolocated moments.
+- Publish moments immediately on creation instead of routing the main product through a daily draft validation workflow.
+- Expose a quasi-public trip page with:
+  - a simplified header
+  - a horizontal auto-scrolling gallery
+  - a click-to-open fullscreen viewer
+  - image-level comments
+  - a map with route + moment points
+  - a timeline grouped by day
+- Keep the application reusable for future trips and other contributors instead of hard-coding the July 2026 trip.
+- Use a Vercel-compatible deployment architecture backed by GitHub, Neon Postgres, Vercel Blob, and Redis.
 
 ## Capabilities
 
 ### New Capabilities
-- `trip-management`: Create and manage reusable trips, legs, contributors, settings, and visibility rules inside a multi-trip workspace.
-- `journey-capture`: Capture media, notes, audio, itinerary links, and GPS tracking sessions from mobile devices with minimal friction.
-- `journey-map`: Display planned routes and actual traveled paths on a trip map, with privacy-aware public visibility.
-- `story-publication`: Generate, review, and manually publish daily or trip-level stories with share-friendly public pages.
-- `contributor-access`: Allow multiple invited contributors to add content from their phones while preserving owner control over publication.
+
+- `trip-management`: Create and manage reusable trips, route legs, contributors, visibility, and access tokens.
+- `journey-capture`: Capture media, notes, route context, and GPS positions from phones with minimal friction.
+- `journey-map`: Display planned route legs, actual traveled path, geolocated moments, and derived place labels on a trip map.
+- `public-journey-view`: Render a shareable trip page with a simplified header, horizontal gallery, map, timeline, and public reactions.
+- `public-comments`: Allow visitors to comment quickly without account creation at the trip level and image/moment level.
 
 ### Modified Capabilities
 
-None.
+- `story-publication`: The original manual editorial flow still exists in the codebase, but it is no longer the primary surface or primary user workflow. The main product now favors immediate moment publication and public trip consumption.
 
 ## Impact
 
-- New frontend application optimized for mobile capture and public trip viewing.
-- New server-side APIs, background generation hooks, and scheduled or on-demand content compilation flows on Vercel.
-- New storage integrations: Vercel Blob for media, Redis on Vercel for live state, and Neon Postgres via Vercel integration for durable relational data.
-- New deployment workflow tied to a dedicated GitHub repository under the `TomaWaro` account and a Vercel project derived from that repository.
+- The public trip page is now the main storytelling surface rather than a blog-like stack of generated recaps.
+- The admin experience is simpler and more task-oriented, with capture as the most important flow.
+- The storage model still supports drafts and published stories, but those concepts are now legacy/secondary compared to public moments.
+- The project is already deployed through GitHub and Vercel and has working integrations for Postgres, Blob, and Redis-compatible tracking state.
