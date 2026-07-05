@@ -780,11 +780,11 @@ main.shell {
 .trip-header-simple {
   display: grid;
   gap: 14px;
-  padding: 32px 32px 28px;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 36px;
-  box-shadow: var(--shadow-strong);
+  padding: 32px 20px 20px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .trip-header-simple h1 {
@@ -2762,14 +2762,16 @@ code {
 /* Calligraphic main title style */
 .trip-header-simple h1 {
   font-family: var(--font-note), 'Caveat', cursive !important;
-  font-size: clamp(3.2rem, 6.5vw, 5rem) !important; /* Bold, calligraphic sexy title */
-  line-height: 1.15;
-  color: var(--terracotta);
-  text-shadow: 2px 2.5px 0px #ffffff;
-  transform: rotate(-1.2deg);
-  margin: 16px 0 28px 0 !important;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: clamp(4rem, 8vw, 6.2rem) !important; /* Bold, calligraphic sexy title */
+  line-height: 1.05 !important;
+  color: #142032 !important; /* Rich ink blue color */
+  -webkit-text-fill-color: #142032 !important; /* Override transparent fill */
+  background: none !important; /* Remove background text-gradient */
+  text-shadow: 3px 3px 0px rgba(217, 98, 54, 0.12) !important; /* Warm rust text-shadow */
+  transform: rotate(-1.5deg) !important;
+  margin: 16px 0 32px 0 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
 }
 
 /* Trip main description card taped at header */

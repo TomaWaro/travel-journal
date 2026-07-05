@@ -94,24 +94,29 @@ export default async function PublicTripPage({ params }: PageProps) {
       ? bundle.days.find((day) => day.date === publicMoments[publicMoments.length - 1]?.dayDate)
       : bundle.days[0]);
 
+  const isSpainTrip = slug.includes("paris-a-l-espagne");
+  const displaySummary = isSpainTrip 
+    ? "Le grand départ ! 1700 km de bitume chaud, du soleil, des rires, un copilote survolté et de l'Espagne en ligne de mire. ¡Vamos! 🚗💨"
+    : bundle.trip.summary;
+
   return (
     <main className="shell">
       <AnimatedSection className="landing-stage" delay={60}>
-        <section className="panel trip-header-simple" style={{ position: "relative" }}>
+        <section className="trip-header-simple" style={{ position: "relative", textAlign: "center", padding: "20px 20px 40px 20px" }}>
           <p className="eyebrow">Carnet de route</p>
           <h1>{bundle.trip.title}</h1>
           
-          {bundle.trip.summary ? (
+          {displaySummary ? (
             <div className="trip-description-tape-note">
               <div className="washi-tape-scotch-giant" />
-              <p className="trip-header-summary">{bundle.trip.summary}</p>
+              <p className="trip-header-summary">{displaySummary}</p>
             </div>
           ) : null}
 
           {currentDay ? (
-            <div className="trip-header-meta" style={{ marginTop: "24px" }}>
+            <div className="trip-header-meta" style={{ marginTop: "32px", display: "flex", justifyContent: "center", gap: "12px", alignItems: "center" }}>
               <span className="date-badge">Jour en cours</span>
-              <span className="trip-header-day">{formatDateLabel(currentDay.date)}</span>
+              <span className="trip-header-day" style={{ fontFamily: "var(--font-note), cursive", fontSize: "1.6rem", color: "var(--ink-soft)" }}>{formatDateLabel(currentDay.date)}</span>
             </div>
           ) : null}
         </section>
