@@ -71,7 +71,7 @@ function parseTravelMode(value: string | null): TravelMode {
   }
 }
 
-async function buildPlannedPath(stops: string[]): Promise<LatLng[]> {
+export async function buildPlannedPath(stops: string[]): Promise<LatLng[]> {
   const path: LatLng[] = [];
   for (const stop of stops) {
     let coords = inferCoordinates(stop);

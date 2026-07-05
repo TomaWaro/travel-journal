@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { parseGoogleMapsLeg } from "@/lib/google-maps";
+import { parseGoogleMapsLeg, buildPlannedPath } from "@/lib/google-maps";
 import { requireDashboardAccess, requireTripAccess } from "@/lib/server-access";
 import { createLeg } from "@/lib/store";
 
@@ -21,20 +21,28 @@ export async function POST(request: Request, { params }: RouteProps) {
       travelMode?: "driving" | "walking" | "transit" | "cycling";
     };
 
-    const input = body.googleMapsUrl
-      ? await parseGoogleMapsLeg(tripId, body.googleMapsUrl, body.dayDate ?? null)
-      : {
-          tripId,
-          dayDate: body.dayDate ?? null,
-          title: body.title || `${body.originLabel || "Depart"} -> ${body.destinationLabel || "Arrivee"}`,
-          originLabel: body.originLabel || "Depart a preciser",
-          destinationLabel: body.destinationLabel || "Arrivee a preciser",
-          waypoints: [],
-          travelMode: body.travelMode || "driving",
-          rawGoogleMapsUrl: null,
-          plannedPath: [],
-          needsManualCorrection: true
-        };
+    let input;
+    if (body.googleMapsUrl) {
+      input = await parseGoogleMapsLeg(tripId, body.googleMapsUrl, body.dayDate ?? null);
+    } else {
+      const origin = body.originLabel || "";
+      const destination = body.destinationLabel || "";
+      const stops = [origin, destination].filter(Boolean);
+      const plannedPath = await buildPlannedPath(stops);
+
+      input = {
+        tripId,
+        dayDate: body.dayDate ?? null,
+        title: body.title || `${origin || "Depart"} -> ${destination || "Arrivee"}`,
+        originLabel: origin || "Depart a preciser",
+        destinationLabel: destination || "Arrivee a preciser",
+        waypoints: [],
+        travelMode: body.travelMode || "driving",
+        rawGoogleMapsUrl: null,
+        plannedPath,
+        needsManualCorrection: plannedPath.length < 2
+      };
+    }
     const leg = await createLeg(input);
 
     return NextResponse.json({ leg, needsManualCorrection: input.needsManualCorrection });

@@ -167,43 +167,9 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
   const hasItinerary = legs.length > 0 || trackPoints.length > 0;
   const initialTab = hasItinerary ? "route" : "moments";
   const [activeTab, setActiveTab] = useState<"moments" | "route">(initialTab);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const mapInstanceRef = useRef<any>(null);
 
   const liveTrackingUrl = legs.find((leg) => leg.rawGoogleMapsUrl)?.rawGoogleMapsUrl;
-
-  const getGoogleMapsEmbedUrl = (routeLegs: RouteLeg[]) => {
-    const firstLeg = routeLegs[0];
-    if (!firstLeg) return null;
-    
-    const origin = firstLeg.originLabel;
-    const destination = routeLegs[routeLegs.length - 1]?.destinationLabel || firstLeg.destinationLabel;
-    
-    if (
-      origin && 
-      destination && 
-      origin !== "Manual departure required" && 
-      destination !== "Manual arrival required" &&
-      origin !== "Position en direct"
-    ) {
-      return `https://maps.google.com/maps?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(destination)}&output=embed`;
-    }
-    
-    if (firstLeg.plannedPath && firstLeg.plannedPath.length > 0) {
-      const coords = firstLeg.plannedPath[0];
-      if (coords) {
-        return `https://maps.google.com/maps?q=${coords.latitude},${coords.longitude}&z=12&output=embed`;
-      }
-    }
-    
-    if (firstLeg.rawGoogleMapsUrl) {
-      return `https://maps.google.com/maps?q=${encodeURIComponent(firstLeg.rawGoogleMapsUrl)}&output=embed`;
-    }
-    
-    return null;
-  };
-
-  const embedUrl = getGoogleMapsEmbedUrl(legs);
 
   // React to tab changes and adjust layer visibilities
   useEffect(() => {
@@ -387,130 +353,24 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           </div>
         ) : null}
 
-        {activeTab === "route" && embedUrl ? (
+        {activeTab === "route" && liveTrackingUrl ? (
           <div className="live-tracking-card-overlay">
             <div className="live-card-badge">LIVE 🌐</div>
             <div className="live-card-info">
               <h3>Suivi de l&apos;itinéraire</h3>
               <p>Progression en direct, heure d&apos;arrivée estimée (ETA) et tracé Google Maps.</p>
             </div>
-            <button
-              onClick={() => setIsModalOpen(true)}
+            <a
+              href={liveTrackingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="primary-button live-card-action"
-              type="button"
             >
-              Ouvrir l&apos;itinéraire ➔
-            </button>
+              Suivre sur Google Maps ➔
+            </a>
           </div>
         ) : null}
       </div>
-
-      {isModalOpen && embedUrl ? (
-        <div 
-          className="map-modal-backdrop" 
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "#ffffff",
-            zIndex: 9999,
-            padding: 0,
-            display: "flex",
-            flexDirection: "column"
-          }}
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div 
-            className="map-modal-content" 
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: 0,
-              width: "100vw",
-              height: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              boxShadow: "none",
-              border: 0,
-              overflow: "hidden"
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="map-modal-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px", borderBottom: "1px solid var(--line)" }}>
-              <h3 style={{ margin: 0, fontFamily: "var(--font-display), sans-serif", fontSize: "1.25rem", color: "var(--ink)" }}>📍 Itinéraire Google Maps</h3>
-              <button
-                className="map-modal-close"
-                onClick={() => setIsModalOpen(false)}
-                type="button"
-                aria-label="Fermer"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="map-modal-body" style={{ flexGrow: 1, display: "flex", flexDirection: "column", background: "#fef8f4", position: "relative" }}>
-              {embedUrl.includes("saddr=") ? (
-                <iframe
-                  title="Google Maps Itinerary"
-                  src={embedUrl}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0, flexGrow: 1 }}
-                  allowFullScreen
-                  loading="lazy"
-                />
-              ) : (
-                <div 
-                  className="modal-unembeddable-fallback"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    textAlign: "center",
-                    padding: "40px 20px",
-                    background: "#fef8f4",
-                    flexGrow: 1,
-                    color: "var(--ink)"
-                  }}
-                >
-                  <span className="fallback-icon" style={{ fontSize: "5rem", marginBottom: "20px" }}>🗺️</span>
-                  <h3 style={{ fontSize: "1.8rem", margin: "0 0 12px 0", color: "var(--terracotta)", fontFamily: "var(--font-display), sans-serif" }}>
-                    Suivi en direct actif
-                  </h3>
-                  <p style={{ maxWidth: "540px", fontSize: "1rem", lineHeight: "1.6", color: "var(--ink-soft)", margin: "0 0 16px 0" }}>
-                    Pour des raisons de sécurité, Google Maps n&apos;autorise pas l&apos;affichage du partage
-                    de position temps réel directement dans une page externe.
-                  </p>
-                  <p className="fallback-hint" style={{ maxWidth: "500px", fontSize: "0.88rem", color: "var(--olive)", marginBottom: "30px", fontWeight: 500 }}>
-                    Cliquez ci-dessous pour ouvrir le suivi en direct et voir la trajectoire ainsi que
-                    l&apos;heure d&apos;arrivée estimée (ETA) et le trafic en temps réel.
-                  </p>
-                  {liveTrackingUrl && (
-                    <a
-                      href={liveTrackingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="fallback-button"
-                      style={{
-                        background: "linear-gradient(135deg, var(--sunset), var(--terracotta))",
-                        fontSize: "1.1rem",
-                        padding: "14px 32px",
-                        borderRadius: "18px",
-                        boxShadow: "0 6px 20px rgba(217, 98, 54, 0.3)",
-                        fontWeight: 700,
-                        color: "#ffffff",
-                        textDecoration: "none",
-                        display: "inline-flex",
-                        alignItems: "center"
-                      }}
-                    >
-                      Suivre en direct sur Google Maps ➔
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }
