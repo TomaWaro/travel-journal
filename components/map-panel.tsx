@@ -165,10 +165,31 @@ function getInitialCenter(legs: RouteLeg[], trackPoints: TrackPoint[]): [number,
 export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"moments" | "route">("moments");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const mapInstanceRef = useRef<any>(null);
 
   const hasItinerary = legs.length > 0 || trackPoints.length > 0;
   const liveTrackingUrl = legs.find((leg) => leg.rawGoogleMapsUrl)?.rawGoogleMapsUrl;
+
+  const getGoogleMapsEmbedUrl = (routeLegs: RouteLeg[]) => {
+    const firstLeg = routeLegs[0];
+    if (!firstLeg) return null;
+    
+    const origin = firstLeg.originLabel;
+    const destination = routeLegs[routeLegs.length - 1]?.destinationLabel || firstLeg.destinationLabel;
+    
+    if (origin && destination && origin !== "Manual departure required" && destination !== "Manual arrival required") {
+      return `https://maps.google.com/maps?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(destination)}&output=embed`;
+    }
+    
+    if (firstLeg.rawGoogleMapsUrl) {
+      return `https://maps.google.com/maps?q=${encodeURIComponent(firstLeg.rawGoogleMapsUrl)}&output=embed`;
+    }
+    
+    return null;
+  };
+
+  const embedUrl = getGoogleMapsEmbedUrl(legs);
 
   // React to tab changes and adjust layer visibilities
   useEffect(() => {
@@ -345,24 +366,59 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
       <div className="map-relative-container">
         <div className="map-shell" ref={mapRef} />
         
-        {activeTab === "route" && liveTrackingUrl ? (
+        {activeTab === "route" && hasItinerary ? (
+          <div className="live-status-pill">
+            <span className="live-pulse-dot" />
+            <span className="live-status-text">DIRECT ACTIF</span>
+          </div>
+        ) : null}
+
+        {activeTab === "route" && embedUrl ? (
           <div className="live-tracking-card-overlay">
             <div className="live-card-badge">LIVE 🌐</div>
             <div className="live-card-info">
-              <h3>Suivi Google Maps en cours</h3>
-              <p>Progression en direct, heure d&apos;arrivée estimée (ETA) et navigation.</p>
+              <h3>Suivi de l&apos;itinéraire</h3>
+              <p>Progression en direct, heure d&apos;arrivée estimée (ETA) et tracé Google Maps.</p>
             </div>
-            <a
-              href={liveTrackingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setIsModalOpen(true)}
               className="primary-button live-card-action"
+              type="button"
             >
-              Suivre sur Google Maps ➔
-            </a>
+              Ouvrir l&apos;itinéraire ➔
+            </button>
           </div>
         ) : null}
       </div>
+
+      {isModalOpen && embedUrl ? (
+        <div className="map-modal-backdrop" onClick={() => setIsModalOpen(false)}>
+          <div className="map-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="map-modal-header">
+              <h3>📍 Itinéraire Google Maps</h3>
+              <button
+                className="map-modal-close"
+                onClick={() => setIsModalOpen(false)}
+                type="button"
+                aria-label="Fermer"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="map-modal-body">
+              <iframe
+                title="Google Maps Itinerary"
+                src={embedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

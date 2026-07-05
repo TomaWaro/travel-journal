@@ -2473,3 +2473,140 @@ code {
     transform: translateY(0);
   }
 }
+
+/* Pulsing live status indicator */
+.live-status-pill {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(217, 98, 54, 0.95);
+  color: #ffffff;
+  border-radius: 99px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 15px rgba(217, 98, 54, 0.4);
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: pulseGlow 2s infinite;
+}
+
+.live-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  animation: pulseDot 1.4s infinite;
+}
+
+/* Google Maps Iframe Modal popup */
+.map-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 32, 50, 0.6);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeInModal 0.25s ease-out forwards;
+}
+
+.map-modal-content {
+  background: #ffffff;
+  border-radius: 28px;
+  width: min(900px, 100%);
+  height: min(650px, 85vh);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-strong);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  animation: scaleInModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.map-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.map-modal-header h3 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.25rem;
+  color: var(--ink);
+}
+
+.map-modal-close {
+  background: rgba(20, 32, 50, 0.05);
+  border: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  transition: all 0.2s ease;
+}
+
+.map-modal-close:hover {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+  transform: scale(1.1);
+}
+
+.map-modal-body {
+  flex-grow: 1;
+  background: #eaeaea;
+  position: relative;
+}
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(217, 98, 54, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(217, 98, 54, 0.7);
+  }
+}
+
+@keyframes fadeInModal {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes scaleInModal {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
