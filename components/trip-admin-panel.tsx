@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Member, Trip } from "@/lib/types";
+import type { Member, Trip, RouteLeg } from "@/lib/types";
 
 type Props = {
   token: string;
   trip: Trip;
   members: Member[];
+  legs?: RouteLeg[];
   mode: "settings" | "legs" | "invites";
 };
 
-export function TripAdminPanel({ token, trip, members, mode }: Props) {
+export function TripAdminPanel({ token, trip, members, legs = [], mode }: Props) {
   const router = useRouter();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -109,6 +110,57 @@ export function TripAdminPanel({ token, trip, members, mode }: Props) {
         ) : null}
 
         {mode === "legs" ? (
+        <div className="stack" style={{ gap: "24px" }}>
+          {legs.length > 0 ? (
+            <div style={{ padding: "16px", background: "rgba(20,32,50,0.02)", borderRadius: "16px", border: "1px solid rgba(20,32,50,0.06)" }}>
+              <h4 style={{ marginBottom: "12px", color: "var(--ink)" }}>Itinéraires enregistrés</h4>
+              <ul className="stack" style={{ listStyle: "none", padding: 0, gap: "10px", margin: 0 }}>
+                {legs.map((leg) => (
+                  <li key={leg.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", background: "#ffffff", borderRadius: "12px", border: "1px solid rgba(20,32,50,0.05)", boxShadow: "0 2px 5px rgba(0,0,0,0.01)" }}>
+                    <div>
+                      <strong style={{ display: "block", color: "var(--ink)" }}>{leg.title}</strong>
+                      <small style={{ color: "var(--ink-soft)" }}>
+                        {leg.dayDate ? new Date(leg.dayDate).toLocaleDateString("fr-FR", { dateStyle: "medium" }) : "Pas de date"}
+                        {leg.rawGoogleMapsUrl ? " · Lien Google Maps actif" : " · Tracé manuel"}
+                      </small>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!confirm("Voulez-vous vraiment supprimer cet itinéraire ?")) return;
+                        const response = await fetch(`/api/trips/${trip.id}/legs/import-google`, {
+                          method: "DELETE",
+                          headers: {
+                            "Content-Type": "application/json",
+                            "x-access-token": token
+                          },
+                          body: JSON.stringify({ legId: leg.id })
+                        });
+                        if (response.ok) {
+                          router.refresh();
+                        } else {
+                          alert("Erreur lors de la suppression de l'itinéraire.");
+                        }
+                      }}
+                      style={{
+                        padding: "6px 12px",
+                        background: "rgba(255, 76, 76, 0.1)",
+                        color: "rgb(255, 76, 76)",
+                        border: "0",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontWeight: "600",
+                        fontSize: "0.85rem"
+                      }}
+                    >
+                      Supprimer
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
         <form
           className="stack"
           onSubmit={async (event) => {
@@ -167,6 +219,7 @@ export function TripAdminPanel({ token, trip, members, mode }: Props) {
             Ajouter le leg
           </button>
         </form>
+        </div>
         ) : null}
 
         {mode === "invites" ? (

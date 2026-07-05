@@ -275,6 +275,7 @@ export function DashboardShell({
               mode="legs"
               token={token}
               trip={selectedTrip.trip}
+              legs={selectedTrip.legs}
             />
           ) : null}
 

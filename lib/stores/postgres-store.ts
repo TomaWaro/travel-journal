@@ -761,6 +761,16 @@ export async function createLeg(input: CreateLegInput): Promise<RouteLeg> {
   });
 }
 
+export async function deleteLeg(legId: string): Promise<boolean> {
+  return withTransaction(async (client) => {
+    const result = await client.query(
+      "delete from route_legs where id = $1",
+      [legId]
+    );
+    return (result.rowCount ?? 0) > 0;
+  });
+}
+
 export async function addMoment(input: CreateMomentInput): Promise<Moment> {
   return withTransaction(async (client) => {
     const trip = await getTripById(client, input.tripId);

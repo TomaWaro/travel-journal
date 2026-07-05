@@ -206,9 +206,9 @@ export function TimelinePanel({
                 {dayMoments.map((moment) => {
                   const asset = moment.assetId ? assetMap.get(moment.assetId) : null;
                   const momentComments = allComments.filter((c) => c.momentId === moment.id);
-                  const textComments = momentComments.filter((c) => !["❤️", "😂", "😮", "👏", "🔥"].includes(c.body));
+                  const textComments = momentComments.filter((c) => !["❤️", "😂", "😮", "👏", "🔥", "67"].includes(c.body));
 
-                  const emojis = ["❤️", "😂", "😮", "👏", "🔥"];
+                  const emojis = ["❤️", "😂", "😮", "👏", "🔥", "67"];
                   const emojiCounts = emojis.reduce((acc, emo) => {
                     acc[emo] = momentComments.filter((c) => c.body === emo).length;
                     return acc;

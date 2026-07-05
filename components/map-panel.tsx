@@ -169,7 +169,13 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
   const [activeTab, setActiveTab] = useState<"moments" | "route">(initialTab);
   const mapInstanceRef = useRef<any>(null);
 
-  const liveTrackingUrl = legs.find((leg) => leg.rawGoogleMapsUrl)?.rawGoogleMapsUrl;
+  // Find the latest leg that has a Google Maps URL, and ensure it hasn't expired (its dayDate is not in the past)
+  const liveLeg = [...legs].reverse().find((leg) => leg.rawGoogleMapsUrl);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const isLiveActive = liveLeg
+    ? (!liveLeg.dayDate || liveLeg.dayDate >= todayStr)
+    : false;
+  const liveTrackingUrl = isLiveActive ? liveLeg?.rawGoogleMapsUrl : null;
 
   // React to tab changes and adjust layer visibilities
   useEffect(() => {

@@ -45,6 +45,10 @@ export async function createLeg(input: Parameters<typeof postgresStore.createLeg
   return getStore().createLeg(input);
 }
 
+export async function deleteLeg(legId: string) {
+  return getStore().deleteLeg(legId);
+}
+
 export async function addMoment(input: Parameters<typeof postgresStore.addMoment>[0]) {
   return getStore().addMoment(input);
 }

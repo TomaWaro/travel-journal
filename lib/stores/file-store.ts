@@ -362,6 +362,17 @@ export async function createLeg(input: CreateLegInput): Promise<RouteLeg> {
   return leg;
 }
 
+export async function deleteLeg(legId: string): Promise<boolean> {
+  const state = await readState();
+  const initialLength = state.legs.length;
+  state.legs = state.legs.filter((leg) => leg.id !== legId);
+  if (state.legs.length < initialLength) {
+    await writeState(state);
+    return true;
+  }
+  return false;
+}
+
 export async function addMoment(input: CreateMomentInput): Promise<Moment> {
   const state = await readState();
   const trip = state.trips.find((candidate) => candidate.id === input.tripId);

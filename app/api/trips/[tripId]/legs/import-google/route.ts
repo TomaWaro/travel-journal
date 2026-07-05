@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { parseGoogleMapsLeg, buildPlannedPath } from "@/lib/google-maps";
 import { requireDashboardAccess, requireTripAccess } from "@/lib/server-access";
-import { createLeg } from "@/lib/store";
+import { createLeg, deleteLeg } from "@/lib/store";
 
 type RouteProps = {
   params: Promise<{ tripId: string }>;
@@ -49,6 +49,31 @@ export async function POST(request: Request, { params }: RouteProps) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to create leg" },
+      { status: 400 }
+    );
+  }
+}
+
+export async function DELETE(request: Request, { params }: RouteProps) {
+  try {
+    const { tripId } = await params;
+    const dashboard = await requireDashboardAccess(request, ["owner"]);
+    requireTripAccess(dashboard, tripId);
+
+    const body = (await request.json()) as {
+      legId?: string;
+    };
+
+    if (!body.legId) {
+      throw new Error("Leg ID is required.");
+    }
+
+    await deleteLeg(body.legId);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to delete leg" },
       { status: 400 }
     );
   }
