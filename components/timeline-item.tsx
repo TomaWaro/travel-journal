@@ -44,7 +44,6 @@ export function TimelineItem({
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "24px 24px",
             background: isCollapsed 
               ? "linear-gradient(135deg, #f3e5d0, #e9d9c2)" 
               : "linear-gradient(135deg, #fbf3e6, #f3e5d0)",
@@ -66,15 +65,15 @@ export function TimelineItem({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              width: "36px",
-              height: "36px",
+              width: "40px",
+              height: "40px",
               borderRadius: "50%",
               background: "rgba(20, 32, 50, 0.04)",
               transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
               transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)"
             }}
           >
-            <span style={{ fontSize: "1rem", color: "var(--ink-soft)" }}>▼</span>
+            <span style={{ fontSize: "1.1rem", color: "var(--ink-soft)" }}>▼</span>
           </div>
         </div>
 
@@ -88,7 +87,7 @@ export function TimelineItem({
             transition: isCollapsed
               ? "max-height 0.4s cubic-bezier(0.3, 0.5, 0.3, 1), opacity 0.3s ease, padding 0.3s ease"
               : "max-height 0.8s cubic-bezier(0.15, 0.85, 0.3, 1), opacity 0.5s ease, padding 0.5s ease",
-            padding: isCollapsed ? "0px 24px" : "24px"
+            padding: isCollapsed ? "0px" : undefined
           }}
         >
           {children}
