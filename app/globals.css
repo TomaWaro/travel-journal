@@ -2899,6 +2899,20 @@ code {
     padding: 16px 12px !important;
   }
   
+  /* Flatten the nested moments list background & padding */
+  .timeline-moments {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Reduce moment card padding on mobile */
+  .moment-item {
+    padding: 12px !important;
+    border-radius: 20px !important;
+  }
+  
   /* Reclaim padding on the Polaroid card */
   .moment-media-wrapper {
     padding: 10px 10px 32px 10px !important;
@@ -2925,9 +2939,43 @@ code {
     top: -10px !important;
   }
   
-  /* Tighten layout constraints */
+  /* Tighten timeline track column size to reclaim space */
   .timeline-item {
-    gap: 8px !important;
+    gap: 10px !important;
+    grid-template-columns: 12px minmax(0, 1fr) !important;
+  }
+  
+  .timeline-marker {
+    width: 12px !important;
+  }
+  
+  .timeline-marker::after {
+    width: 12px !important;
+    height: 12px !important;
+    top: 8px !important;
+  }
+  
+  .timeline-marker::before {
+    left: 4.5px !important;
+  }
+  
+  /* Prevent inputs and button cut-off by enforcing flexbox properties */
+  .comments-panel-compact .comment-card {
+    max-width: 100% !important;
+  }
+  
+  .compact-form-row {
+    width: 100% !important;
+    display: flex !important;
+    gap: 6px !important;
+  }
+  
+  .compact-input-body {
+    min-width: 0 !important; /* Forces the text field to respect flex limits and shrink to fit */
+  }
+  
+  .timeline-panel {
+    padding: 8px !important;
   }
   
   /* Scale down main title */
