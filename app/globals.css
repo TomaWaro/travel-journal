@@ -2520,8 +2520,8 @@ code {
 .map-modal-content {
   background: #ffffff;
   border-radius: 28px;
-  width: min(900px, 100%);
-  height: min(650px, 85vh);
+  width: min(1200px, 95vw);
+  height: min(800px, 90vh);
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-strong);
@@ -2608,5 +2608,72 @@ code {
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Unembeddable live map fallback overlay */
+.modal-unembeddable-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  background: #fef8f4;
+  height: 100%;
+  color: var(--ink);
+}
+
+.modal-unembeddable-fallback h3 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.6rem;
+  margin: 16px 0 8px 0;
+  color: var(--terracotta);
+}
+
+.modal-unembeddable-fallback p {
+  max-width: 540px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 16px 0;
+}
+
+.modal-unembeddable-fallback .fallback-hint {
+  max-width: 500px;
+  font-size: 0.85rem;
+  color: var(--olive);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.fallback-icon {
+  font-size: 4rem;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+.fallback-button {
+  background: linear-gradient(135deg, var(--sunset), var(--terracotta)) !important;
+  font-size: 1rem !important;
+  padding: 14px 28px !important;
+  border-radius: 18px !important;
+  box-shadow: 0 6px 20px rgba(217, 98, 54, 0.3) !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.fallback-button:hover {
+  transform: scale(1.05) translateY(-2px) !important;
+  box-shadow: 0 10px 25px rgba(217, 98, 54, 0.4) !important;
+}
+
+@keyframes floatIcon {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }

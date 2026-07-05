@@ -406,15 +406,40 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
               </button>
             </div>
             <div className="map-modal-body">
-              <iframe
-                title="Google Maps Itinerary"
-                src={embedUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-              />
+              {embedUrl.includes("saddr=") ? (
+                <iframe
+                  title="Google Maps Itinerary"
+                  src={embedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                />
+              ) : (
+                <div className="modal-unembeddable-fallback">
+                  <span className="fallback-icon">🗺️</span>
+                  <h3>Suivi en direct actif</h3>
+                  <p>
+                    Pour des raisons de sécurité, Google Maps n&apos;autorise pas l&apos;affichage du partage
+                    de position temps réel directement dans une page externe.
+                  </p>
+                  <p className="fallback-hint">
+                    Cliquez ci-dessous pour ouvrir le suivi en direct et voir la trajectoire ainsi que
+                    l&apos;heure d&apos;arrivée estimée (ETA) et le trafic en temps réel.
+                  </p>
+                  {liveTrackingUrl && (
+                    <a
+                      href={liveTrackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="primary-button fallback-button"
+                    >
+                      Suivre en direct sur Google Maps ➔
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

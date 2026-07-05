@@ -28,6 +28,38 @@ function inferCoordinates(label: string): LatLng | null {
   return null;
 }
 
+async function fetchCoordinates(label: string): Promise<LatLng | null> {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(label)}&format=json&limit=1`;
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "TravelJournalApp/1.0"
+      }
+    });
+    const data = await response.json();
+    if (Array.isArray(data) && data[0]) {
+      return {
+        latitude: parseFloat(data[0].lat),
+        longitude: parseFloat(data[0].lon)
+      };
+    }
+  } catch (error) {
+    console.error("Geocoding failed for:", label, error);
+  }
+  return null;
+}
+
+function parseCoordinatesFromUrl(url: string): LatLng | null {
+  const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (match && match[1] && match[2]) {
+    return {
+      latitude: parseFloat(match[1]),
+      longitude: parseFloat(match[2])
+    };
+  }
+  return null;
+}
+
 function parseTravelMode(value: string | null): TravelMode {
   switch (value) {
     case "walking":
@@ -39,10 +71,18 @@ function parseTravelMode(value: string | null): TravelMode {
   }
 }
 
-function buildPlannedPath(stops: string[]): LatLng[] {
-  return stops
-    .map((stop) => inferCoordinates(stop))
-    .filter((coordinates): coordinates is LatLng => Boolean(coordinates));
+async function buildPlannedPath(stops: string[]): Promise<LatLng[]> {
+  const path: LatLng[] = [];
+  for (const stop of stops) {
+    let coords = inferCoordinates(stop);
+    if (!coords) {
+      coords = await fetchCoordinates(stop);
+    }
+    if (coords) {
+      path.push(coords);
+    }
+  }
+  return path;
 }
 
 async function resolveShortUrl(url: string): Promise<string> {
@@ -104,6 +144,7 @@ export async function parseGoogleMapsLeg(
   let destination = "";
   let waypoints: string[] = [];
   let travelMode: TravelMode = "driving";
+  let plannedPath: LatLng[] = [];
 
   // Case 1: Search params (API/Embed format)
   if (parsed.searchParams.has("origin") || parsed.searchParams.has("destination")) {
@@ -114,6 +155,8 @@ export async function parseGoogleMapsLeg(
       .map((waypoint) => waypoint.trim())
       .filter(Boolean);
     travelMode = parseTravelMode(parsed.searchParams.get("travelmode"));
+    const stops = [origin, ...waypoints, destination].filter(Boolean);
+    plannedPath = await buildPlannedPath(stops);
   } else {
     // Case 2: Path-based (User sharing format: maps/dir/Lyon/Barcelona)
     const pathParts = parsed.pathname.split("/").filter(Boolean);
@@ -131,12 +174,23 @@ export async function parseGoogleMapsLeg(
         origin = decodeURIComponent(stops[0]);
         destination = decodeURIComponent(stops[stops.length - 1]);
         waypoints = stops.slice(1, -1).map((w) => decodeURIComponent(w));
+        const finalStops = [origin, ...waypoints, destination].filter(Boolean);
+        plannedPath = await buildPlannedPath(finalStops);
       }
     }
   }
 
+  // Fallback Case 3: If no planned path found, but coordinates are present in URL
+  if (plannedPath.length === 0) {
+    const coords = parseCoordinatesFromUrl(resolvedUrl);
+    if (coords) {
+      plannedPath = [coords, coords];
+      origin = "Position en direct";
+      destination = "Position en direct";
+    }
+  }
+
   const stops = [origin, ...waypoints, destination].filter(Boolean);
-  const plannedPath = buildPlannedPath(stops);
   const title = stops.length >= 2 ? `${stops[0]} -> ${stops[stops.length - 1]}` : "Leg imported from Google Maps";
 
   return {
