@@ -2734,17 +2734,17 @@ code {
 .timeline-pinned-date {
   position: relative;
   background: #ffffff;
-  padding: 6px 14px 6px 22px;
-  border-radius: 4px;
-  box-shadow: 3px 5px 12px rgba(20, 32, 50, 0.08);
-  border: 1px dashed rgba(20, 32, 50, 0.15);
+  padding: 10px 24px 10px 36px;
+  border-radius: 6px;
+  box-shadow: 4px 6px 16px rgba(20, 32, 50, 0.1);
+  border: 1.5px dashed rgba(20, 32, 50, 0.2);
   font-family: var(--font-note), cursive;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.95rem !important; /* Made way bigger as requested! */
   color: var(--terracotta);
-  transform: rotate(-2.5deg);
-  margin-top: -8px;
-  margin-left: -4px;
+  transform: rotate(-1.5deg);
+  margin-top: -6px;
+  margin-left: 8px;
   display: inline-flex;
   align-items: center;
   user-select: none;
@@ -2752,29 +2752,62 @@ code {
 
 .timeline-pinned-date .push-pin {
   position: absolute;
-  top: -12px;
+  top: -16px;
   left: 2px;
-  font-size: 1.35rem;
+  font-size: 2rem;
   transform: rotate(-12deg);
-  filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.18));
+  filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.22));
 }
 
-/* Large, handwritten description text style */
-.moment-body-below {
-  padding: 16px 20px !important;
-  background: rgba(255, 255, 255, 0.4) !important;
-  border-radius: 16px !important;
-  border: 1px dashed rgba(20, 32, 50, 0.12) !important;
-  box-shadow: none !important;
-  margin-top: 12px;
+/* Description note taped at the top of the photo */
+.moment-description-tape-note {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1.5deg);
+  width: 82%;
+  background: #fffdf0; /* Soft cream paper */
+  border: 1px dashed rgba(20, 32, 50, 0.15);
+  border-radius: 4px;
+  padding: 14px 16px 8px 16px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
 }
 
-.moment-body-below p {
+.moment-description-tape-note p {
   font-family: var(--font-note), cursive !important;
   font-size: 1.85rem !important;
-  line-height: 1.4 !important;
-  color: #1a2a3a !important;
+  line-height: 1.35 !important;
+  color: #1a293a !important;
   margin: 0 !important;
-  transform: rotate(-0.5deg);
-  display: block;
+}
+
+/* Semi-transparent piece of scotch holding the description paper scrap */
+.washi-tape-scotch {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%) rotate(2deg);
+  width: 90px;
+  height: 24px;
+  background: rgba(255, 230, 190, 0.65) !important; /* Transparent beige tape */
+  backdrop-filter: blur(0.5px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  clip-path: polygon(
+    0% 8%, 5% 0%, 10% 8%, 15% 0%, 20% 8%, 25% 0%, 30% 8%, 35% 0%, 40% 8%, 45% 0%, 50% 8%, 55% 0%, 60% 8%, 65% 0%, 70% 8%, 75% 0%, 80% 8%, 85% 0%, 90% 8%, 95% 0%, 100% 8%,
+    100% 92%, 95% 100%, 90% 92%, 85% 100%, 80% 92%, 75% 100%, 70% 92%, 65% 100%, 60% 92%, 55% 100%, 50% 92%, 45% 100%, 40% 92%, 35% 100%, 30% 92%, 25% 100%, 20% 92%, 15% 100%, 10% 92%, 5% 100%, 0% 92%
+  ); /* Ripped tape edges! */
+  z-index: 12;
+}
+
+/* Alternate rotation for even items description notes */
+.moment-item:nth-child(even) .moment-description-tape-note {
+  transform: translateX(-50%) rotate(1deg);
+}
+
+.moment-item:nth-child(even) .washi-tape-scotch {
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgba(190, 225, 220, 0.7) !important; /* Transparent green/aqua tape */
 }

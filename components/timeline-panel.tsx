@@ -129,7 +129,14 @@ export function TimelinePanel({
                       <div className="moment-main-content">
                         {asset ? (
                           <div className="moment-media-wrapper">
-                            <div className="washi-tape" />
+                            {!moment.body ? (
+                              <div className="washi-tape" />
+                            ) : (
+                              <div className="moment-description-tape-note">
+                                <div className="washi-tape-scotch" />
+                                <p>{moment.body}</p>
+                              </div>
+                            )}
                             <div className="moment-media">
                               {moment.type === "photo" ? (
                                 <Image
@@ -163,11 +170,6 @@ export function TimelinePanel({
                             {moment.body ? <p>{moment.body}</p> : null}
                           </div>
                         )}
-                        {asset && moment.body ? (
-                          <div className="moment-body-below">
-                            <p>{moment.body}</p>
-                          </div>
-                        ) : null}
                       </div>
 
                       {tripId ? (
