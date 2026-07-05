@@ -22,7 +22,7 @@ export async function POST(request: Request, { params }: RouteProps) {
     };
 
     const input = body.googleMapsUrl
-      ? parseGoogleMapsLeg(tripId, body.googleMapsUrl, body.dayDate ?? null)
+      ? await parseGoogleMapsLeg(tripId, body.googleMapsUrl, body.dayDate ?? null)
       : {
           tripId,
           dayDate: body.dayDate ?? null,

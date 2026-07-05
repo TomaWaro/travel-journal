@@ -45,19 +45,96 @@ function buildPlannedPath(stops: string[]): LatLng[] {
     .filter((coordinates): coordinates is LatLng => Boolean(coordinates));
 }
 
-export function parseGoogleMapsLeg(
+async function resolveShortUrl(url: string): Promise<string> {
+  try {
+    let currentUrl = url;
+
+    // First check if it is a dynamic link with an embedded deep link
+    try {
+      const parsed = new URL(currentUrl);
+      const deepLink = parsed.searchParams.get("link");
+      if (deepLink) {
+        currentUrl = deepLink;
+      }
+    } catch {
+      // ignore
+    }
+
+    // Follow up to 3 redirects
+    for (let i = 0; i < 3; i++) {
+      const parsed = new URL(currentUrl);
+      // Only fetch redirect if it's on a known short/dynamic domain or path-based directions are not present
+      if (
+        parsed.hostname.includes("goo.gl") ||
+        parsed.hostname.includes("maps.app.goo.gl") ||
+        parsed.hostname.includes("t.co") ||
+        !parsed.pathname.includes("/dir/")
+      ) {
+        const response = await fetch(currentUrl, { method: "HEAD", redirect: "manual" });
+        const location = response.headers.get("location");
+        if (location) {
+          currentUrl = new URL(location, currentUrl).toString();
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+    return currentUrl;
+  } catch {
+    return url;
+  }
+}
+
+export async function parseGoogleMapsLeg(
   tripId: string,
   url: string,
   fallbackDayDate: string | null
-): Omit<CreateLegInput, "title"> & { title: string; needsManualCorrection: boolean } {
-  const parsed = new URL(url);
-  const origin = parsed.searchParams.get("origin") ?? "";
-  const destination = parsed.searchParams.get("destination") ?? "";
-  const waypoints = (parsed.searchParams.get("waypoints") ?? "")
-    .split("|")
-    .map((waypoint) => waypoint.trim())
-    .filter(Boolean);
-  const travelMode = parseTravelMode(parsed.searchParams.get("travelmode"));
+): Promise<Omit<CreateLegInput, "title"> & { title: string; needsManualCorrection: boolean }> {
+  let resolvedUrl = url;
+  try {
+    resolvedUrl = await resolveShortUrl(url);
+  } catch {
+    // fallback to original url
+  }
+
+  const parsed = new URL(resolvedUrl);
+  let origin = "";
+  let destination = "";
+  let waypoints: string[] = [];
+  let travelMode: TravelMode = "driving";
+
+  // Case 1: Search params (API/Embed format)
+  if (parsed.searchParams.has("origin") || parsed.searchParams.has("destination")) {
+    origin = parsed.searchParams.get("origin") ?? "";
+    destination = parsed.searchParams.get("destination") ?? "";
+    waypoints = (parsed.searchParams.get("waypoints") ?? "")
+      .split("|")
+      .map((waypoint) => waypoint.trim())
+      .filter(Boolean);
+    travelMode = parseTravelMode(parsed.searchParams.get("travelmode"));
+  } else {
+    // Case 2: Path-based (User sharing format: maps/dir/Lyon/Barcelona)
+    const pathParts = parsed.pathname.split("/").filter(Boolean);
+    const dirIndex = pathParts.indexOf("dir");
+    if (dirIndex >= 0) {
+      const rawStops = pathParts.slice(dirIndex + 1);
+      const stops = rawStops.filter(
+        (part) =>
+          !part.startsWith("@") &&
+          !part.startsWith("data=") &&
+          !part.includes("data") &&
+          !part.includes("dir")
+      );
+      if (stops.length >= 2) {
+        origin = decodeURIComponent(stops[0]);
+        destination = decodeURIComponent(stops[stops.length - 1]);
+        waypoints = stops.slice(1, -1).map((w) => decodeURIComponent(w));
+      }
+    }
+  }
+
   const stops = [origin, ...waypoints, destination].filter(Boolean);
   const plannedPath = buildPlannedPath(stops);
   const title = stops.length >= 2 ? `${stops[0]} -> ${stops[stops.length - 1]}` : "Leg imported from Google Maps";
