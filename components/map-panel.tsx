@@ -164,11 +164,12 @@ function getInitialCenter(legs: RouteLeg[], trackPoints: TrackPoint[]): [number,
 
 export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const [activeTab, setActiveTab] = useState<"moments" | "route">("moments");
+  const hasItinerary = legs.length > 0 || trackPoints.length > 0;
+  const initialTab = hasItinerary ? "route" : "moments";
+  const [activeTab, setActiveTab] = useState<"moments" | "route">(initialTab);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const mapInstanceRef = useRef<any>(null);
 
-  const hasItinerary = legs.length > 0 || trackPoints.length > 0;
   const liveTrackingUrl = legs.find((leg) => leg.rawGoogleMapsUrl)?.rawGoogleMapsUrl;
 
   const getGoogleMapsEmbedUrl = (routeLegs: RouteLeg[]) => {
@@ -178,8 +179,21 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
     const origin = firstLeg.originLabel;
     const destination = routeLegs[routeLegs.length - 1]?.destinationLabel || firstLeg.destinationLabel;
     
-    if (origin && destination && origin !== "Manual departure required" && destination !== "Manual arrival required") {
+    if (
+      origin && 
+      destination && 
+      origin !== "Manual departure required" && 
+      destination !== "Manual arrival required" &&
+      origin !== "Position en direct"
+    ) {
       return `https://maps.google.com/maps?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(destination)}&output=embed`;
+    }
+    
+    if (firstLeg.plannedPath && firstLeg.plannedPath.length > 0) {
+      const coords = firstLeg.plannedPath[0];
+      if (coords) {
+        return `https://maps.google.com/maps?q=${coords.latitude},${coords.longitude}&z=12&output=embed`;
+      }
     }
     
     if (firstLeg.rawGoogleMapsUrl) {
@@ -260,7 +274,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           source: "journey",
           filter: ["==", ["get", "kind"], "planned"],
           layout: {
-            visibility: "none"
+            visibility: initialTab === "route" ? "visible" : "none"
           },
           paint: {
             "line-color": "#ffd166",
@@ -275,7 +289,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           source: "journey",
           filter: ["==", ["get", "kind"], "actual"],
           layout: {
-            visibility: "none"
+            visibility: initialTab === "route" ? "visible" : "none"
           },
           paint: {
             "line-color": "#36cfc9",
@@ -289,7 +303,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           source: "journey",
           filter: ["==", ["get", "kind"], "moment"],
           layout: {
-            visibility: "visible"
+            visibility: initialTab === "moments" ? "visible" : "none"
           },
           paint: {
             "circle-color": "#f18f5c",
@@ -309,7 +323,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
             "text-size": 12,
             "text-offset": [0, 1.3],
             "text-anchor": "top",
-            visibility: "visible"
+            visibility: initialTab === "moments" ? "visible" : "none"
           },
           paint: {
             "text-color": "#132033",
@@ -333,7 +347,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
       mapInstance?.remove();
       mapInstanceRef.current = null;
     };
-  }, [legs, moments, trackPoints, trip.id]);
+  }, [legs, moments, trackPoints, trip.id, initialTab]);
 
   return (
     <section className="panel map-panel">
