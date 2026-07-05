@@ -406,10 +406,36 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
       </div>
 
       {isModalOpen && embedUrl ? (
-        <div className="map-modal-backdrop" onClick={() => setIsModalOpen(false)}>
-          <div className="map-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="map-modal-header">
-              <h3>📍 Itinéraire Google Maps</h3>
+        <div 
+          className="map-modal-backdrop" 
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "#ffffff",
+            zIndex: 9999,
+            padding: 0,
+            display: "flex",
+            flexDirection: "column"
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div 
+            className="map-modal-content" 
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: 0,
+              width: "100vw",
+              height: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "none",
+              border: 0,
+              overflow: "hidden"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="map-modal-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px", borderBottom: "1px solid var(--line)" }}>
+              <h3 style={{ margin: 0, fontFamily: "var(--font-display), sans-serif", fontSize: "1.25rem", color: "var(--ink)" }}>📍 Itinéraire Google Maps</h3>
               <button
                 className="map-modal-close"
                 onClick={() => setIsModalOpen(false)}
@@ -419,26 +445,41 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
                 ✕
               </button>
             </div>
-            <div className="map-modal-body">
+            <div className="map-modal-body" style={{ flexGrow: 1, display: "flex", flexDirection: "column", background: "#fef8f4", position: "relative" }}>
               {embedUrl.includes("saddr=") ? (
                 <iframe
                   title="Google Maps Itinerary"
                   src={embedUrl}
                   width="100%"
                   height="100%"
-                  style={{ border: 0 }}
+                  style={{ border: 0, flexGrow: 1 }}
                   allowFullScreen
                   loading="lazy"
                 />
               ) : (
-                <div className="modal-unembeddable-fallback">
-                  <span className="fallback-icon">🗺️</span>
-                  <h3>Suivi en direct actif</h3>
-                  <p>
+                <div 
+                  className="modal-unembeddable-fallback"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    padding: "40px 20px",
+                    background: "#fef8f4",
+                    flexGrow: 1,
+                    color: "var(--ink)"
+                  }}
+                >
+                  <span className="fallback-icon" style={{ fontSize: "5rem", marginBottom: "20px" }}>🗺️</span>
+                  <h3 style={{ fontSize: "1.8rem", margin: "0 0 12px 0", color: "var(--terracotta)", fontFamily: "var(--font-display), sans-serif" }}>
+                    Suivi en direct actif
+                  </h3>
+                  <p style={{ maxWidth: "540px", fontSize: "1rem", lineHeight: "1.6", color: "var(--ink-soft)", margin: "0 0 16px 0" }}>
                     Pour des raisons de sécurité, Google Maps n&apos;autorise pas l&apos;affichage du partage
                     de position temps réel directement dans une page externe.
                   </p>
-                  <p className="fallback-hint">
+                  <p className="fallback-hint" style={{ maxWidth: "500px", fontSize: "0.88rem", color: "var(--olive)", marginBottom: "30px", fontWeight: 500 }}>
                     Cliquez ci-dessous pour ouvrir le suivi en direct et voir la trajectoire ainsi que
                     l&apos;heure d&apos;arrivée estimée (ETA) et le trafic en temps réel.
                   </p>
@@ -447,7 +488,19 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
                       href={liveTrackingUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="primary-button fallback-button"
+                      className="fallback-button"
+                      style={{
+                        background: "linear-gradient(135deg, var(--sunset), var(--terracotta))",
+                        fontSize: "1.1rem",
+                        padding: "14px 32px",
+                        borderRadius: "18px",
+                        boxShadow: "0 6px 20px rgba(217, 98, 54, 0.3)",
+                        fontWeight: 700,
+                        color: "#ffffff",
+                        textDecoration: "none",
+                        display: "inline-flex",
+                        alignItems: "center"
+                      }}
                     >
                       Suivre en direct sur Google Maps ➔
                     </a>
