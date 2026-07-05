@@ -124,7 +124,8 @@ export function PhotoGrid({ items }: Props) {
             <div className="photo-viewer-stage">
               {activeItem.type === "photo" ? (
                 <div className="photo-viewer-media photo-viewer-media-image">
-                  <Image alt={activeItem.title} fill sizes="100vw" src={activeItem.url} />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img alt={activeItem.title} className="photo-viewer-image" src={activeItem.url} />
                 </div>
               ) : activeItem.type === "video" ? (
                 <div className="photo-viewer-media">
