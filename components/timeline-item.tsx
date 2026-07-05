@@ -54,8 +54,11 @@ export function TimelineItem({
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: "4px", flexGrow: 1, marginRight: "16px" }}>
-            <div className="timeline-kicker" style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-              <DateBadge>{date}</DateBadge>
+            <div className="timeline-kicker" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", position: "relative" }}>
+              <div className="timeline-pinned-date">
+                <span className="push-pin">📌</span>
+                <span className="date-text">{date}</span>
+              </div>
               {location ? <LocationBadge>{location}</LocationBadge> : null}
             </div>
             <h3 style={{ margin: "4px 0 0 0", fontSize: "1.2rem", fontWeight: 700, color: "var(--ink)" }}>{title}</h3>

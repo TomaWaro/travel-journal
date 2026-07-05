@@ -86,11 +86,8 @@ export function TimelinePanel({
 
   return (
     <section className="panel timeline-panel">
-      <div className="section-intro">
-        <div>
-          <p className="eyebrow">Timeline</p>
-          <h2>Le trajet jour après jour</h2>
-        </div>
+      <div className="timeline-header-container" style={{ textAlign: "center", marginBottom: "48px" }}>
+        <h2 className="timeline-main-title">Timeline</h2>
       </div>
       <div className="timeline-list">
         {visibleDays.map((day) => {

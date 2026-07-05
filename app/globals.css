@@ -2077,29 +2077,57 @@ code {
   margin: 12px 0;
 }
 
-/* Washi Tape styling overlay */
+/* Atypical Paperclip styling overlay */
 .washi-tape {
   position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-4deg);
-  width: 120px;
-  height: 28px;
-  background: rgba(255, 133, 76, 0.55);
-  backdrop-filter: blur(1px);
-  box-shadow: 0 2px 4px rgba(20, 32, 50, 0.04);
-  z-index: 2;
-  clip-path: polygon(0% 10%, 5% 0%, 10% 10%, 15% 0%, 20% 10%, 25% 0%, 30% 10%, 35% 0%, 40% 10%, 45% 0%, 50% 10%, 55% 0%, 60% 10%, 65% 0%, 70% 10%, 75% 0%, 80% 10%, 85% 0%, 90% 10%, 95% 0%, 100% 10%, 100% 90%, 95% 100%, 90% 90%, 85% 100%, 80% 90%, 75% 100%, 70% 90%, 65% 100%, 60% 90%, 55% 100%, 50% 90%, 45% 100%, 40% 90%, 35% 100%, 30% 90%, 25% 100%, 20% 90%, 15% 100%, 10% 90%, 5% 100%, 0% 90%);
+  top: -22px;
+  left: 24px;
+  width: 20px;
+  height: 52px;
+  border: 2.5px solid #8a9198;
+  border-radius: 8px;
+  background: transparent;
+  z-index: 5;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.15);
+  transform: rotate(-12deg);
+  backdrop-filter: none;
+  clip-path: none;
+}
+
+.washi-tape::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 1.5px;
+  width: 12px;
+  height: 38px;
+  border: 2.5px solid #8a9198;
+  border-radius: 5px;
+  border-bottom: none;
+}
+
+.washi-tape::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 1.5px;
+  width: 12px;
+  height: 25px;
+  border: 2.5px solid #8a9198;
+  border-radius: 4px;
+  border-top: none;
 }
 
 .moment-item:nth-child(even) .washi-tape {
-  background: rgba(131, 197, 190, 0.65);
-  transform: translateX(-50%) rotate(3deg);
+  background: transparent !important;
+  left: auto;
+  right: 24px;
+  transform: rotate(14deg);
 }
 
 /* Polaroid bottom margin caption text */
 .moment-caption-overlay {
-  margin-top: 14px;
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -2109,9 +2137,10 @@ code {
 }
 
 .moment-caption-overlay strong {
-  font-size: 1.4rem;
+  font-size: 1.95rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.15;
+  color: var(--ink);
 }
 
 .moment-caption-overlay span {
@@ -2687,4 +2716,65 @@ code {
 .timeline-header-bandeau:hover .collapse-arrow-container {
   background: rgba(20, 32, 50, 0.08) !important;
   color: var(--ink) !important;
+}
+
+/* Scrapbook Timeline title */
+.timeline-main-title {
+  font-family: var(--font-note), 'Caveat', cursive, sans-serif;
+  font-size: 3.8rem !important;
+  color: var(--terracotta);
+  text-shadow: 2px 2px 0px #ffffff;
+  transform: rotate(-1.5deg);
+  display: inline-block;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Scrapbook Pinned Date Badge */
+.timeline-pinned-date {
+  position: relative;
+  background: #ffffff;
+  padding: 6px 14px 6px 22px;
+  border-radius: 4px;
+  box-shadow: 3px 5px 12px rgba(20, 32, 50, 0.08);
+  border: 1px dashed rgba(20, 32, 50, 0.15);
+  font-family: var(--font-note), cursive;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--terracotta);
+  transform: rotate(-2.5deg);
+  margin-top: -8px;
+  margin-left: -4px;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+}
+
+.timeline-pinned-date .push-pin {
+  position: absolute;
+  top: -12px;
+  left: 2px;
+  font-size: 1.35rem;
+  transform: rotate(-12deg);
+  filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.18));
+}
+
+/* Large, handwritten description text style */
+.moment-body-below {
+  padding: 16px 20px !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-radius: 16px !important;
+  border: 1px dashed rgba(20, 32, 50, 0.12) !important;
+  box-shadow: none !important;
+  margin-top: 12px;
+}
+
+.moment-body-below p {
+  font-family: var(--font-note), cursive !important;
+  font-size: 1.85rem !important;
+  line-height: 1.4 !important;
+  color: #1a2a3a !important;
+  margin: 0 !important;
+  transform: rotate(-0.5deg);
+  display: block;
 }
