@@ -21,25 +21,82 @@ export function TimelineItem({
   onToggle
 }: Props) {
   return (
-    <article className={`timeline-item ${isCollapsed ? "timeline-item-collapsed" : ""}`}>
+    <article className={`timeline-item ${isCollapsed ? "timeline-item-collapsed" : ""}`} style={{ marginBottom: "28px" }}>
       <div className="timeline-marker" aria-hidden="true" />
-      <div className="timeline-content">
+      <div 
+        className="timeline-content" 
+        style={{ 
+          padding: 0, 
+          overflow: "hidden", 
+          borderRadius: "24px", 
+          border: "1px solid rgba(20, 32, 50, 0.08)", 
+          background: "rgba(255, 255, 255, 0.65)",
+          boxShadow: "var(--shadow-soft)"
+        }}
+      >
+        {/* Bandeau d'en-tête visible */}
         <div 
-          className="timeline-header-clickable" 
+          className="timeline-header-bandeau" 
           onClick={onToggle}
-          style={{ cursor: "pointer", display: "flex", flexDirection: "column", gap: "6px" }}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "16px 24px",
+            background: isCollapsed 
+              ? "linear-gradient(135deg, #f3e5d0, #e9d9c2)" 
+              : "linear-gradient(135deg, #fbf3e6, #f3e5d0)",
+            borderBottom: isCollapsed ? "0px" : "1px solid rgba(20, 32, 50, 0.08)",
+            transition: "all 0.3s ease",
+            userSelect: "none"
+          }}
         >
-          <div className="timeline-kicker" style={{ display: "flex", alignItems: "center", width: "100%" }}>
-            <DateBadge>{date}</DateBadge>
-            {location ? <LocationBadge>{location}</LocationBadge> : null}
-            <span className="collapse-toggle-icon" style={{ marginLeft: "auto", fontSize: "1rem" }}>
-              {isCollapsed ? "➕" : "➖"}
-            </span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", flexGrow: 1, marginRight: "16px" }}>
+            <div className="timeline-kicker" style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+              <DateBadge>{date}</DateBadge>
+              {location ? <LocationBadge>{location}</LocationBadge> : null}
+            </div>
+            <h3 style={{ margin: "4px 0 0 0", fontSize: "1.2rem", fontWeight: 700, color: "var(--ink)" }}>{title}</h3>
+            {note && !isCollapsed ? (
+              <p className="timeline-note" style={{ margin: "4px 0 0 0", fontSize: "0.82rem", color: "var(--ink-soft)" }}>{note}</p>
+            ) : null}
           </div>
-          <h3 style={{ margin: 0 }}>{title}</h3>
-          {note && !isCollapsed ? <p className="timeline-note" style={{ margin: "4px 0 0 0" }}>{note}</p> : null}
+          
+          <div 
+            className="collapse-arrow-container"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              background: "rgba(20, 32, 50, 0.04)",
+              transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+              transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)"
+            }}
+          >
+            <span style={{ fontSize: "1rem", color: "var(--ink-soft)" }}>▼</span>
+          </div>
         </div>
-        {!isCollapsed && <div style={{ marginTop: "16px" }}>{children}</div>}
+
+        {/* Corps de la journée avec animation fluide */}
+        <div 
+          className="timeline-item-body-wrapper"
+          style={{
+            maxHeight: isCollapsed ? "0px" : "3500px",
+            opacity: isCollapsed ? 0 : 1,
+            overflow: "hidden",
+            transition: isCollapsed
+              ? "max-height 0.4s cubic-bezier(0.3, 0.5, 0.3, 1), opacity 0.3s ease, padding 0.3s ease"
+              : "max-height 0.8s cubic-bezier(0.15, 0.85, 0.3, 1), opacity 0.5s ease, padding 0.5s ease",
+            padding: isCollapsed ? "0px 24px" : "24px"
+          }}
+        >
+          {children}
+        </div>
       </div>
     </article>
   );

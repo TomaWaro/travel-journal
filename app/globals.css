@@ -2674,3 +2674,17 @@ code {
     transform: translateY(-10px);
   }
 }
+
+/* Collapsible accordion banner hover effects */
+.timeline-header-bandeau {
+  transition: background 0.25s ease !important;
+}
+
+.timeline-header-bandeau:hover {
+  background: linear-gradient(135deg, #f7ebd9, #e9d9c2) !important;
+}
+
+.timeline-header-bandeau:hover .collapse-arrow-container {
+  background: rgba(20, 32, 50, 0.08) !important;
+  color: var(--ink) !important;
+}
