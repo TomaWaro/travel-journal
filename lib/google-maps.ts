@@ -1,6 +1,8 @@
 import type { CreateLegInput, LatLng, TravelMode } from "@/lib/types";
 
 const knownLocations: Record<string, LatLng> = {
+  paris: { latitude: 48.8566, longitude: 2.3522 },
+  "issy-les-moulineaux": { latitude: 48.8245, longitude: 2.2742 },
   lyon: { latitude: 45.764, longitude: 4.8357 },
   lunel: { latitude: 43.6778, longitude: 4.1361 },
   espagne: { latitude: 41.5912, longitude: 2.5202 },
