@@ -255,6 +255,8 @@ export function DashboardShell({
               members={selectedTrip.contributors}
               moments={selectedTrip.moments}
               stories={[]}
+              comments={selectedTrip.comments}
+              tripId={selectedTrip.trip.id}
             />
           ) : null}
 

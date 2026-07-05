@@ -24,7 +24,7 @@ function formatCommentDate(value: string): string {
 export function PublicCommentsPanel({
   comments,
   compact = false,
-  intro = "Un nom, un message, et c'est publie tout de suite. Aucun compte necessaire.",
+  intro = "Un nom, un message, et c'est publié tout de suite. Aucun compte nécessaire.",
   momentId,
   storyId,
   title = "Laisser un mot",
@@ -68,10 +68,11 @@ export function PublicCommentsPanel({
         return;
       }
 
-      setItems((current) => [payload.comment!, ...current]);
+      setItems((current) => [...current, payload.comment!]);
       setAuthorName("");
       setBody("");
-      setMessage("Commentaire ajoute.");
+      setMessage("Commentaire ajouté !");
+      setTimeout(() => setMessage(""), 3000);
     } finally {
       setSubmitting(false);
     }
@@ -79,52 +80,60 @@ export function PublicCommentsPanel({
 
   return (
     <section className={`panel comments-panel${compact ? " comments-panel-compact" : ""}`}>
-      <div className="section-intro">
-        <div>
-          <p className="eyebrow">Commentaires</p>
-          <h2>{title}</h2>
-          <p className="comment-intro">{intro}</p>
+      {compact ? (
+        <div className="compact-comments-head">
+          <h4>{title}</h4>
+          <span className="comment-counter">{items.length}</span>
         </div>
-        <span className="comment-counter">{items.length} message(s)</span>
-      </div>
-
-      <form className="stack" onSubmit={handleSubmit}>
-        <label className="field">
-          <span>Votre nom</span>
-          <input
-            maxLength={50}
-            onChange={(event) => setAuthorName(event.target.value)}
-            placeholder="Ex: Claire"
-            required
-            type="text"
-            value={authorName}
-          />
-        </label>
-        <label className="field">
-          <span>Votre commentaire</span>
-          <textarea
-            maxLength={1200}
-            onChange={(event) => setBody(event.target.value)}
-            placeholder="Un message rapide, une reaction, un souvenir..."
-            required
-            rows={4}
-            value={body}
-          />
-        </label>
-        <div className="button-row">
-          <button className="primary-button" disabled={submitting} type="submit">
-            {submitting ? "Envoi..." : "Publier le commentaire"}
-          </button>
+      ) : (
+        <div className="section-intro">
+          <div>
+            <p className="eyebrow">Commentaires</p>
+            <h2>{title}</h2>
+            <p className="comment-intro">{intro}</p>
+          </div>
+          <span className="comment-counter">{items.length} message(s)</span>
         </div>
-      </form>
+      )}
 
-      {message ? <p className="status-line">{message}</p> : null}
+      {!compact && (
+        <form className="stack" onSubmit={handleSubmit}>
+          <label className="field">
+            <span>Votre nom</span>
+            <input
+              maxLength={50}
+              onChange={(event) => setAuthorName(event.target.value)}
+              placeholder="Ex: Claire"
+              required
+              type="text"
+              value={authorName}
+            />
+          </label>
+          <label className="field">
+            <span>Votre commentaire</span>
+            <textarea
+              maxLength={1200}
+              onChange={(event) => setBody(event.target.value)}
+              placeholder="Un message rapide, une reaction, un souvenir..."
+              required
+              rows={4}
+              value={body}
+            />
+          </label>
+          <div className="button-row">
+            <button className="primary-button" disabled={submitting} type="submit">
+              {submitting ? "Envoi..." : "Publier le commentaire"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {message && !compact ? <p className="status-line">{message}</p> : null}
 
       <div className="comment-list">
         {items.length === 0 ? (
-          <div className="comment-card">
-            <strong>Pas encore de commentaire.</strong>
-            <p>Soyez le premier a reagir.</p>
+          <div className="comment-card empty-comments-card">
+            <p>Pas encore de mot doux. Soyez le premier ! 💬</p>
           </div>
         ) : null}
         {items.map((comment) => (
@@ -137,6 +146,35 @@ export function PublicCommentsPanel({
           </article>
         ))}
       </div>
+
+      {compact && (
+        <form className="compact-form" onSubmit={handleSubmit}>
+          <div className="compact-form-row">
+            <input
+              className="compact-input-name"
+              maxLength={50}
+              onChange={(event) => setAuthorName(event.target.value)}
+              placeholder="Nom"
+              required
+              type="text"
+              value={authorName}
+            />
+            <input
+              className="compact-input-body"
+              maxLength={1200}
+              onChange={(event) => setBody(event.target.value)}
+              placeholder="Ajouter un commentaire..."
+              required
+              type="text"
+              value={body}
+            />
+            <button className="compact-send-button" disabled={submitting} type="submit" aria-label="Envoyer">
+              {submitting ? "..." : "🚀"}
+            </button>
+          </div>
+          {message ? <p className="compact-status-line">{message}</p> : null}
+        </form>
+      )}
     </section>
   );
 }

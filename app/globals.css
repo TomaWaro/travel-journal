@@ -1,26 +1,26 @@
 :root {
-  --bg: #f6efe3;
-  --bg-2: #efe2cf;
-  --surface: rgba(255, 248, 238, 0.68);
-  --surface-strong: rgba(255, 245, 233, 0.88);
+  --bg: #faf7f0;
+  --bg-2: #f4edd9;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.94);
   --surface-dark: #19222e;
   --ink: #142032;
   --ink-soft: #415067;
   --ink-muted: #6a788c;
-  --line: rgba(20, 32, 50, 0.1);
-  --line-strong: rgba(20, 32, 50, 0.18);
-  --terracotta: #c96844;
-  --sunset: #ef8856;
-  --olive: #6f7c56;
-  --sky: #8fc7d8;
-  --aqua: #2e8f8b;
-  --sand: #e7c490;
-  --cream: #fff9f1;
-  --shadow-soft: 0 18px 50px rgba(128, 86, 41, 0.1);
-  --shadow-strong: 0 40px 100px rgba(79, 53, 24, 0.16);
-  --radius-xl: 38px;
-  --radius-lg: 28px;
-  --radius-md: 22px;
+  --line: rgba(20, 32, 50, 0.08);
+  --line-strong: rgba(20, 32, 50, 0.14);
+  --terracotta: #d96236;
+  --sunset: #ff854c;
+  --olive: #7c8f5d;
+  --sky: #83c5be;
+  --aqua: #0081a7;
+  --sand: #f4a261;
+  --cream: #ffffff;
+  --shadow-soft: 0 12px 35px rgba(217, 98, 54, 0.06);
+  --shadow-strong: 0 25px 60px rgba(20, 32, 50, 0.08);
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 16px;
   --radius-pill: 999px;
   --text-xs: 0.76rem;
   --text-sm: 0.92rem;
@@ -50,10 +50,10 @@ body {
   font-family: var(--font-body), sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 10% 12%, rgba(239, 136, 86, 0.24), transparent 18%),
-    radial-gradient(circle at 84% 18%, rgba(143, 199, 216, 0.28), transparent 16%),
-    radial-gradient(circle at 72% 72%, rgba(111, 124, 86, 0.12), transparent 20%),
-    linear-gradient(180deg, #f7f0e6 0%, #f0e2cf 32%, #f8f2e8 100%);
+    radial-gradient(circle at 10% 12%, rgba(255, 133, 76, 0.18), transparent 25%),
+    radial-gradient(circle at 84% 18%, rgba(131, 197, 190, 0.22), transparent 20%),
+    radial-gradient(circle at 72% 72%, rgba(124, 143, 93, 0.1), transparent 25%),
+    linear-gradient(180deg, #faf7f0 0%, #f4edd9 40%, #faf7f0 100%);
   overflow-x: hidden;
   position: relative;
   padding-bottom: env(safe-area-inset-bottom);
@@ -180,16 +180,11 @@ main.shell {
 }
 
 .animated-section {
-  opacity: 1;
-  transform: none;
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
   transition:
-    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.animated-section:not(.is-revealed) {
-  opacity: 0.999;
-  transform: translateY(24px);
+    opacity 900ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 900ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .animated-section.is-revealed {
@@ -198,7 +193,7 @@ main.shell {
 }
 
 .animated-section + .animated-section {
-  margin-top: 28px;
+  margin-top: 36px;
 }
 
 .hero,
@@ -785,15 +780,23 @@ main.shell {
 .trip-header-simple {
   display: grid;
   gap: 14px;
-  padding: 22px 24px 20px;
+  padding: 32px 32px 28px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 36px;
+  box-shadow: var(--shadow-strong);
 }
 
 .trip-header-simple h1 {
   margin: 0;
-  font-size: clamp(2rem, 5vw, 4.2rem);
-  line-height: 0.94;
+  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+  line-height: 0.92;
+  font-weight: 800;
   max-width: none;
   width: 100%;
+  background: linear-gradient(135deg, var(--terracotta), var(--sunset));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .trip-header-summary,
@@ -1969,5 +1972,392 @@ code {
 
   .editorial-grid {
     grid-template-columns: 0.8fr 1fr 1fr;
+  }
+}
+
+/* ==========================================================================
+   Travel Journal Redesign: Scrapbook, Polaroid & Inline Photo Comments
+   ========================================================================== */
+
+/* Modern bouncy hover effect for primary elements */
+.primary-button, .secondary-button, .ghost-button, .nav-chip, .floating-card {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, background 0.2s ease, border-color 0.2s ease !important;
+}
+
+.primary-button:hover, .secondary-button:hover, .ghost-button:hover, .nav-chip:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 12px 25px rgba(217, 98, 54, 0.18) !important;
+}
+
+/* General Layout overrides */
+#trip-map {
+  margin-bottom: 24px;
+}
+
+/* Timeline Customizations */
+.timeline-moments {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  display: grid;
+  gap: 32px !important;
+}
+
+/* Moment items in the timeline */
+.moment-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.moment-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(217, 98, 54, 0.08);
+}
+
+@media (min-width: 880px) {
+  .moment-item {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+.moment-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Polaroid Container for media moments */
+.moment-media-wrapper {
+  position: relative;
+  background: #ffffff;
+  padding: 16px 16px 44px 16px;
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(20, 32, 50, 0.08);
+  transform: rotate(-1.5deg);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(20, 32, 50, 0.05);
+}
+
+.moment-item:nth-child(even) .moment-media-wrapper {
+  transform: rotate(1.8deg);
+}
+
+.moment-media-wrapper:hover {
+  transform: rotate(0deg) scale(1.02);
+  z-index: 10;
+}
+
+.moment-media {
+  overflow: hidden;
+  border-radius: 2px;
+  background: #f7f0e6;
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+.moment-media img,
+.moment-media video {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 420px !important;
+  object-fit: cover;
+  display: block;
+}
+
+.moment-media audio {
+  width: 100%;
+  margin: 12px 0;
+}
+
+/* Washi Tape styling overlay */
+.washi-tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-4deg);
+  width: 120px;
+  height: 28px;
+  background: rgba(255, 133, 76, 0.55);
+  backdrop-filter: blur(1px);
+  box-shadow: 0 2px 4px rgba(20, 32, 50, 0.04);
+  z-index: 2;
+  clip-path: polygon(0% 10%, 5% 0%, 10% 10%, 15% 0%, 20% 10%, 25% 0%, 30% 10%, 35% 0%, 40% 10%, 45% 0%, 50% 10%, 55% 0%, 60% 10%, 65% 0%, 70% 10%, 75% 0%, 80% 10%, 85% 0%, 90% 10%, 95% 0%, 100% 10%, 100% 90%, 95% 100%, 90% 90%, 85% 100%, 80% 90%, 75% 100%, 70% 90%, 65% 100%, 60% 90%, 55% 100%, 50% 90%, 45% 100%, 40% 90%, 35% 100%, 30% 90%, 25% 100%, 20% 90%, 15% 100%, 10% 90%, 5% 100%, 0% 90%);
+}
+
+.moment-item:nth-child(even) .washi-tape {
+  background: rgba(131, 197, 190, 0.65);
+  transform: translateX(-50%) rotate(3deg);
+}
+
+/* Polaroid bottom margin caption text */
+.moment-caption-overlay {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  font-family: var(--font-note), cursive;
+  color: var(--ink);
+}
+
+.moment-caption-overlay strong {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.moment-caption-overlay span {
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+/* Handwritten sticky notes (text moments) */
+.moment-text-card {
+  position: relative;
+  background: #fffbde; /* Sticky yellow */
+  padding: 24px;
+  border-radius: 4px;
+  box-shadow: 4px 10px 22px rgba(20, 32, 50, 0.05);
+  transform: rotate(0.8deg);
+  border-left: 5px solid var(--sunset);
+  transition: transform 0.3s ease;
+}
+
+.moment-item:nth-child(even) .moment-text-card {
+  transform: rotate(-1.2deg);
+  border-left-color: var(--aqua);
+  background: #f0faf9; /* Light blue sticky note */
+}
+
+.moment-text-card:hover {
+  transform: rotate(0deg) scale(1.01);
+}
+
+.moment-text-card strong {
+  display: block;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+
+.moment-text-card span {
+  display: block;
+  font-family: var(--font-note), cursive;
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+
+.moment-text-card p {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.moment-body-below {
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+}
+
+/* Timeline Comments Wrapper Styles */
+.moment-comments-wrapper {
+  align-self: stretch;
+}
+
+.comments-panel-compact {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  border-radius: 24px !important;
+  padding: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+  height: 100%;
+}
+
+.compact-comments-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+.compact-comments-head h4 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.compact-comments-head .comment-counter {
+  background: var(--sunset);
+  color: #fff;
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(255, 133, 76, 0.25);
+}
+
+.comments-panel-compact .comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px !important;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 32, 50, 0.1) transparent;
+}
+
+/* Chat bubble aesthetics */
+.comments-panel-compact .comment-card {
+  padding: 12px 14px !important;
+  border-radius: 18px 18px 18px 4px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(20, 32, 50, 0.04) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.01) !important;
+  gap: 4px !important;
+  max-width: 95%;
+  align-self: start;
+  transform-origin: left bottom;
+  animation: popInComment 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.comments-panel-compact .comment-card.empty-comments-card {
+  align-self: stretch;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.25) !important;
+  border: 1px dashed rgba(20, 32, 50, 0.1) !important;
+  border-radius: 16px !important;
+  text-align: center;
+  padding: 20px !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.comments-panel-compact .comment-card.empty-comments-card p {
+  font-family: var(--font-note), cursive;
+  font-size: 1.15rem;
+  color: var(--ink-muted);
+}
+
+.comments-panel-compact .comment-head strong {
+  font-size: 0.78rem;
+  color: var(--terracotta);
+}
+
+.comments-panel-compact .comment-head span {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+}
+
+.comments-panel-compact .comment-card p {
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+/* Compact form row at bottom */
+.compact-form {
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.compact-form-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.compact-input-name {
+  width: 75px !important;
+  flex-shrink: 0;
+  font-size: 0.82rem !important;
+  min-height: 38px !important;
+  padding: 6px 10px !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--line) !important;
+  background: #ffffff !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.compact-input-name:focus, .compact-input-body:focus {
+  outline: 2px solid rgba(255, 133, 76, 0.15) !important;
+  border-color: var(--sunset) !important;
+}
+
+.compact-input-body {
+  flex-grow: 1;
+  font-size: 0.82rem !important;
+  min-height: 38px !important;
+  padding: 6px 12px !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--line) !important;
+  background: #ffffff !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.compact-send-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  border: 0;
+  background: linear-gradient(135deg, var(--sunset), var(--terracotta));
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 133, 76, 0.25);
+}
+
+.compact-send-button:hover {
+  transform: scale(1.1) rotate(6deg);
+  box-shadow: 0 6px 16px rgba(255, 133, 76, 0.35);
+}
+
+.compact-send-button:active {
+  transform: scale(0.9);
+}
+
+.compact-status-line {
+  margin: 6px 0 0 0;
+  font-size: 0.72rem;
+  color: var(--olive);
+  text-align: center;
+  font-weight: 600;
+}
+
+@keyframes popInComment {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }

@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { TimelineItem } from "@/components/timeline-item";
 import { formatDateLabel } from "@/lib/date";
-import type { Asset, DraftStory, Member, Moment, PublishedStory, TripDay } from "@/lib/types";
+import type { Asset, DraftStory, Member, Moment, PublishedStory, TripDay, PublicComment } from "@/lib/types";
+import { PublicCommentsPanel } from "@/components/public-comments-panel";
 
 type Props = {
   assets: Asset[];
@@ -11,6 +12,8 @@ type Props = {
   drafts: DraftStory[];
   stories: PublishedStory[];
   showEmptyDays?: boolean;
+  comments?: PublicComment[];
+  tripId?: string;
 };
 
 export function TimelinePanel({
@@ -20,7 +23,9 @@ export function TimelinePanel({
   members,
   drafts,
   stories,
-  showEmptyDays = true
+  showEmptyDays = true,
+  comments,
+  tripId
 }: Props) {
   const assetMap = new Map(assets.map((asset) => [asset.id, asset]));
   const memberMap = new Map(members.map((member) => [member.id, member]));
@@ -41,7 +46,7 @@ export function TimelinePanel({
       <div className="section-intro">
         <div>
           <p className="eyebrow">Timeline</p>
-          <h2>Le trajet jour apres jour</h2>
+          <h2>Le trajet jour après jour</h2>
         </div>
       </div>
       <div className="timeline-list">
@@ -51,7 +56,7 @@ export function TimelinePanel({
           const dayStories = stories.filter((story) => story.slug.includes(day.date.replaceAll("-", "")));
           const primaryMoment = dayMoments[0];
           const primaryLocation =
-            primaryMoment?.latitude !== null && primaryMoment?.longitude !== null ? "Moment geolocalise" : undefined;
+            primaryMoment?.latitude !== null && primaryMoment?.longitude !== null ? "Moment géolocalisé" : undefined;
           const relatedStoryCount = dayStories.length;
 
           return (
@@ -64,44 +69,75 @@ export function TimelinePanel({
                   ? `${dayMoments.length} moment(s) · ${relatedStoryCount} publication(s)`
                   : `${dayMoments.length} moment(s)`
               }
-              title={primaryMoment?.caption || dayStories[0]?.title || "Une nouvelle journee de route"}
+              title={primaryMoment?.caption || dayStories[0]?.title || "Une nouvelle journée de route"}
             >
               <ul className="compact-list timeline-moments">
                 {dayMoments.length === 0 ? (
                   <li className="empty-state compact-empty">
-                    <strong>Aucun moment capture.</strong>
-                    <p>La journee apparaîtra ici des qu&apos;un souvenir sera publie.</p>
+                    <strong>Aucun moment capturé.</strong>
+                    <p>La journée apparaîtra ici dès qu&apos;un souvenir sera publié.</p>
                   </li>
                 ) : null}
                 {dayMoments.map((moment) => {
                   const asset = moment.assetId ? assetMap.get(moment.assetId) : null;
+                  const momentComments = (comments ?? []).filter((c) => c.momentId === moment.id);
 
                   return (
-                    <li className="moment-item" key={moment.id}>
-                      <div className="moment-copy">
-                        <strong>{moment.caption || moment.type}</strong>
-                        <span>
-                          {memberMap.get(moment.memberId)?.name ?? "Contributeur"} · {moment.status}
-                        </span>
-                        {moment.body ? <p>{moment.body}</p> : null}
+                    <li className={`moment-item ${asset ? "moment-has-asset" : "moment-text-only"}`} key={moment.id}>
+                      <div className="moment-main-content">
+                        {asset ? (
+                          <div className="moment-media-wrapper">
+                            <div className="washi-tape" />
+                            <div className="moment-media">
+                              {moment.type === "photo" ? (
+                                <Image
+                                  alt={moment.caption || "Moment photo"}
+                                  height={960}
+                                  loading="lazy"
+                                  src={asset.url}
+                                  width={1280}
+                                />
+                              ) : null}
+                              {moment.type === "video" ? (
+                                <video controls playsInline preload="metadata" src={asset.url} />
+                              ) : null}
+                              {moment.type === "audio" ? (
+                                <audio controls preload="metadata" src={asset.url} />
+                              ) : null}
+                            </div>
+                            <div className="moment-caption-overlay">
+                              <strong>{moment.caption || moment.type}</strong>
+                              <span>
+                                Par {memberMap.get(moment.memberId)?.name ?? "Contributeur"}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="moment-text-card">
+                            <strong>{moment.caption || moment.type}</strong>
+                            <span>
+                              Par {memberMap.get(moment.memberId)?.name ?? "Contributeur"}
+                            </span>
+                            {moment.body ? <p>{moment.body}</p> : null}
+                          </div>
+                        )}
+                        {asset && moment.body ? (
+                          <div className="moment-body-below">
+                            <p>{moment.body}</p>
+                          </div>
+                        ) : null}
                       </div>
-                      {asset ? (
-                        <div className="moment-media">
-                          {moment.type === "photo" ? (
-                            <Image
-                              alt={moment.caption || "Moment photo"}
-                              height={960}
-                              loading="lazy"
-                              src={asset.url}
-                              width={1280}
-                            />
-                          ) : null}
-                          {moment.type === "video" ? (
-                            <video controls playsInline preload="metadata" src={asset.url} />
-                          ) : null}
-                          {moment.type === "audio" ? (
-                            <audio controls preload="metadata" src={asset.url} />
-                          ) : null}
+
+                      {tripId ? (
+                        <div className="moment-comments-wrapper">
+                          <PublicCommentsPanel
+                            comments={momentComments}
+                            compact
+                            momentId={moment.id}
+                            tripId={tripId}
+                            title="Réactions"
+                            intro="Écrivez un mot sur ce souvenir !"
+                          />
                         </div>
                       ) : null}
                     </li>
@@ -121,7 +157,7 @@ export function TimelinePanel({
                 <div className="tag-row">
                   {dayStories.map((story) => (
                     <span className="tag tag-published" key={story.id}>
-                      Publie: {story.title}
+                      Publié: {story.title}
                     </span>
                   ))}
                 </div>
@@ -131,8 +167,8 @@ export function TimelinePanel({
         })}
         {visibleDays.length === 0 ? (
           <div className="empty-state">
-            <strong>Aucune journee publiee pour le moment.</strong>
-            <p>La timeline apparaitra ici des qu&apos;un souvenir ou un recit sera visible.</p>
+            <strong>Aucune journée publiée pour le moment.</strong>
+            <p>La timeline apparaîtra ici dès qu&apos;un souvenir ou un récit sera visible.</p>
           </div>
         ) : null}
       </div>

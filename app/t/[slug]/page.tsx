@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AnimatedSection } from "@/components/animated-section";
 import { MapPanel } from "@/components/map-panel";
-import { PhotoGrid } from "@/components/photo-grid";
 import { PublicCommentsPanel } from "@/components/public-comments-panel";
 import { TimelinePanel } from "@/components/timeline-panel";
 import { appEnv } from "@/lib/env";
@@ -89,20 +88,6 @@ export default async function PublicTripPage({ params }: PageProps) {
     bundle.trackSessions
   );
   const tripComments = bundle.comments.filter((comment) => comment.storyId === null && comment.momentId === null);
-  const mediaMoments = getMomentAssetMap(publicMoments, bundle.assets);
-  const momentCommentMap = new Map(
-    bundle.comments
-      .filter((comment) => comment.momentId)
-      .map((comment) => [comment.momentId!, [] as typeof bundle.comments])
-  );
-  const galleryItems = mediaMoments.slice(0, 8);
-
-  for (const comment of bundle.comments) {
-    if (comment.momentId) {
-      momentCommentMap.set(comment.momentId, [...(momentCommentMap.get(comment.momentId) ?? []), comment]);
-    }
-  }
-
   const currentDay =
     bundle.days.find((day) => day.date === getParisIsoDate()) ??
     (publicMoments.length > 0
@@ -126,34 +111,14 @@ export default async function PublicTripPage({ params }: PageProps) {
       </AnimatedSection>
 
       <AnimatedSection className="trip-experience trip-experience-simple" delay={120}>
-        <section className="panel panel-cinematic" id="trip-gallery">
-          <div className="section-intro">
-            <div>
-              <p className="eyebrow">Souvenirs</p>
-              <h2>Le fil d&apos;images du voyage</h2>
-            </div>
-          </div>
-          <PhotoGrid
-            items={galleryItems.map(({ asset, moment }) => ({
-              comments: momentCommentMap.get(moment.id) ?? [],
-              id: moment.id,
-              type: moment.type,
-              title: moment.caption || moment.type,
-              body: moment.body,
-              tripId: bundle.trip.id,
-              url: asset.url
-            }))}
-          />
-        </section>
-
         <div id="trip-map">
-        <MapPanel
-          legs={bundle.legs}
-          moments={publicMoments}
-          title="Carte du voyage"
-          trackPoints={publicTrackPoints}
-          trip={bundle.trip}
-        />
+          <MapPanel
+            legs={bundle.legs}
+            moments={publicMoments}
+            title="Carte du voyage"
+            trackPoints={publicTrackPoints}
+            trip={bundle.trip}
+          />
         </div>
 
         <TimelinePanel
@@ -164,6 +129,8 @@ export default async function PublicTripPage({ params }: PageProps) {
           moments={publicMoments}
           showEmptyDays={false}
           stories={[]}
+          comments={bundle.comments}
+          tripId={bundle.trip.id}
         />
         <div id="trip-comments">
           <PublicCommentsPanel comments={tripComments} tripId={bundle.trip.id} />
