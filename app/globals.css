@@ -2301,9 +2301,10 @@ code {
 }
 
 .comments-panel-compact .comment-card p {
-  font-size: 0.84rem;
-  line-height: 1.4;
-  color: var(--ink-soft);
+  font-size: 1.15rem !important;
+  line-height: 1.45 !important;
+  color: var(--ink) !important;
+  font-weight: 500;
 }
 
 /* Compact form row at bottom */
@@ -2991,4 +2992,20 @@ code {
   .trip-description-tape-note .trip-header-summary {
     font-size: 1.45rem !important;
   }
+}
+
+/* Quick emoji reaction buttons micro-interactions */
+.quick-emoji-btn {
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.quick-emoji-btn:hover {
+  transform: translateY(-4px) scale(1.22) !important;
+  box-shadow: 0 4px 10px rgba(255, 133, 76, 0.2) !important;
+  border-color: var(--sunset) !important;
+  background: #fffdf0 !important;
+}
+
+.quick-emoji-btn:active {
+  transform: translateY(1px) scale(0.92) !important;
 }
