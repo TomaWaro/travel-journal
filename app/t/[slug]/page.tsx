@@ -103,8 +103,9 @@ export default async function PublicTripPage({ params }: PageProps) {
     <main className="shell">
       <AnimatedSection className="landing-stage" delay={60}>
         <section className="trip-header-simple" style={{ position: "relative", textAlign: "center", padding: "20px 20px 40px 20px" }}>
-          <p className="eyebrow">Carnet de route</p>
+          <p className="eyebrow">Carnet de route 🇪🇸</p>
           <h1>{bundle.trip.title}</h1>
+          <div className="spanish-flag-divider" />
           
           {displaySummary ? (
             <div className="trip-description-tape-note">

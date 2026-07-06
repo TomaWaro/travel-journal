@@ -517,7 +517,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
               onClick={() => setActiveTab("route")}
               type="button"
             >
-              🚗 Trajet & Suivi
+              🚗 Trajet & Suivi 🇪🇸
             </button>
           </div>
         ) : null}
@@ -529,18 +529,18 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
         {activeTab === "route" && liveTrackingUrl ? (
           <div className="live-status-pill">
             <span className="live-pulse-dot" />
-            <span className="live-status-text">DIRECT ACTIF</span>
+            <span className="live-status-text">DIRECT ACTIF 🇪🇸</span>
           </div>
         ) : activeTab === "route" ? (
           <div className="live-status-pill inactive">
             <span className="live-pulse-dot" style={{ background: "#94a3b8" }} />
-            <span className="live-status-text">DIRECT INACTIF</span>
+            <span className="live-status-text">DIRECT INACTIF 🇪🇸</span>
           </div>
         ) : null}
 
         {activeTab === "route" && liveTrackingUrl ? (
           <div className="live-tracking-card-overlay">
-            <div className="live-card-badge">LIVE 🌐</div>
+            <div className="live-card-badge">LIVE 🇪🇸</div>
             <div className="live-card-info">
               <h3>Suivi de l&apos;itinéraire</h3>
               <p>Progression en direct, heure d&apos;arrivée estimée (ETA) et tracé Google Maps.</p>

@@ -1,23 +1,23 @@
 :root {
-  --bg: #faf7f0;
-  --bg-2: #f4edd9;
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-strong: rgba(255, 255, 255, 0.94);
-  --surface-dark: #19222e;
-  --ink: #142032;
-  --ink-soft: #415067;
-  --ink-muted: #6a788c;
-  --line: rgba(20, 32, 50, 0.08);
-  --line-strong: rgba(20, 32, 50, 0.14);
-  --terracotta: #d96236;
-  --sunset: #ff854c;
-  --olive: #7c8f5d;
-  --sky: #83c5be;
-  --aqua: #0081a7;
-  --sand: #f4a261;
+  --bg: #fffcf2;
+  --bg-2: #fcf1d4;
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-strong: #ffffff;
+  --surface-dark: #1f0b0d;
+  --ink: #2b1115;
+  --ink-soft: #5c3539;
+  --ink-muted: #805c60;
+  --line: rgba(198, 11, 30, 0.08);
+  --line-strong: rgba(198, 11, 30, 0.15);
+  --terracotta: #c60b1e;
+  --sunset: #ffb81c;
+  --olive: #5d7a36;
+  --sky: #ffb81c;
+  --aqua: #c60b1e;
+  --sand: #ffb81c;
   --cream: #ffffff;
-  --shadow-soft: 0 12px 35px rgba(217, 98, 54, 0.06);
-  --shadow-strong: 0 25px 60px rgba(20, 32, 50, 0.08);
+  --shadow-soft: 0 12px 35px rgba(198, 11, 30, 0.04);
+  --shadow-strong: 0 25px 60px rgba(43, 17, 21, 0.08);
   --radius-xl: 32px;
   --radius-lg: 24px;
   --radius-md: 16px;
@@ -50,11 +50,10 @@ body {
   font-family: var(--font-body), sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 12% 15%, rgba(198, 11, 30, 0.12), transparent 30%),
-    radial-gradient(circle at 86% 22%, rgba(255, 184, 28, 0.16), transparent 25%),
-    radial-gradient(circle at 50% 60%, rgba(217, 98, 54, 0.06), transparent 40%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M0 30 L30 0 L60 30 L30 60 Z' stroke='%23d96236' stroke-width='0.5' stroke-opacity='0.12' fill='none'/%3E%3Ccircle cx='30' cy='30' r='10' stroke='%23ffb81c' stroke-width='0.75' stroke-opacity='0.20' fill='none'/%3E%3Ccircle cx='30' cy='30' r='3' fill='%23c60b1e' fill-opacity='0.12'/%3E%3C/svg%3E"),
-    linear-gradient(180deg, #faf7f0 0%, #f7edf2 30%, #faf3e6 70%, #faf7f0 100%);
+    radial-gradient(circle at 10% 12%, rgba(198, 11, 30, 0.08), transparent 30%),
+    radial-gradient(circle at 90% 16%, rgba(255, 184, 28, 0.12), transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(255, 184, 28, 0.04), transparent 45%),
+    linear-gradient(180deg, #fffcf2 0%, #fdf5df 40%, #fffcf2 100%);
   background-attachment: fixed;
   overflow-x: hidden;
   position: relative;
@@ -117,12 +116,25 @@ main.shell {
   justify-content: space-between;
   gap: 16px;
   align-items: center;
-  padding: 12px 14px;
+  padding: 14px 14px 12px 14px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.58);
-  background: rgba(250, 243, 232, 0.68);
+  border-top: 3px solid #c60b1e;
+  background: rgba(255, 252, 245, 0.82);
   backdrop-filter: blur(16px);
   box-shadow: var(--shadow-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+.site-header-inner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to bottom, #c60b1e 0%, #c60b1e 25%, #ffb81c 25%, #ffb81c 75%, #c60b1e 75%, #c60b1e 100%);
 }
 
 .site-brand {
@@ -2806,7 +2818,7 @@ code {
   transform: translateX(-50%) rotate(-2.2deg);
   width: 140px;
   height: 32px;
-  background: rgba(255, 133, 76, 0.45);
+  background: linear-gradient(to bottom, rgba(198, 11, 30, 0.72) 0%, rgba(198, 11, 30, 0.72) 25%, rgba(255, 184, 28, 0.8) 25%, rgba(255, 184, 28, 0.8) 75%, rgba(198, 11, 30, 0.72) 75%, rgba(198, 11, 30, 0.72) 100%);
   backdrop-filter: blur(0.5px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.03);
   clip-path: polygon(
@@ -2849,7 +2861,7 @@ code {
   transform: translateX(-50%) rotate(2deg);
   width: 90px;
   height: 24px;
-  background: rgba(255, 230, 190, 0.65) !important; /* Transparent beige tape */
+  background: linear-gradient(to bottom, rgba(198, 11, 30, 0.72) 0%, rgba(198, 11, 30, 0.72) 25%, rgba(255, 184, 28, 0.8) 25%, rgba(255, 184, 28, 0.8) 75%, rgba(198, 11, 30, 0.72) 75%, rgba(198, 11, 30, 0.72) 100%) !important;
   backdrop-filter: blur(0.5px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   clip-path: polygon(
@@ -2866,7 +2878,6 @@ code {
 
 .moment-item:nth-child(even) .washi-tape-scotch {
   transform: translateX(-50%) rotate(-3deg);
-  background: rgba(190, 225, 220, 0.7) !important; /* Transparent green/aqua tape */
 }
 
 /* Base styles for Timeline Item parts */
@@ -3105,4 +3116,13 @@ code {
   color: #ffffff !important;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
   transform: translateY(-1px);
+}
+
+.spanish-flag-divider {
+  height: 5px;
+  width: 140px;
+  margin: 16px auto 24px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, #c60b1e 0%, #c60b1e 25%, #ffb81c 25%, #ffb81c 75%, #c60b1e 75%, #c60b1e 100%);
+  box-shadow: 0 2px 6px rgba(198, 11, 30, 0.18);
 }
