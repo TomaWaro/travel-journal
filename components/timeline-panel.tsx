@@ -269,10 +269,10 @@ export function TimelinePanel({
                                          <Image
                                            src="/reaction_67.png"
                                            alt="67"
-                                           height={22}
-                                           width={34}
+                                           height={32}
+                                           width={48}
                                            style={{
-                                             height: "22px",
+                                             height: "32px",
                                              width: "auto",
                                              display: "block",
                                            }}
