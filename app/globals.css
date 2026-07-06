@@ -2964,24 +2964,28 @@ code {
     transform: translateX(-50%) rotate(0deg) !important;
   }
   
-  /* Tighten timeline track column size to reclaim space */
+  /* Hide timeline vertical axis track on mobile to center content card and avoid offset shifts */
   .timeline-item {
-    gap: 10px !important;
-    grid-template-columns: 12px minmax(0, 1fr) !important;
+    gap: 0 !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
   }
   
   .timeline-marker {
-    width: 12px !important;
+    display: none !important;
   }
-  
-  .timeline-marker::after {
-    width: 12px !important;
-    height: 12px !important;
-    top: 8px !important;
+
+  /* Reduce content body padding on mobile to give photos max width */
+  .timeline-item-body-wrapper {
+    padding: 12px 6px !important;
   }
-  
-  .timeline-marker::before {
-    left: 4.5px !important;
+
+  /* Make moment container card completely flat and transparent on mobile so Polaroid occupies full width */
+  .moment-item {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
   }
   
   /* Prevent inputs and button cut-off by enforcing flexbox properties */
@@ -3070,6 +3074,7 @@ code {
 
 @media (max-width: 600px) {
   .polaroid-reactions-bar {
+    flex-wrap: wrap !important;
     gap: 6px !important;
     padding: 2px !important;
   }
