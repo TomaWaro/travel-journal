@@ -1,7 +1,7 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import type { Moment, RouteLeg, TrackPoint, Trip } from "@/lib/types";
 
 type Props = {
@@ -88,86 +88,18 @@ function inferMomentLocation(moment: Moment, legs: RouteLeg[]) {
   return moment.caption || null;
 }
 
-function interpolateRoutePoints(coords: [number, number][]): [number, number][] {
-  if (coords.length < 2) return coords;
-
-  const result: [number, number][] = [];
-  for (let i = 0; i < coords.length - 1; i++) {
-    const start = coords[i];
-    const end = coords[i + 1];
-    
-    result.push(start);
-    
-    // Check if the segment crosses the Gulf of Lion (France to Spain / Nice/Marseille/Montpellier to Catalonia)
-    const isStartInFrance = start[1] > 42.8 && start[0] > 3.2;
-    const isEndInSpain = end[1] < 42.1 && end[0] < 3.2;
-    
-    const isStartInSpain = start[1] < 42.1 && start[0] < 3.2;
-    const isEndInFrance = end[1] > 42.8 && end[0] > 3.2;
-    
-    if ((isStartInFrance && isEndInSpain) || (isStartInSpain && isEndInFrance)) {
-      // Inject Montpellier & Perpignan coordinates to follow the coastal highway around the sea
-      if (isStartInFrance) {
-        result.push([3.8767, 43.6108]); // Montpellier
-        result.push([2.8954, 42.6976]); // Perpignan
-      } else {
-        result.push([2.8954, 42.6976]); // Perpignan
-        result.push([3.8767, 43.6108]); // Montpellier
-      }
-    }
-  }
-  
-  result.push(coords[coords.length - 1]);
-  return result;
-}
-
-function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], moments: Moment[], trip: Trip) {
+function buildFeatureCollection(
+  legs: RouteLeg[],
+  trackPoints: TrackPoint[],
+  moments: Moment[],
+  trip: Trip,
+  roadPlannedCoords: [number, number][],
+  roadLiveCoords: [number, number][]
+) {
   const features: Array<Record<string, unknown>> = [];
 
-  // Parse and display the global live tracking route line string on the map
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const isTripActive = !trip.endDate || trip.endDate >= todayStr;
-  
-  const liveCoords: [number, number][] = [];
-  if (isTripActive && trip.liveTrackingUrl && trip.liveTrackingPath) {
-    try {
-      const coords = JSON.parse(trip.liveTrackingPath) as { latitude: number; longitude: number }[];
-      if (coords.length >= 2) {
-        for (const c of coords) {
-          liveCoords.push([c.longitude, c.latitude]);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to parse liveTrackingPath:", e);
-    }
-  }
-
-  // Gather planned path coordinates from manually configured legs
-  const plannedCoords: [number, number][] = [];
-  for (const leg of legs) {
-    for (const pt of leg.plannedPath) {
-      plannedCoords.push([pt.longitude, pt.latitude]);
-    }
-  }
-
-  // Fallback: If no legs have coordinate points, build a route line by connecting 
-  // all text & photo moments sequentially in chronological order.
-  if (plannedCoords.length === 0) {
-    const sortedMoments = [...moments]
-      .filter((m) => m.longitude !== null && m.latitude !== null)
-      .sort((a, b) => {
-        const dateA = a.dayDate || a.createdAt;
-        const dateB = b.dayDate || b.createdAt;
-        return dateA.localeCompare(dateB);
-      });
-    for (const m of sortedMoments) {
-      plannedCoords.push([m.longitude!, m.latitude!]);
-    }
-  }
-
   // Render the planned itinerary route line
-  const interpolatedPlanned = interpolateRoutePoints(plannedCoords);
-  if (interpolatedPlanned.length >= 2) {
+  if (roadPlannedCoords.length >= 2) {
     features.push({
       type: "Feature",
       properties: {
@@ -176,14 +108,13 @@ function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], mom
       },
       geometry: {
         type: "LineString",
-        coordinates: interpolatedPlanned
+        coordinates: roadPlannedCoords
       }
     });
   }
 
   // Render the live tracking route line (if present)
-  const interpolatedLive = interpolateRoutePoints(liveCoords);
-  if (interpolatedLive.length >= 2) {
+  if (roadLiveCoords.length >= 2) {
     features.push({
       type: "Feature",
       properties: {
@@ -192,7 +123,7 @@ function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], mom
       },
       geometry: {
         type: "LineString",
-        coordinates: interpolatedLive
+        coordinates: roadLiveCoords
       }
     });
   }
@@ -264,6 +195,126 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
   const [activeTab, setActiveTab] = useState<"moments" | "route">(initialTab);
   const mapInstanceRef = useRef<any>(null);
 
+  // Gather planned coordinates from legs
+  const plannedCoords = useMemo(() => {
+    const coords: [number, number][] = [];
+    for (const leg of legs) {
+      for (const pt of leg.plannedPath) {
+        coords.push([pt.longitude, pt.latitude]);
+      }
+    }
+
+    // Fallback: Connect moments chronologically if legs have no coordinates
+    if (coords.length === 0) {
+      const sortedMoments = [...moments]
+        .filter((m) => m.longitude !== null && m.latitude !== null)
+        .sort((a, b) => {
+          const dateA = a.dayDate || a.createdAt;
+          const dateB = b.dayDate || b.createdAt;
+          return dateA.localeCompare(dateB);
+        });
+      for (const m of sortedMoments) {
+        coords.push([m.longitude!, m.latitude!]);
+      }
+    }
+    return coords;
+  }, [legs, moments]);
+
+  // Gather live coordinates from trip
+  const liveCoords = useMemo(() => {
+    const coords: [number, number][] = [];
+    if (isTripActive && trip.liveTrackingUrl && trip.liveTrackingPath) {
+      try {
+        const parsed = JSON.parse(trip.liveTrackingPath) as { latitude: number; longitude: number }[];
+        if (parsed.length >= 2) {
+          for (const c of parsed) {
+            coords.push([c.longitude, c.latitude]);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse liveTrackingPath:", e);
+      }
+    }
+    return coords;
+  }, [trip, isTripActive]);
+
+  const [roadPlannedCoords, setRoadPlannedCoords] = useState<[number, number][]>([]);
+  const [roadLiveCoords, setRoadLiveCoords] = useState<[number, number][]>([]);
+
+  // Fetch actual driving road coordinates from OSRM for planned/legs route
+  useEffect(() => {
+    let active = true;
+    if (plannedCoords.length < 2) {
+      Promise.resolve().then(() => {
+        if (active) {
+          setRoadPlannedCoords(plannedCoords);
+        }
+      });
+      return;
+    }
+    const coordsString = plannedCoords.map((c) => `${c[0]},${c[1]}`).join(";");
+    const url = `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson`;
+    
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (active) {
+          if (data.routes && data.routes[0]?.geometry?.coordinates) {
+            setRoadPlannedCoords(data.routes[0].geometry.coordinates);
+          } else {
+            setRoadPlannedCoords(plannedCoords);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("OSRM planned routing failed:", err);
+        if (active) {
+          setRoadPlannedCoords(plannedCoords);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [plannedCoords]);
+
+  // Fetch actual driving road coordinates from OSRM for live route
+  useEffect(() => {
+    let active = true;
+    if (liveCoords.length < 2) {
+      Promise.resolve().then(() => {
+        if (active) {
+          setRoadLiveCoords(liveCoords);
+        }
+      });
+      return;
+    }
+    const coordsString = liveCoords.map((c) => `${c[0]},${c[1]}`).join(";");
+    const url = `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson`;
+    
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (active) {
+          if (data.routes && data.routes[0]?.geometry?.coordinates) {
+            setRoadLiveCoords(data.routes[0].geometry.coordinates);
+          } else {
+            setRoadLiveCoords(liveCoords);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("OSRM live routing failed:", err);
+        if (active) {
+          setRoadLiveCoords(liveCoords);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [liveCoords]);
+
   // React to tab changes and adjust layer visibilities
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -322,7 +373,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
 
       map.addControl(new maplibre.NavigationControl({ visualizePitch: true }), "top-right");
       map.on("load", () => {
-        const data = buildFeatureCollection(legs, trackPoints, moments, trip);
+        const data = buildFeatureCollection(legs, trackPoints, moments, trip, roadPlannedCoords, roadLiveCoords);
         map.addSource("journey", {
           type: "geojson",
           data
@@ -395,10 +446,11 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
 
         // Fit camera viewport bounds to cover all trajectory coordinates
         const allCoords: [number, number][] = [];
-        for (const leg of legs) {
-          for (const pt of leg.plannedPath) {
-            allCoords.push([pt.longitude, pt.latitude]);
-          }
+        for (const coord of roadPlannedCoords) {
+          allCoords.push(coord);
+        }
+        for (const coord of roadLiveCoords) {
+          allCoords.push(coord);
         }
         for (const pt of trackPoints) {
           allCoords.push([pt.longitude, pt.latitude]);
@@ -441,7 +493,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
       mapInstance?.remove();
       mapInstanceRef.current = null;
     };
-  }, [legs, moments, trackPoints, trip, initialTab]);
+  }, [roadPlannedCoords, roadLiveCoords, legs, moments, trackPoints, trip, initialTab]);
 
   return (
     <section className="panel map-panel">
