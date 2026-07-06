@@ -2975,9 +2975,14 @@ code {
     display: none !important;
   }
 
-  /* Reduce content body padding on mobile to give photos max width */
+  /* Reduce content body padding on mobile to give photos max width (with 24px top to prevent top tape clipping) */
   .timeline-item-body-wrapper {
-    padding: 12px 6px !important;
+    padding: 24px 6px 12px 6px !important;
+  }
+
+  /* Separate different moments with more spacing on mobile */
+  .timeline-moments {
+    gap: 54px !important;
   }
 
   /* Make moment container card completely flat and transparent on mobile so Polaroid occupies full width */
@@ -3141,4 +3146,29 @@ code {
   border-radius: 999px;
   background: linear-gradient(to bottom, #c60b1e 0%, #c60b1e 25%, #ffb81c 25%, #ffb81c 75%, #c60b1e 75%, #c60b1e 100%);
   box-shadow: 0 2px 6px rgba(198, 11, 30, 0.18);
+}
+
+/* Organic hand-made cyclical variations for the washi tape scotch */
+.moment-item:nth-child(4n+1) .washi-tape-scotch {
+  transform: translateX(-47%) rotate(3.2deg) scaleX(0.95) !important;
+}
+.moment-item:nth-child(4n+2) .washi-tape-scotch {
+  transform: translateX(-53%) rotate(-2.8deg) scaleX(1.05) !important;
+}
+.moment-item:nth-child(4n+3) .washi-tape-scotch {
+  transform: translateX(-49%) rotate(1.5deg) scaleX(0.9) !important;
+}
+.moment-item:nth-child(4n+4) .washi-tape-scotch {
+  transform: translateX(-51%) rotate(-4deg) scaleX(1.1) !important;
+}
+
+/* Organic hand-made cyclical variations for the giant travel summary tape */
+.timeline-item:nth-child(3n+1) .washi-tape-scotch-giant {
+  transform: translateX(-48%) rotate(-3deg) scaleX(0.95) !important;
+}
+.timeline-item:nth-child(3n+2) .washi-tape-scotch-giant {
+  transform: translateX(-52%) rotate(2.5deg) scaleX(1.05) !important;
+}
+.timeline-item:nth-child(3n+3) .washi-tape-scotch-giant {
+  transform: translateX(-50%) rotate(-1deg) scaleX(0.9) !important;
 }

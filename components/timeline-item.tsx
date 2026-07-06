@@ -27,7 +27,7 @@ export function TimelineItem({
         className="timeline-content" 
         style={{ 
           padding: 0, 
-          overflow: "hidden", 
+          overflow: "visible", 
           borderRadius: "24px", 
           border: "1px solid rgba(20, 32, 50, 0.08)", 
           background: "rgba(255, 255, 255, 0.65)",
