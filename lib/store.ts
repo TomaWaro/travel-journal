@@ -36,7 +36,7 @@ export async function createInvite(tripId: string, memberId: string, label: stri
 
 export async function updateTripSettings(
   tripId: string,
-  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published" | "liveTrackingUrl">>
+  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published" | "liveTrackingUrl" | "liveTrackingPath">>
 ) {
   return getStore().updateTripSettings(tripId, patch);
 }

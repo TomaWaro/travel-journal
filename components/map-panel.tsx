@@ -88,8 +88,32 @@ function inferMomentLocation(moment: Moment, legs: RouteLeg[]) {
   return moment.caption || null;
 }
 
-function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], moments: Moment[]) {
+function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], moments: Moment[], trip: Trip) {
   const features: Array<Record<string, unknown>> = [];
+
+  // Parse and display the global live tracking route line string on the map
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const isTripActive = !trip.endDate || trip.endDate >= todayStr;
+  if (isTripActive && trip.liveTrackingUrl && trip.liveTrackingPath) {
+    try {
+      const coords = JSON.parse(trip.liveTrackingPath) as { latitude: number; longitude: number }[];
+      if (coords.length >= 2) {
+        features.push({
+          type: "Feature",
+          properties: {
+            kind: "planned",
+            title: "Suivi en direct"
+          },
+          geometry: {
+            type: "LineString",
+            coordinates: coords.map((c) => [c.longitude, c.latitude])
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Failed to parse liveTrackingPath:", e);
+    }
+  }
 
   for (const leg of legs) {
     if (leg.plannedPath.length >= 2) {
@@ -232,7 +256,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
 
       map.addControl(new maplibre.NavigationControl({ visualizePitch: true }), "top-right");
       map.on("load", () => {
-        const data = buildFeatureCollection(legs, trackPoints, moments);
+        const data = buildFeatureCollection(legs, trackPoints, moments, trip);
         map.addSource("journey", {
           type: "geojson",
           data
@@ -350,7 +374,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
       mapInstance?.remove();
       mapInstanceRef.current = null;
     };
-  }, [legs, moments, trackPoints, trip.id, initialTab]);
+  }, [legs, moments, trackPoints, trip, initialTab]);
 
   return (
     <section className="panel map-panel">

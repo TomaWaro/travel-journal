@@ -10,7 +10,8 @@ const migrationFiles = [
   "0001_initial.sql",
   "0002_public_comments.sql",
   "0003_public_comment_moments.sql",
-  "0004_trip_live_tracking_url.sql"
+  "0004_trip_live_tracking_url.sql",
+  "0005_trip_live_tracking_path.sql"
 ] as const;
 
 let pool: Pool | null = null;
