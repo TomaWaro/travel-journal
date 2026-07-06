@@ -4,11 +4,11 @@
   --surface: rgba(255, 255, 255, 0.98);
   --surface-strong: #ffffff;
   --surface-dark: #023e8a;
-  --ink: #ffffff;
-  --ink-soft: #ffe4a0;
-  --ink-muted: rgba(255, 255, 255, 0.75);
-  --line: rgba(255, 255, 255, 0.2);
-  --line-strong: rgba(255, 255, 255, 0.3);
+  --ink: #142032;
+  --ink-soft: #415067;
+  --ink-muted: #6a788c;
+  --line: rgba(20, 32, 50, 0.08);
+  --line-strong: rgba(20, 32, 50, 0.14);
   --terracotta: #c60b1e;
   --sunset: #ffb81c;
   --olive: #2a9d8f;
@@ -3148,16 +3148,14 @@ code {
   box-shadow: 0 2px 6px rgba(198, 11, 30, 0.18);
 }
 
-/* Force dark deep blue text inside all white cards for legibility */
-.timeline-content,
-.moment-media-wrapper,
-.moment-text-card,
-.moment-description-tape-note,
-.live-tracking-card-overlay,
-.comments-panel,
-.comments-panel-compact,
-.site-header-inner {
-  color: #03045e !important;
+/* Ensure main titles directly on the blue page background are bright white/gold for legibility */
+.trip-header-simple h1,
+.timeline-main-title {
+  color: #ffffff !important;
+}
+
+.trip-header-simple .eyebrow {
+  color: #ffe4a0 !important;
 }
 
 .comments-panel input,
@@ -3165,67 +3163,67 @@ code {
 .comments-panel select,
 .workspace-panel input,
 .workspace-panel textarea {
-  color: #03045e !important;
+  color: var(--ink) !important;
   background: #ffffff !important;
-  border: 1px solid rgba(3, 4, 94, 0.15) !important;
+  border: 1px solid var(--line-strong) !important;
 }
 
 .comments-panel input:focus,
 .comments-panel textarea:focus {
-  border-color: #c60b1e !important;
+  border-color: var(--terracotta) !important;
   outline: none !important;
 }
 
 .moment-comments-wrapper {
-  border-top: 1px dashed rgba(3, 4, 94, 0.12) !important;
+  border-top: 1px dashed var(--line-strong) !important;
   padding-top: 24px !important;
   margin-top: 24px !important;
 }
 
 /* Fix active reaction buttons and counts to prevent yellow-on-white text */
 .polaroid-emoji-btn .emoji-count {
-  color: #03045e !important;
+  color: var(--ink) !important;
 }
 
 .polaroid-emoji-btn:hover {
-  border-color: #c60b1e !important;
+  border-color: var(--terracotta) !important;
   box-shadow: 0 6px 14px rgba(198, 11, 30, 0.12) !important;
 }
 
 .polaroid-emoji-btn.active-reacted {
   background: rgba(198, 11, 30, 0.08) !important;
-  border-color: #c60b1e !important;
+  border-color: var(--terracotta) !important;
 }
 
 .polaroid-emoji-btn.active-reacted .emoji-count {
-  color: #c60b1e !important;
+  color: var(--terracotta) !important;
 }
 
 .map-tab-container {
-  background: rgba(3, 4, 94, 0.08) !important;
+  background: rgba(20, 32, 50, 0.05) !important;
 }
 
 .map-tab-button {
-  color: #023e8a !important;
+  color: var(--ink-soft) !important;
 }
 
 .map-tab-button.active {
   background: #ffffff !important;
-  color: #c60b1e !important;
+  color: var(--terracotta) !important;
 }
 
 .live-status-pill {
-  background: #c60b1e !important;
+  background: var(--terracotta) !important;
   color: #ffffff !important;
 }
 
 .live-card-badge {
   background: rgba(198, 11, 30, 0.12) !important;
-  color: #c60b1e !important;
+  color: var(--terracotta) !important;
 }
 
 .primary-button {
-  background: #c60b1e !important;
+  background: var(--terracotta) !important;
   color: #ffffff !important;
 }
 
