@@ -100,6 +100,7 @@ main.shell {
   width: min(1280px, calc(100vw - 24px));
   margin: 0 auto;
   padding: calc(28px + env(safe-area-inset-top)) 0 calc(88px + env(safe-area-inset-bottom));
+  position: relative;
 }
 
 .site-header {
@@ -3149,8 +3150,7 @@ code {
 }
 
 /* Ensure main titles directly on the blue page background are bright white/gold for legibility */
-.trip-header-simple h1,
-.timeline-main-title {
+.trip-header-simple h1 {
   color: #ffffff !important;
 }
 
@@ -3254,4 +3254,92 @@ code {
 }
 .timeline-item:nth-child(3n+3) .washi-tape-scotch-giant {
   transform: translateX(-50%) rotate(-1deg) scaleX(0.9) !important;
+}
+
+/* Die-cut Scrapbook Stickers */
+.scrapbook-sticker {
+  position: absolute;
+  font-size: 2.2rem;
+  z-index: 10;
+  user-select: none;
+  pointer-events: none;
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.18),
+    inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+}
+
+.sun-sticker {
+  top: 140px;
+  right: -70px;
+  transform: rotate(8deg);
+}
+
+.guitar-sticker {
+  top: 480px;
+  left: -70px;
+  transform: rotate(-12deg);
+}
+
+.dancer-sticker {
+  top: 920px;
+  right: -70px;
+  transform: rotate(15deg);
+}
+
+.wine-sticker {
+  top: 1350px;
+  left: -70px;
+  transform: rotate(-8deg);
+}
+
+.bull-sticker {
+  top: 1800px;
+  right: -70px;
+  transform: rotate(-15deg);
+}
+
+.olives-sticker {
+  top: 2200px;
+  left: -70px;
+  transform: rotate(10deg);
+}
+
+.fan-sticker {
+  top: 2600px;
+  right: -70px;
+  transform: rotate(-5deg);
+}
+
+.grapes-sticker {
+  top: 2950px;
+  left: -70px;
+  transform: rotate(12deg);
+}
+
+.pepper-sticker {
+  top: 3300px;
+  right: -70px;
+  transform: rotate(-10deg);
+}
+
+.sailboat-sticker {
+  top: 3600px;
+  left: -70px;
+  transform: rotate(6deg);
+}
+
+/* Hide or push inside on mobile/smaller screens to prevent horizontal overflow */
+@media (max-width: 1420px) {
+  .scrapbook-sticker {
+    display: none !important;
+  }
 }

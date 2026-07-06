@@ -176,7 +176,7 @@ export function TimelinePanel({
   return (
     <section className="panel timeline-panel">
       <div className="timeline-header-container" style={{ textAlign: "center", marginBottom: "48px" }}>
-        <h2 className="timeline-main-title">Timeline</h2>
+        <h2 className="timeline-main-title">Timeline 💃🎸</h2>
       </div>
       <div className="timeline-list">
         {visibleDays.map((day) => {

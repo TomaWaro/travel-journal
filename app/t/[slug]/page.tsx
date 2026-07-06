@@ -100,11 +100,23 @@ export default async function PublicTripPage({ params }: PageProps) {
     : bundle.trip.summary;
 
   return (
-    <main className="shell">
+    <main className="shell" style={{ position: "relative" }}>
+      {/* Scrapbook Floating Stamps/Stickers in margins */}
+      <div className="scrapbook-sticker sun-sticker" title="Sol de España">☀️</div>
+      <div className="scrapbook-sticker guitar-sticker" title="Guitarra española">🎸</div>
+      <div className="scrapbook-sticker dancer-sticker" title="Flamenco">💃</div>
+      <div className="scrapbook-sticker wine-sticker" title="Tinto de verano">🍷</div>
+      <div className="scrapbook-sticker bull-sticker" title="Toro de lidia">🐂</div>
+      <div className="scrapbook-sticker olives-sticker" title="Aceitunas de mesa">🫒</div>
+      <div className="scrapbook-sticker fan-sticker" title="Abanico">🪭</div>
+      <div className="scrapbook-sticker grapes-sticker" title="Uvas de España">🍇</div>
+      <div className="scrapbook-sticker pepper-sticker" title="Pimiento picante">🌶️</div>
+      <div className="scrapbook-sticker sailboat-sticker" title="Velero mediterráneo">⛵</div>
+
       <AnimatedSection className="landing-stage" delay={60}>
         <section className="trip-header-simple" style={{ position: "relative", textAlign: "center", padding: "20px 20px 40px 20px" }}>
           <p className="eyebrow">Carnet de route 🇪🇸</p>
-          <h1>{bundle.trip.title}</h1>
+          <h1>{bundle.trip.title} ☀️⛵</h1>
           <div className="spanish-flag-divider" />
           
           {displaySummary ? (

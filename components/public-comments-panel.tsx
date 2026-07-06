@@ -133,7 +133,7 @@ export function PublicCommentsPanel({
         <div className="section-intro">
           <div>
             <p className="eyebrow">Commentaires</p>
-            <h2>{title}</h2>
+            <h2>{title} 🍷🍇</h2>
             <p className="comment-intro">{intro}</p>
           </div>
           <span className="comment-counter">{items.length} message(s)</span>
