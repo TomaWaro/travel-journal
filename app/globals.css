@@ -3070,3 +3070,11 @@ code {
 .polaroid-emoji-btn.active-reacted .emoji-count {
   color: var(--terracotta) !important;
 }
+
+/* Inactive live status indicator */
+.live-status-pill.inactive {
+  background: rgba(148, 163, 184, 0.9) !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 10px rgba(148, 163, 184, 0.15) !important;
+  animation: none !important;
+}

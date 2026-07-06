@@ -164,15 +164,15 @@ function getInitialCenter(legs: RouteLeg[], trackPoints: TrackPoint[]): [number,
 
 export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const hasItinerary = legs.length > 0 || trackPoints.length > 0;
-  const initialTab = hasItinerary ? "route" : "moments";
-  const [activeTab, setActiveTab] = useState<"moments" | "route">(initialTab);
-  const mapInstanceRef = useRef<any>(null);
-
   // Use the global live tracking URL of the trip, which automatically hides if the trip is finished
   const todayStr = new Date().toISOString().slice(0, 10);
   const isTripActive = !trip.endDate || trip.endDate >= todayStr;
   const liveTrackingUrl = isTripActive ? trip.liveTrackingUrl : null;
+
+  const hasItinerary = legs.length > 0 || trackPoints.length > 0;
+  const initialTab = liveTrackingUrl ? "route" : "moments";
+  const [activeTab, setActiveTab] = useState<"moments" | "route">(initialTab);
+  const mapInstanceRef = useRef<any>(null);
 
   // React to tab changes and adjust layer visibilities
   useEffect(() => {
@@ -383,10 +383,15 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
       <div className="map-relative-container">
         <div className="map-shell" ref={mapRef} />
         
-        {activeTab === "route" && hasItinerary ? (
+        {activeTab === "route" && liveTrackingUrl ? (
           <div className="live-status-pill">
             <span className="live-pulse-dot" />
             <span className="live-status-text">DIRECT ACTIF</span>
+          </div>
+        ) : activeTab === "route" ? (
+          <div className="live-status-pill inactive">
+            <span className="live-pulse-dot" style={{ background: "#94a3b8" }} />
+            <span className="live-status-text">DIRECT INACTIF</span>
           </div>
         ) : null}
 
