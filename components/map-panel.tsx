@@ -88,6 +88,39 @@ function inferMomentLocation(moment: Moment, legs: RouteLeg[]) {
   return moment.caption || null;
 }
 
+function interpolateRoutePoints(coords: [number, number][]): [number, number][] {
+  if (coords.length < 2) return coords;
+
+  const result: [number, number][] = [];
+  for (let i = 0; i < coords.length - 1; i++) {
+    const start = coords[i];
+    const end = coords[i + 1];
+    
+    result.push(start);
+    
+    // Check if the segment crosses the Gulf of Lion (France to Spain / Nice/Marseille/Montpellier to Catalonia)
+    const isStartInFrance = start[1] > 42.8 && start[0] > 3.2;
+    const isEndInSpain = end[1] < 42.1 && end[0] < 3.2;
+    
+    const isStartInSpain = start[1] < 42.1 && start[0] < 3.2;
+    const isEndInFrance = end[1] > 42.8 && end[0] > 3.2;
+    
+    if ((isStartInFrance && isEndInSpain) || (isStartInSpain && isEndInFrance)) {
+      // Inject Montpellier & Perpignan coordinates to follow the coastal highway around the sea
+      if (isStartInFrance) {
+        result.push([3.8767, 43.6108]); // Montpellier
+        result.push([2.8954, 42.6976]); // Perpignan
+      } else {
+        result.push([2.8954, 42.6976]); // Perpignan
+        result.push([3.8767, 43.6108]); // Montpellier
+      }
+    }
+  }
+  
+  result.push(coords[coords.length - 1]);
+  return result;
+}
+
 function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], moments: Moment[], trip: Trip) {
   const features: Array<Record<string, unknown>> = [];
 
@@ -133,7 +166,8 @@ function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], mom
   }
 
   // Render the planned itinerary route line
-  if (plannedCoords.length >= 2) {
+  const interpolatedPlanned = interpolateRoutePoints(plannedCoords);
+  if (interpolatedPlanned.length >= 2) {
     features.push({
       type: "Feature",
       properties: {
@@ -142,13 +176,14 @@ function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], mom
       },
       geometry: {
         type: "LineString",
-        coordinates: plannedCoords
+        coordinates: interpolatedPlanned
       }
     });
   }
 
   // Render the live tracking route line (if present)
-  if (liveCoords.length >= 2) {
+  const interpolatedLive = interpolateRoutePoints(liveCoords);
+  if (interpolatedLive.length >= 2) {
     features.push({
       type: "Feature",
       properties: {
@@ -157,7 +192,7 @@ function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], mom
       },
       geometry: {
         type: "LineString",
-        coordinates: liveCoords
+        coordinates: interpolatedLive
       }
     });
   }
