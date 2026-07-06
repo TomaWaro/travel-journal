@@ -45,9 +45,9 @@ export function TimelineItem({
             justifyContent: "space-between",
             alignItems: "center",
             background: isCollapsed 
-              ? "linear-gradient(135deg, #f3e5d0, #e9d9c2)" 
-              : "linear-gradient(135deg, #fbf3e6, #f3e5d0)",
-            borderBottom: isCollapsed ? "0px" : "1px solid rgba(20, 32, 50, 0.08)",
+              ? "linear-gradient(135deg, #bae6fd, #e0f2fe)" 
+              : "linear-gradient(135deg, #e0f2fe, #bae6fd)",
+            borderBottom: isCollapsed ? "0px" : "1px solid rgba(3, 4, 94, 0.08)",
             transition: "all 0.3s ease",
             userSelect: "none"
           }}
