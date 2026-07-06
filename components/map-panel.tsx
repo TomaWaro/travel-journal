@@ -268,12 +268,13 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           source: "journey",
           filter: ["==", ["get", "kind"], "planned"],
           layout: {
-            visibility: "visible"
+            visibility: "visible",
+            "line-join": "round",
+            "line-cap": "round"
           },
           paint: {
-            "line-color": "#ffd166",
-            "line-width": 4,
-            "line-dasharray": [2, 1]
+            "line-color": "#1a73e8",
+            "line-width": 8
           }
         });
 
