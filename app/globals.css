@@ -2927,9 +2927,14 @@ code {
     border-radius: 20px !important;
   }
   
-  /* Reclaim padding on the Polaroid card */
+  /* Reclaim padding on the Polaroid card and align it flat to prevent mobile borders clip/overflow */
   .moment-media-wrapper {
     padding: 10px 10px 32px 10px !important;
+    transform: none !important;
+  }
+  
+  .moment-item:nth-child(even) .moment-media-wrapper {
+    transform: none !important;
   }
   
   /* Scale down captions and descriptions */
@@ -2941,6 +2946,11 @@ code {
     width: 90% !important;
     padding: 8px 10px 6px 10px !important;
     top: -20px !important;
+    transform: translateX(-50%) rotate(0deg) !important;
+  }
+  
+  .moment-item:nth-child(even) .moment-description-tape-note {
+    transform: translateX(-50%) rotate(0deg) !important;
   }
   
   .moment-description-tape-note p {
@@ -2951,6 +2961,7 @@ code {
     width: 65px !important;
     height: 18px !important;
     top: -10px !important;
+    transform: translateX(-50%) rotate(0deg) !important;
   }
   
   /* Tighten timeline track column size to reclaim space */
