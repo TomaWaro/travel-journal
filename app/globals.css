@@ -2003,8 +2003,8 @@ code {
   gap: 32px !important;
 }
 
-/* Moment items in the timeline */
 .moment-item {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
@@ -3077,4 +3077,30 @@ code {
   color: #f1f5f9 !important;
   box-shadow: 0 4px 10px rgba(148, 163, 184, 0.15) !important;
   animation: none !important;
+}
+
+/* Timeline moment delete button */
+.timeline-delete-moment-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.15) !important;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.timeline-delete-moment-btn:hover {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
+  transform: translateY(-1px);
 }

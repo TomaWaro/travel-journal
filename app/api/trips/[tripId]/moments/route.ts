@@ -4,7 +4,7 @@ import path from "node:path";
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { requireDashboardAccess, requireTripAccess } from "@/lib/server-access";
-import { addMoment } from "@/lib/store";
+import { addMoment, deleteMoment } from "@/lib/store";
 import type { Asset, MomentType } from "@/lib/types";
 
 type RouteProps = {
@@ -133,6 +133,27 @@ export async function POST(request: Request, { params }: RouteProps) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to create moment" },
+      { status: 400 }
+    );
+  }
+}
+
+export async function DELETE(request: Request, { params }: RouteProps) {
+  try {
+    const { tripId } = await params;
+    const dashboard = await requireDashboardAccess(request, ["owner"]);
+    requireTripAccess(dashboard, tripId);
+    
+    const body = (await request.json()) as { momentId: string };
+    if (!body.momentId) {
+      throw new Error("Missing momentId");
+    }
+    
+    await deleteMoment(body.momentId);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to delete moment" },
       { status: 400 }
     );
   }

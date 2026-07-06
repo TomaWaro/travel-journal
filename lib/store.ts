@@ -36,7 +36,7 @@ export async function createInvite(tripId: string, memberId: string, label: stri
 
 export async function updateTripSettings(
   tripId: string,
-  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published">>
+  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published" | "liveTrackingUrl">>
 ) {
   return getStore().updateTripSettings(tripId, patch);
 }
@@ -103,4 +103,8 @@ export async function unpublishStory(storyId: string) {
 
 export async function getAsset(assetId: string) {
   return getStore().getAsset(assetId);
+}
+
+export async function deleteMoment(momentId: string) {
+  return getStore().deleteMoment(momentId);
 }

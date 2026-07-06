@@ -1296,3 +1296,16 @@ export async function deletePublicComment(input: {
     return (result.rowCount ?? 0) > 0;
   });
 }
+
+export async function deleteMoment(momentId: string): Promise<void> {
+  return withTransaction(async (client) => {
+    const momentRow = await queryOne(client, "select asset_id from moments where id = $1", [momentId]);
+    if (!momentRow) return;
+
+    await client.query("delete from moments where id = $1", [momentId]);
+
+    if (momentRow.asset_id) {
+      await client.query("delete from assets where id = $1", [momentRow.asset_id]);
+    }
+  });
+}

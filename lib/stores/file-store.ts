@@ -715,3 +715,16 @@ export async function deletePublicComment(input: {
 export function localAssetPath(asset: Asset): string {
   return path.join(/* turbopackIgnore: true */ process.cwd(), asset.path);
 }
+
+export async function deleteMoment(momentId: string): Promise<void> {
+  const state = await readState();
+  const moment = state.moments.find((m) => m.id === momentId);
+  if (!moment) return;
+
+  state.moments = state.moments.filter((m) => m.id !== momentId);
+  state.comments = state.comments.filter((c) => c.momentId !== momentId);
+  if (moment.assetId) {
+    state.assets = state.assets.filter((a) => a.id !== moment.assetId);
+  }
+  await writeState(state);
+}

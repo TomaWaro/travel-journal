@@ -257,6 +257,8 @@ export function DashboardShell({
               stories={[]}
               comments={selectedTrip.comments}
               tripId={selectedTrip.trip.id}
+              role={dashboard.role}
+              token={token}
             />
           ) : null}
 

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TimelineItem } from "@/components/timeline-item";
 import { formatDateLabel } from "@/lib/date";
 import type { Asset, DraftStory, Member, Moment, PublishedStory, TripDay, PublicComment } from "@/lib/types";
@@ -17,6 +18,8 @@ type Props = {
   showEmptyDays?: boolean;
   comments?: PublicComment[];
   tripId?: string;
+  role?: "owner" | "contributor" | "viewer";
+  token?: string;
 };
 
 export function TimelinePanel({
@@ -28,8 +31,11 @@ export function TimelinePanel({
   stories,
   showEmptyDays = true,
   comments,
-  tripId
+  tripId,
+  role,
+  token
 }: Props) {
+  const router = useRouter();
   const assetMap = new Map(assets.map((asset) => [asset.id, asset]));
   const memberMap = new Map(members.map((member) => [member.id, member]));
   const visibleDays = days.filter((day) => {
@@ -216,6 +222,32 @@ export function TimelinePanel({
 
                   return (
                     <li className={`moment-item ${asset ? "moment-has-asset" : "moment-text-only"}`} key={moment.id}>
+                      {role === "owner" && token ? (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!confirm("Voulez-vous vraiment supprimer ce souvenir définitivement ?")) return;
+                            const response = await fetch(`/api/trips/${tripId}/moments`, {
+                              method: "DELETE",
+                              headers: {
+                                "Content-Type": "application/json",
+                                "x-access-token": token
+                              },
+                              body: JSON.stringify({ momentId: moment.id })
+                            });
+                            if (response.ok) {
+                              router.refresh();
+                            } else {
+                              alert("Impossible de supprimer le souvenir.");
+                            }
+                          }}
+                          className="timeline-delete-moment-btn"
+                          title="Supprimer ce souvenir"
+                        >
+                          <span>🗑️</span>
+                          <span>Supprimer</span>
+                        </button>
+                      ) : null}
                       <div className="moment-main-content">
                         {asset ? (
                           <div className="moment-media-wrapper">
