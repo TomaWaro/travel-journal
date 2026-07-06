@@ -94,41 +94,72 @@ function buildFeatureCollection(legs: RouteLeg[], trackPoints: TrackPoint[], mom
   // Parse and display the global live tracking route line string on the map
   const todayStr = new Date().toISOString().slice(0, 10);
   const isTripActive = !trip.endDate || trip.endDate >= todayStr;
+  
+  const liveCoords: [number, number][] = [];
   if (isTripActive && trip.liveTrackingUrl && trip.liveTrackingPath) {
     try {
       const coords = JSON.parse(trip.liveTrackingPath) as { latitude: number; longitude: number }[];
       if (coords.length >= 2) {
-        features.push({
-          type: "Feature",
-          properties: {
-            kind: "planned",
-            title: "Suivi en direct"
-          },
-          geometry: {
-            type: "LineString",
-            coordinates: coords.map((c) => [c.longitude, c.latitude])
-          }
-        });
+        for (const c of coords) {
+          liveCoords.push([c.longitude, c.latitude]);
+        }
       }
     } catch (e) {
       console.error("Failed to parse liveTrackingPath:", e);
     }
   }
 
+  // Gather planned path coordinates from manually configured legs
+  const plannedCoords: [number, number][] = [];
   for (const leg of legs) {
-    if (leg.plannedPath.length >= 2) {
-      features.push({
-        type: "Feature",
-        properties: {
-          kind: "planned",
-          title: leg.title
-        },
-        geometry: {
-          type: "LineString",
-          coordinates: leg.plannedPath.map((point) => [point.longitude, point.latitude])
-        }
-      });
+    for (const pt of leg.plannedPath) {
+      plannedCoords.push([pt.longitude, pt.latitude]);
     }
+  }
+
+  // Fallback: If no legs have coordinate points, build a route line by connecting 
+  // all text & photo moments sequentially in chronological order.
+  if (plannedCoords.length === 0) {
+    const sortedMoments = [...moments]
+      .filter((m) => m.longitude !== null && m.latitude !== null)
+      .sort((a, b) => {
+        const dateA = a.dayDate || a.createdAt;
+        const dateB = b.dayDate || b.createdAt;
+        return dateA.localeCompare(dateB);
+      });
+    for (const m of sortedMoments) {
+      plannedCoords.push([m.longitude!, m.latitude!]);
+    }
+  }
+
+  // Render the planned itinerary route line
+  if (plannedCoords.length >= 2) {
+    features.push({
+      type: "Feature",
+      properties: {
+        kind: "planned",
+        title: "Itinéraire"
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: plannedCoords
+      }
+    });
+  }
+
+  // Render the live tracking route line (if present)
+  if (liveCoords.length >= 2) {
+    features.push({
+      type: "Feature",
+      properties: {
+        kind: "planned",
+        title: "Suivi en direct"
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: liveCoords
+      }
+    });
   }
 
   if (trackPoints.length >= 2) {
@@ -249,7 +280,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
 
       const map = new maplibre.Map({
         container: mapRef.current,
-        style: process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://demotiles.maplibre.org/style.json",
+        style: process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
         center: getInitialCenter(legs, trackPoints),
         zoom: 5.1
       });
