@@ -187,7 +187,8 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
     const updateVisibility = () => {
       try {
         if (map.getLayer("planned-line")) {
-          map.setLayoutProperty("planned-line", "visibility", activeTab === "route" ? "visible" : "none");
+          // Keep planned route line always visible to show the path
+          map.setLayoutProperty("planned-line", "visibility", "visible");
         }
         if (map.getLayer("actual-line")) {
           map.setLayoutProperty("actual-line", "visibility", activeTab === "route" ? "visible" : "none");
@@ -246,7 +247,7 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
           source: "journey",
           filter: ["==", ["get", "kind"], "planned"],
           layout: {
-            visibility: initialTab === "route" ? "visible" : "none"
+            visibility: "visible"
           },
           paint: {
             "line-color": "#ffd166",
@@ -303,6 +304,39 @@ export function MapPanel({ title, trip, legs, trackPoints, moments }: Props) {
             "text-halo-width": 1.2
           }
         });
+
+        // Fit camera viewport bounds to cover all trajectory coordinates
+        const allCoords: [number, number][] = [];
+        for (const leg of legs) {
+          for (const pt of leg.plannedPath) {
+            allCoords.push([pt.longitude, pt.latitude]);
+          }
+        }
+        for (const pt of trackPoints) {
+          allCoords.push([pt.longitude, pt.latitude]);
+        }
+        for (const m of moments) {
+          if (m.longitude !== null && m.latitude !== null) {
+            allCoords.push([m.longitude, m.latitude]);
+          }
+        }
+
+        if (allCoords.length > 0) {
+          const bounds = allCoords.reduce(
+            (acc, coord) => {
+              return [
+                [Math.min(acc[0][0], coord[0]), Math.min(acc[0][1], coord[1])],
+                [Math.max(acc[1][0], coord[0]), Math.max(acc[1][1], coord[1])]
+              ];
+            },
+            [[allCoords[0][0], allCoords[0][1]], [allCoords[0][0], allCoords[0][1]]]
+          );
+          
+          map.fitBounds(bounds as [[number, number], [number, number]], {
+            padding: 40,
+            maxZoom: 12
+          });
+        }
 
         mapInstanceRef.current = map;
       });
