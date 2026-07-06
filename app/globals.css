@@ -2886,7 +2886,7 @@ code {
 }
 
 .timeline-item-body-wrapper {
-  padding: 24px;
+  padding: 44px 24px 24px 24px;
 }
 
 /* Mobile responsive styles */
@@ -2906,11 +2906,6 @@ code {
   /* Reduce bandeau padding */
   .timeline-header-bandeau {
     padding: 12px 14px !important;
-  }
-  
-  /* Reduce content body padding */
-  .timeline-item-body-wrapper {
-    padding: 16px 12px !important;
   }
   
   /* Flatten the nested moments list background & padding */
@@ -2975,14 +2970,14 @@ code {
     display: none !important;
   }
 
-  /* Reduce content body padding on mobile to give photos max width (with 24px top to prevent top tape clipping) */
+  /* Reduce content body padding on mobile to give photos max width (with 44px top to prevent top tape clipping) */
   .timeline-item-body-wrapper {
-    padding: 24px 6px 12px 6px !important;
+    padding: 44px 6px 12px 6px !important;
   }
 
   /* Separate different moments with more spacing on mobile */
   .timeline-moments {
-    gap: 54px !important;
+    gap: 64px !important;
   }
 
   /* Make moment container card completely flat and transparent on mobile so Polaroid occupies full width */
@@ -2991,6 +2986,12 @@ code {
     border: none !important;
     box-shadow: none !important;
     padding: 0 !important;
+  }
+
+  .moment-item:not(:last-child) {
+    border-bottom: 2px dashed rgba(198, 11, 30, 0.12) !important;
+    padding-bottom: 48px !important;
+    margin-bottom: 24px !important;
   }
   
   /* Prevent inputs and button cut-off by enforcing flexbox properties */
