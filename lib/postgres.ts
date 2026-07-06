@@ -6,7 +6,12 @@ import type { AppState, Trip } from "@/lib/types";
 
 const migrationDirectory = path.join(process.cwd(), "db", "migrations");
 const seedPath = path.join(process.cwd(), "data", "seed.travel-journal.json");
-const migrationFiles = ["0001_initial.sql", "0002_public_comments.sql", "0003_public_comment_moments.sql"] as const;
+const migrationFiles = [
+  "0001_initial.sql",
+  "0002_public_comments.sql",
+  "0003_public_comment_moments.sql",
+  "0004_trip_live_tracking_url.sql"
+] as const;
 
 let pool: Pool | null = null;
 let initializationPromise: Promise<void> | null = null;

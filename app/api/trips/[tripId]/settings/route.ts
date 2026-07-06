@@ -17,6 +17,7 @@ export async function PATCH(request: Request, { params }: RouteProps) {
       mapPrivacy?: "delayed" | "completed-only";
       mapDelayMinutes?: number;
       published?: boolean;
+      liveTrackingUrl?: string | null;
     };
     const trip = await updateTripSettings(tripId, patch);
 

@@ -124,6 +124,7 @@ function mapTrip(row: SqlRow): Trip {
     mapPrivacy: row.map_privacy as Trip["mapPrivacy"],
     mapDelayMinutes: Number(row.map_delay_minutes),
     published: Boolean(row.published),
+    liveTrackingUrl: row.live_tracking_url ? String(row.live_tracking_url) : null,
     createdAt: toIsoTimestamp(row.created_at)
   };
 }
@@ -572,6 +573,7 @@ export async function createTrip(input: CreateTripInput, ownerMemberId: string):
       mapPrivacy: input.mapPrivacy,
       mapDelayMinutes: input.mapDelayMinutes,
       published: input.visibility === "quasi-public",
+      liveTrackingUrl: null,
       createdAt: new Date().toISOString()
     };
 
@@ -664,7 +666,7 @@ export async function createInvite(tripId: string, memberId: string, label: stri
 
 export async function updateTripSettings(
   tripId: string,
-  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published">>
+  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published" | "liveTrackingUrl">>
 ): Promise<Trip> {
   return withTransaction(async (client) => {
     const trip = await getTripById(client, tripId);
@@ -684,7 +686,8 @@ export async function updateTripSettings(
            visibility = $3,
            map_privacy = $4,
            map_delay_minutes = $5,
-           published = $6
+           published = $6,
+           live_tracking_url = $7
        where id = $1`,
       [
         tripId,
@@ -692,7 +695,8 @@ export async function updateTripSettings(
         nextTrip.visibility,
         nextTrip.mapPrivacy,
         nextTrip.mapDelayMinutes,
-        nextTrip.published
+        nextTrip.published,
+        nextTrip.liveTrackingUrl
       ]
     );
 

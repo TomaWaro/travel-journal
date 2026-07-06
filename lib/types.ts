@@ -41,6 +41,7 @@ export interface Trip {
   mapPrivacy: MapPrivacy;
   mapDelayMinutes: number;
   published: boolean;
+  liveTrackingUrl: string | null;
   createdAt: string;
 }
 

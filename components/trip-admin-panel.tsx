@@ -111,6 +111,93 @@ export function TripAdminPanel({ token, trip, members, legs = [], mode }: Props)
 
         {mode === "legs" ? (
         <div className="stack" style={{ gap: "24px" }}>
+          {/* Suivi en direct (Live Sharing) */}
+          <div style={{ padding: "20px", background: "linear-gradient(135deg, rgba(255, 133, 76, 0.08), rgba(201, 104, 68, 0.03))", borderRadius: "20px", border: "1.5px dashed rgba(255, 133, 76, 0.2)" }}>
+            <h3 style={{ margin: 0, display: "flex", alignItems: "center", gap: "8px", color: "var(--ink)" }}>
+              <span>🌐</span> Partage de Position en Direct (Google Maps)
+            </h3>
+            <p style={{ fontSize: "0.9rem", color: "var(--ink-soft)", margin: "8px 0 16px 0" }}>
+              Configurez le lien de partage de position temps réel généré sur l&apos;application mobile Google Maps.
+            </p>
+            
+            {trip.liveTrackingUrl ? (
+              <div className="stack" style={{ gap: "12px" }}>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center", background: "#ffffff", padding: "10px 14px", borderRadius: "12px", border: "1px solid rgba(20,32,50,0.06)", width: "fit-content" }}>
+                  <span className="live-pulse-dot" style={{ background: "#22c55e", width: "10px", height: "10px", borderRadius: "50%", display: "inline-block" }} />
+                  <strong style={{ fontSize: "0.9rem", color: "#16a34a" }}>SUIVI DIRECT ACTIF</strong>
+                </div>
+                <div style={{ wordBreak: "break-all", background: "rgba(20,32,50,0.03)", padding: "10px 14px", borderRadius: "12px", fontSize: "0.85rem", color: "var(--ink-muted)" }}>
+                  <code>{trip.liveTrackingUrl}</code>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const response = await fetch(`/api/trips/${trip.id}/settings`, {
+                      method: "PATCH",
+                      headers: {
+                        "Content-Type": "application/json",
+                        "x-access-token": token
+                      },
+                      body: JSON.stringify({ liveTrackingUrl: null })
+                    });
+                    if (response.ok) {
+                      setMessage("Suivi en direct arrêté.");
+                      router.refresh();
+                    } else {
+                      alert("Impossible d'arrêter le suivi.");
+                    }
+                  }}
+                  className="secondary-button"
+                  style={{ background: "#fee2e2", color: "#ef4444", border: "0", cursor: "pointer", padding: "10px 16px", borderRadius: "12px", fontWeight: "600" }}
+                >
+                  Arrêter le suivi direct (Éteindre)
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  const formData = new FormData(event.currentTarget);
+                  const url = String(formData.get("liveUrl") ?? "").trim();
+                  if (!url) return;
+                  const response = await fetch(`/api/trips/${trip.id}/settings`, {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "x-access-token": token
+                    },
+                    body: JSON.stringify({ liveTrackingUrl: url })
+                  });
+                  if (response.ok) {
+                    setMessage("Suivi en direct démarré !");
+                    event.currentTarget.reset();
+                    router.refresh();
+                  } else {
+                    alert("Impossible de démarrer le suivi.");
+                  }
+                }}
+                className="stack"
+                style={{ gap: "10px" }}
+              >
+                <div style={{ display: "flex", gap: "8px", width: "100%", flexWrap: "wrap" }}>
+                  <input
+                    name="liveUrl"
+                    placeholder="Coller le lien de partage Google Maps (ex: https://maps.app.goo.gl/...)"
+                    required
+                    type="url"
+                    style={{ flexGrow: 1, padding: "10px 14px", borderRadius: "12px", border: "1px solid var(--line)", background: "#ffffff" }}
+                  />
+                  <button
+                    type="submit"
+                    className="primary-button"
+                    style={{ whiteSpace: "nowrap" }}
+                  >
+                    Activer le Live 🚀
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
           {legs.length > 0 ? (
             <div style={{ padding: "16px", background: "rgba(20,32,50,0.02)", borderRadius: "16px", border: "1px solid rgba(20,32,50,0.06)" }}>
               <h4 style={{ marginBottom: "12px", color: "var(--ink)" }}>Itinéraires enregistrés</h4>

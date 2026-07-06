@@ -272,6 +272,7 @@ export async function createTrip(input: CreateTripInput, ownerMemberId: string):
     mapPrivacy: input.mapPrivacy,
     mapDelayMinutes: input.mapDelayMinutes,
     published: input.visibility === "quasi-public",
+    liveTrackingUrl: null,
     createdAt: new Date().toISOString()
   };
 
@@ -317,7 +318,7 @@ export async function createInvite(tripId: string, memberId: string, label: stri
 
 export async function updateTripSettings(
   tripId: string,
-  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published">>
+  patch: Partial<Pick<Trip, "summary" | "visibility" | "mapPrivacy" | "mapDelayMinutes" | "published" | "liveTrackingUrl">>
 ): Promise<Trip> {
   const state = await readState();
   const trip = state.trips.find((candidate) => candidate.id === tripId);
