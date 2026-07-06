@@ -1,14 +1,14 @@
 :root {
-  --bg: #fffcf2;
-  --bg-2: #fcf1d4;
-  --surface: rgba(255, 255, 255, 0.88);
+  --bg: #6b0c13;
+  --bg-2: #43060b;
+  --surface: rgba(255, 255, 255, 0.98);
   --surface-strong: #ffffff;
   --surface-dark: #1f0b0d;
-  --ink: #2b1115;
-  --ink-soft: #5c3539;
-  --ink-muted: #805c60;
-  --line: rgba(198, 11, 30, 0.08);
-  --line-strong: rgba(198, 11, 30, 0.15);
+  --ink: #ffffff;
+  --ink-soft: #ffe4a0;
+  --ink-muted: rgba(255, 255, 255, 0.7);
+  --line: rgba(255, 255, 255, 0.15);
+  --line-strong: rgba(255, 255, 255, 0.25);
   --terracotta: #c60b1e;
   --sunset: #ffb81c;
   --olive: #5d7a36;
@@ -16,8 +16,8 @@
   --aqua: #c60b1e;
   --sand: #ffb81c;
   --cream: #ffffff;
-  --shadow-soft: 0 12px 35px rgba(198, 11, 30, 0.04);
-  --shadow-strong: 0 25px 60px rgba(43, 17, 21, 0.08);
+  --shadow-soft: 0 12px 35px rgba(0, 0, 0, 0.18);
+  --shadow-strong: 0 25px 60px rgba(0, 0, 0, 0.28);
   --radius-xl: 32px;
   --radius-lg: 24px;
   --radius-md: 16px;
@@ -29,7 +29,7 @@
   --text-xl: 1.35rem;
   --text-2xl: clamp(1.7rem, 3.6vw, 3rem);
   --text-3xl: clamp(2.9rem, 8vw, 7rem);
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 * {
@@ -50,10 +50,10 @@ body {
   font-family: var(--font-body), sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 10% 12%, rgba(198, 11, 30, 0.08), transparent 30%),
-    radial-gradient(circle at 90% 16%, rgba(255, 184, 28, 0.12), transparent 25%),
-    radial-gradient(circle at 50% 50%, rgba(255, 184, 28, 0.04), transparent 45%),
-    linear-gradient(180deg, #fffcf2 0%, #fdf5df 40%, #fffcf2 100%);
+    radial-gradient(circle at 10% 12%, rgba(255, 184, 28, 0.15), transparent 30%),
+    radial-gradient(circle at 90% 16%, rgba(239, 68, 68, 0.22), transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(255, 184, 28, 0.05), transparent 45%),
+    linear-gradient(180deg, #6b0c13 0%, #43060b 45%, #220205 100%);
   background-attachment: fixed;
   overflow-x: hidden;
   position: relative;
@@ -75,7 +75,7 @@ body::before {
   right: -80px;
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, rgba(255, 184, 28, 0.22), rgba(198, 11, 30, 0.08), transparent);
+  background: radial-gradient(circle, rgba(255, 184, 28, 0.15), rgba(198, 11, 30, 0.08), transparent);
   animation: drift 14s ease-in-out infinite;
 }
 
@@ -84,7 +84,7 @@ body::after {
   bottom: 14vh;
   width: 260px;
   height: 260px;
-  background: radial-gradient(circle, rgba(198, 11, 30, 0.16), rgba(217, 98, 54, 0.06), transparent);
+  background: radial-gradient(circle, rgba(198, 11, 30, 0.12), rgba(217, 98, 54, 0.04), transparent);
   animation: drift 20s ease-in-out infinite reverse;
 }
 
@@ -219,7 +219,7 @@ main.shell {
 .sidebar-card {
   border: 1px solid rgba(255, 255, 255, 0.58);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(255, 247, 236, 0.74)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.96)),
     var(--surface);
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow-strong);
@@ -2886,7 +2886,7 @@ code {
 }
 
 .timeline-item-body-wrapper {
-  padding: 44px 24px 24px 24px;
+  padding: 68px 24px 24px 24px;
 }
 
 /* Mobile responsive styles */
@@ -2970,9 +2970,9 @@ code {
     display: none !important;
   }
 
-  /* Reduce content body padding on mobile to give photos max width (with 44px top to prevent top tape clipping) */
+  /* Reduce content body padding on mobile to give photos max width (with 60px top to prevent top tape clipping) */
   .timeline-item-body-wrapper {
-    padding: 44px 6px 12px 6px !important;
+    padding: 60px 6px 12px 6px !important;
   }
 
   /* Separate different moments with more spacing on mobile */
@@ -2989,9 +2989,9 @@ code {
   }
 
   .moment-item:not(:last-child) {
-    border-bottom: 2px dashed rgba(198, 11, 30, 0.12) !important;
-    padding-bottom: 48px !important;
-    margin-bottom: 24px !important;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.2) !important;
+    padding-bottom: 56px !important;
+    margin-bottom: 32px !important;
   }
   
   /* Prevent inputs and button cut-off by enforcing flexbox properties */
@@ -3147,6 +3147,34 @@ code {
   border-radius: 999px;
   background: linear-gradient(to bottom, #c60b1e 0%, #c60b1e 25%, #ffb81c 25%, #ffb81c 75%, #c60b1e 75%, #c60b1e 100%);
   box-shadow: 0 2px 6px rgba(198, 11, 30, 0.18);
+}
+
+/* Force dark cherry text inside all white cards for legibility */
+.timeline-content,
+.moment-media-wrapper,
+.moment-text-card,
+.moment-description-tape-note,
+.live-tracking-card-overlay,
+.comments-panel,
+.comments-panel-compact,
+.site-header-inner {
+  color: #2b1115 !important;
+}
+
+.comments-panel input,
+.comments-panel textarea,
+.comments-panel select,
+.workspace-panel input,
+.workspace-panel textarea {
+  color: #2b1115 !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(43, 17, 21, 0.15) !important;
+}
+
+.moment-comments-wrapper {
+  border-top: 1px dashed rgba(43, 17, 21, 0.12) !important;
+  padding-top: 24px !important;
+  margin-top: 24px !important;
 }
 
 /* Organic hand-made cyclical variations for the washi tape scotch */
