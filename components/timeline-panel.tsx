@@ -262,8 +262,25 @@ export function TimelinePanel({
                                     type="button"
                                     onClick={() => handleEmojiReact(moment.id, emoji)}
                                     className={`polaroid-emoji-btn${isReacted ? " active-reacted" : ""}`}
+                                    style={emoji === "67" ? { display: "inline-flex", alignItems: "center", justifyContent: "center" } : undefined}
                                   >
-                                    <span className="emoji-icon">{emoji}</span>
+                                    <span className="emoji-icon">
+                                      {emoji === "67" ? (
+                                         <Image
+                                           src="/reaction_67.png"
+                                           alt="67"
+                                           height={22}
+                                           width={34}
+                                           style={{
+                                             height: "22px",
+                                             width: "auto",
+                                             display: "block",
+                                           }}
+                                         />
+                                      ) : (
+                                        emoji
+                                      )}
+                                    </span>
                                     {count > 0 && <span className="emoji-count">{count}</span>}
                                   </button>
                                 );
