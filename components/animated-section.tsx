@@ -15,10 +15,16 @@ export function AnimatedSection({ children, className = "", id, delay = 0 }: Pro
   const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
+    // Fail-proof backup timeout: force reveal after 800ms if observer fails on mobile Safari/Chrome
+    const backupTimeout = setTimeout(() => {
+      setIsRevealed(true);
+    }, 800);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsRevealed(true);
+          clearTimeout(backupTimeout);
           observer.unobserve(entry.target);
         }
       },
@@ -34,6 +40,7 @@ export function AnimatedSection({ children, className = "", id, delay = 0 }: Pro
     }
 
     return () => {
+      clearTimeout(backupTimeout);
       if (currentRef) {
         observer.unobserve(currentRef);
       }

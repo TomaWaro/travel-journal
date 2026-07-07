@@ -3277,38 +3277,71 @@ code {
   height: 58px;
 }
 
+.scrapbook-sticker img {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+}
+
 .sun-sticker {
   top: 140px;
   right: -70px;
   transform: rotate(8deg);
 }
 
-.guitar-sticker {
-  top: 480px;
+.flag-sticker {
+  top: 350px;
   left: -70px;
+  transform: rotate(-6deg);
+}
+
+.guitar-sticker {
+  top: 600px;
+  right: -70px;
   transform: rotate(-12deg);
 }
 
+.map-sticker {
+  top: 850px;
+  left: -70px;
+  transform: rotate(5deg);
+}
+
 .dancer-sticker {
-  top: 920px;
+  top: 1100px;
   right: -70px;
   transform: rotate(15deg);
 }
 
-.wine-sticker {
+.matador-sticker {
   top: 1350px;
   left: -70px;
+  transform: rotate(-10deg);
+}
+
+.wine-sticker {
+  top: 1600px;
+  right: -70px;
   transform: rotate(-8deg);
 }
 
 .bull-sticker {
-  top: 1800px;
-  right: -70px;
+  top: 1850px;
+  left: -70px;
   transform: rotate(-15deg);
 }
 
+.sagrada-sticker {
+  top: 2100px;
+  right: -70px;
+  transform: rotate(8deg);
+}
+
 .olives-sticker {
-  top: 2200px;
+  top: 2350px;
   left: -70px;
   transform: rotate(10deg);
 }
@@ -3320,21 +3353,21 @@ code {
 }
 
 .grapes-sticker {
-  top: 2950px;
+  top: 2850px;
   left: -70px;
   transform: rotate(12deg);
 }
 
-.pepper-sticker {
-  top: 3300px;
+.sailboat-sticker {
+  top: 3100px;
   right: -70px;
-  transform: rotate(-10deg);
+  transform: rotate(6deg);
 }
 
-.sailboat-sticker {
-  top: 3600px;
+.pepper-sticker {
+  top: 3350px;
   left: -70px;
-  transform: rotate(6deg);
+  transform: rotate(-10deg);
 }
 
 /* Hide or push inside on mobile/smaller screens to prevent horizontal overflow */

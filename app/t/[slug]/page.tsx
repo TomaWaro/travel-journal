@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { AnimatedSection } from "@/components/animated-section";
 import { MapPanel } from "@/components/map-panel";
 import { PublicCommentsPanel } from "@/components/public-comments-panel";
@@ -101,22 +102,48 @@ export default async function PublicTripPage({ params }: PageProps) {
 
   return (
     <main className="shell" style={{ position: "relative" }}>
-      {/* Scrapbook Floating Stamps/Stickers in margins */}
-      <div className="scrapbook-sticker sun-sticker" title="Sol de España">☀️</div>
-      <div className="scrapbook-sticker guitar-sticker" title="Guitarra española">🎸</div>
-      <div className="scrapbook-sticker dancer-sticker" title="Flamenco">💃</div>
-      <div className="scrapbook-sticker wine-sticker" title="Tinto de verano">🍷</div>
-      <div className="scrapbook-sticker bull-sticker" title="Toro de lidia">🐂</div>
-      <div className="scrapbook-sticker olives-sticker" title="Aceitunas de mesa">🫒</div>
-      <div className="scrapbook-sticker fan-sticker" title="Abanico">🪭</div>
-      <div className="scrapbook-sticker grapes-sticker" title="Uvas de España">🍇</div>
-      <div className="scrapbook-sticker pepper-sticker" title="Pimiento picante">🌶️</div>
-      <div className="scrapbook-sticker sailboat-sticker" title="Velero mediterráneo">⛵</div>
+      {/* Scrapbook Floating Stamps/Stickers in margins using real cropped illustrations */}
+      <div className="scrapbook-sticker sun-sticker" title="Sol de España">
+        <Image src="/stickers/sun.png" alt="Sol de España" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker guitar-sticker" title="Guitarra española">
+        <Image src="/stickers/guitar.png" alt="Guitarra española" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker dancer-sticker" title="Flamenco">
+        <Image src="/stickers/dancer.png" alt="Flamenco" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker flag-sticker" title="Bandera de España">
+        <Image src="/stickers/flag.png" alt="Bandera de España" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker map-sticker" title="Mapa de España">
+        <Image src="/stickers/map.png" alt="Mapa de España" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker bull-sticker" title="Toro">
+        <Image src="/stickers/bull.png" alt="Toro" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker olives-sticker" title="Aceitunas y Pimiento">
+        <Image src="/stickers/olives_chili.png" alt="Aceitunas y Pimiento" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker grapes-sticker" title="Queso y Uvas">
+        <Image src="/stickers/cheese_grapes.png" alt="Queso y Uvas" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker wine-sticker" title="Jamón y Vino">
+        <Image src="/stickers/jamon_wine.png" alt="Jamón y Vino" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker sailboat-sticker" title="Velero">
+        <Image src="/stickers/sailboat.png" alt="Velero" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker matador-sticker" title="Matador">
+        <Image src="/stickers/matador.png" alt="Matador" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
+      <div className="scrapbook-sticker sagrada-sticker" title="Sagrada Familia">
+        <Image src="/stickers/sagrada.png" alt="Sagrada Familia" width={52} height={52} style={{ objectFit: "contain" }} />
+      </div>
 
       <AnimatedSection className="landing-stage" delay={60}>
         <section className="trip-header-simple" style={{ position: "relative", textAlign: "center", padding: "20px 20px 40px 20px" }}>
           <p className="eyebrow">Carnet de route 🇪🇸</p>
-          <h1>{bundle.trip.title} ☀️⛵</h1>
+          <h1>{bundle.trip.title}</h1>
           <div className="spanish-flag-divider" />
           
           {displaySummary ? (
