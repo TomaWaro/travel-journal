@@ -3256,25 +3256,19 @@ code {
   transform: translateX(-50%) rotate(-1deg) scaleX(0.9) !important;
 }
 
-/* Die-cut Scrapbook Stickers */
+/* Scrapbook Stickers Floating in Background */
 .scrapbook-sticker {
   position: absolute;
-  font-size: 2.2rem;
-  z-index: 10;
+  z-index: -1;
   user-select: none;
   pointer-events: none;
-  background: #ffffff;
-  padding: 8px;
-  border-radius: 50%;
-  border: 3px solid #ffffff;
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.18),
-    inset 0 2px 4px rgba(0, 0, 0, 0.05);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  height: 58px;
+  width: 320px;
+  height: 320px;
+  opacity: 0.22;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.12));
 }
 
 .scrapbook-sticker img {
@@ -3370,9 +3364,25 @@ code {
   transform: rotate(-10deg);
 }
 
-/* Hide or push inside on mobile/smaller screens to prevent horizontal overflow */
+/* Make background illustrations look gorgeous behind content on mobile/tablet */
 @media (max-width: 1420px) {
   .scrapbook-sticker {
-    display: none !important;
+    width: 200px;
+    height: 200px;
+    opacity: 0.14;
   }
+  .sun-sticker { right: 5% !important; left: auto !important; }
+  .flag-sticker { left: 5% !important; right: auto !important; }
+  .guitar-sticker { right: 5% !important; left: auto !important; }
+  .map-sticker { left: 5% !important; right: auto !important; }
+  .dancer-sticker { right: 5% !important; left: auto !important; }
+  .matador-sticker { left: 5% !important; right: auto !important; }
+  .wine-sticker { right: 5% !important; left: auto !important; }
+  .bull-sticker { left: 5% !important; right: auto !important; }
+  .sagrada-sticker { right: 5% !important; left: auto !important; }
+  .olives-sticker { left: 5% !important; right: auto !important; }
+  .fan-sticker { right: 5% !important; left: auto !important; }
+  .grapes-sticker { left: 5% !important; right: auto !important; }
+  .sailboat-sticker { right: 5% !important; left: auto !important; }
+  .pepper-sticker { left: 5% !important; right: auto !important; }
 }
