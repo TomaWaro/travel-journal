@@ -22,6 +22,15 @@ type Props = {
   token?: string;
 };
 
+const watermarkStickers = ["guitar", "dancer", "wine", "olives", "hat", "paella", "bull", "sagrada"];
+const getMomentStickerName = (id: string) => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return watermarkStickers[Math.abs(hash) % watermarkStickers.length];
+};
+
 export function TimelinePanel({
   assets,
   days,
@@ -254,11 +263,19 @@ export function TimelinePanel({
                             {!moment.body ? (
                               <div className="washi-tape" />
                             ) : (
-                              <div className="moment-description-tape-note">
-                                <div className="washi-tape-scotch" />
-                                <p>{moment.body}</p>
-                              </div>
-                            )}
+                               <div className="moment-description-tape-note">
+                                 <div className="washi-tape-scotch" />
+                                 <p>{moment.body}</p>
+                                 <div className="moment-card-watermark">
+                                   <Image
+                                     src={`/stickers/${getMomentStickerName(moment.id)}.png`}
+                                     alt=""
+                                     width={130}
+                                     height={130}
+                                   />
+                                 </div>
+                               </div>
+                             )}
                             <div className="moment-media">
                               {moment.type === "photo" ? (
                                 <Image
@@ -327,14 +344,22 @@ export function TimelinePanel({
                             </div>
                           </div>
                         ) : (
-                          <div className="moment-text-card">
-                            <strong>{moment.caption || moment.type}</strong>
-                            <span>
-                              Par {memberMap.get(moment.memberId)?.name ?? "Contributeur"}
-                            </span>
-                            {moment.body ? <p>{moment.body}</p> : null}
-                          </div>
-                        )}
+                           <div className="moment-text-card">
+                             <strong>{moment.caption || moment.type}</strong>
+                             <span>
+                               Par {memberMap.get(moment.memberId)?.name ?? "Contributeur"}
+                             </span>
+                             {moment.body ? <p>{moment.body}</p> : null}
+                             <div className="moment-card-watermark">
+                               <Image
+                                 src={`/stickers/${getMomentStickerName(moment.id)}.png`}
+                                 alt=""
+                                 width={130}
+                                 height={130}
+                               />
+                             </div>
+                           </div>
+                         )}
                       </div>
 
                       {tripId ? (

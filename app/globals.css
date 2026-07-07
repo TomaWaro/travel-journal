@@ -3267,8 +3267,8 @@ code {
   justify-content: center;
   width: 320px;
   height: 320px;
-  opacity: 0.22;
-  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.12));
+  opacity: 1.0;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.15));
 }
 
 .scrapbook-sticker img {
@@ -3369,7 +3369,7 @@ code {
   .scrapbook-sticker {
     width: 200px;
     height: 200px;
-    opacity: 0.14;
+    opacity: 1.0;
   }
   .sun-sticker { right: 5% !important; left: auto !important; }
   .flag-sticker { left: 5% !important; right: auto !important; }
@@ -3385,4 +3385,44 @@ code {
   .grapes-sticker { left: 5% !important; right: auto !important; }
   .sailboat-sticker { right: 5% !important; left: auto !important; }
   .pepper-sticker { left: 5% !important; right: auto !important; }
+}
+
+/* Faint Watermarks inside Text Cards (2nd plane, never on photos) */
+.moment-description-tape-note,
+.moment-text-card {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.moment-description-tape-note p,
+.moment-text-card strong,
+.moment-text-card span,
+.moment-text-card p {
+  position: relative;
+  z-index: 2;
+}
+
+.moment-card-watermark {
+  position: absolute;
+  bottom: -15px;
+  right: -15px;
+  width: 130px;
+  height: 130px;
+  opacity: 0.08;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  transform: rotate(8deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moment-card-watermark img {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
 }

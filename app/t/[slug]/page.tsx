@@ -102,7 +102,7 @@ export default async function PublicTripPage({ params }: PageProps) {
 
   return (
     <main className="shell" style={{ position: "relative" }}>
-      {/* Scrapbook Floating Stamps/Stickers in margins using real cropped illustrations */}
+      {/* Scrapbook Floating Stamps/Stickers in background using real cropped flat illustrations */}
       <div className="scrapbook-sticker sun-sticker" title="Sol de España">
         <Image src="/stickers/sun.png" alt="Sol de España" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
@@ -116,28 +116,29 @@ export default async function PublicTripPage({ params }: PageProps) {
         <Image src="/stickers/flag.png" alt="Bandera de España" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
       <div className="scrapbook-sticker map-sticker" title="Mapa de España">
-        <Image src="/stickers/map.png" alt="Mapa de España" width={300} height={300} style={{ objectFit: "contain" }} />
+        {/* We can use the flag or sagrada as a second-column illustration here */}
+        <Image src="/stickers/flag.png" alt="Bandera de España" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
       <div className="scrapbook-sticker bull-sticker" title="Toro">
         <Image src="/stickers/bull.png" alt="Toro" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
-      <div className="scrapbook-sticker olives-sticker" title="Aceitunas y Pimiento">
-        <Image src="/stickers/olives_chili.png" alt="Aceitunas y Pimiento" width={300} height={300} style={{ objectFit: "contain" }} />
+      <div className="scrapbook-sticker olives-sticker" title="Aceitunas">
+        <Image src="/stickers/olives.png" alt="Aceitunas" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
-      <div className="scrapbook-sticker grapes-sticker" title="Queso y Uvas">
-        <Image src="/stickers/cheese_grapes.png" alt="Queso y Uvas" width={300} height={300} style={{ objectFit: "contain" }} />
+      <div className="scrapbook-sticker grapes-sticker" title="Paella">
+        <Image src="/stickers/paella.png" alt="Paella" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
-      <div className="scrapbook-sticker wine-sticker" title="Jamón y Vino">
-        <Image src="/stickers/jamon_wine.png" alt="Jamón y Vino" width={300} height={300} style={{ objectFit: "contain" }} />
+      <div className="scrapbook-sticker wine-sticker" title="Copa de vino">
+        <Image src="/stickers/wine.png" alt="Copa de vino" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
-      <div className="scrapbook-sticker sailboat-sticker" title="Velero">
-        <Image src="/stickers/sailboat.png" alt="Velero" width={300} height={300} style={{ objectFit: "contain" }} />
+      <div className="scrapbook-sticker sailboat-sticker" title="Sombrero">
+        <Image src="/stickers/hat.png" alt="Sombrero Cordobés" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
-      <div className="scrapbook-sticker matador-sticker" title="Matador">
-        <Image src="/stickers/matador.png" alt="Matador" width={300} height={300} style={{ objectFit: "contain" }} />
+      <div className="scrapbook-sticker matador-sticker" title="Sagrada Família">
+        <Image src="/stickers/sagrada.png" alt="Sagrada Família" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
-      <div className="scrapbook-sticker sagrada-sticker" title="Sagrada Familia">
-        <Image src="/stickers/sagrada.png" alt="Sagrada Familia" width={300} height={300} style={{ objectFit: "contain" }} />
+      <div className="scrapbook-sticker sagrada-sticker" title="Guitarra">
+        <Image src="/stickers/guitar.png" alt="Guitarra" width={300} height={300} style={{ objectFit: "contain" }} />
       </div>
 
       <AnimatedSection className="landing-stage" delay={60}>
