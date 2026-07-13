@@ -57,6 +57,81 @@ function sanitizeFilename(filename: string): string {
   return safeExtension ? `${safeBase || "media"}.${safeExtension}` : safeBase || "media";
 }
 
+async function compressImage(file: File): Promise<File> {
+  if (!file.type.startsWith("image/") || file.size < 100 * 1024) {
+    return file;
+  }
+
+  if (file.type === "image/gif") {
+    return file;
+  }
+
+  return new Promise<File>((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+
+        const MAX_WIDTH = 1600;
+        const MAX_HEIGHT = 1600;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve(file);
+              return;
+            }
+            const originalName = file.name;
+            const extensionIndex = originalName.lastIndexOf(".");
+            const baseName = extensionIndex !== -1 ? originalName.substring(0, extensionIndex) : originalName;
+            
+            const compressedFile = new File([blob], `${baseName}.jpg`, {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            
+            if (compressedFile.size < file.size) {
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          0.8
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+}
+
 function inferMomentTypeFromFile(file: File): UploadedAsset["type"] {
   if (file.type.startsWith("image/")) {
     return "photo";
@@ -122,18 +197,32 @@ export function CapturePanel({ blobUploadsEnabled, token, tripId, publicUrl }: P
       formData.set("latitude", location.latitude?.toString() ?? "");
       formData.set("longitude", location.longitude?.toString() ?? "");
       const uploaded = formData.get("file");
-      const file = uploaded instanceof File && uploaded.size > 0 ? uploaded : null;
+      let file = uploaded instanceof File && uploaded.size > 0 ? uploaded : null;
 
       if (blobUploadsEnabled && file) {
-        setMessage("Upload du media vers Blob...");
-        const asset = await uploadAsset(file);
-        formData.delete("file");
-        formData.set("uploadedAssetId", asset.id);
-        formData.set("uploadedAssetPath", asset.path);
-        formData.set("uploadedAssetUrl", asset.url);
-        formData.set("uploadedAssetMimeType", asset.mimeType);
-        formData.set("uploadedAssetSizeBytes", String(asset.sizeBytes));
-        formData.set("uploadedAssetType", asset.type);
+        if (file.type.startsWith("image/")) {
+          setMessage("Compression de l'image...");
+          try {
+            file = await compressImage(file);
+          } catch (e) {
+            console.error("Compression error:", e);
+          }
+        }
+
+        try {
+          setMessage("Upload du media vers Blob...");
+          const asset = await uploadAsset(file);
+          formData.delete("file");
+          formData.set("uploadedAssetId", asset.id);
+          formData.set("uploadedAssetPath", asset.path);
+          formData.set("uploadedAssetUrl", asset.url);
+          formData.set("uploadedAssetMimeType", asset.mimeType);
+          formData.set("uploadedAssetSizeBytes", String(asset.sizeBytes));
+          formData.set("uploadedAssetType", asset.type);
+        } catch (err) {
+          console.warn("Direct blob upload failed, falling back to database upload", err);
+          formData.set("file", file);
+        }
       }
 
       const response = await fetch(`/api/trips/${tripId}/moments`, {

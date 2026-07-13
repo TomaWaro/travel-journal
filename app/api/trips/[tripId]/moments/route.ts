@@ -69,25 +69,56 @@ async function persistAsset(tripId: string, file: File): Promise<Asset> {
   const assetId = randomUUID();
 
   if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
-    const blob = await put(`trips/${tripId}/${assetId}-${file.name}`, file, {
-      access: "public",
-      addRandomSuffix: false
-    });
+    try {
+      const blob = await put(`trips/${tripId}/${assetId}-${file.name}`, file, {
+        access: "public",
+        addRandomSuffix: false
+      });
 
+      return {
+        id: assetId,
+        tripId,
+        storage: "blob",
+        path: blob.pathname,
+        url: blob.url,
+        mimeType: file.type || "application/octet-stream",
+        sizeBytes: file.size,
+        uploadedAt: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error("Vercel Blob upload failed, falling back to database storage:", error);
+      
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const base64 = buffer.toString("base64");
+      
+      return {
+        id: assetId,
+        tripId,
+        storage: "database",
+        path: base64,
+        url: `/api/assets/${assetId}`,
+        mimeType: file.type || "application/octet-stream",
+        sizeBytes: file.size,
+        uploadedAt: new Date().toISOString()
+      };
+    }
+  }
+
+  if (process.env.VERCEL === "1") {
+    console.warn("Vercel Blob is not configured, falling back to database storage in production.");
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const base64 = buffer.toString("base64");
+    
     return {
       id: assetId,
       tripId,
-      storage: "blob",
-      path: blob.pathname,
-      url: blob.url,
+      storage: "database",
+      path: base64,
+      url: `/api/assets/${assetId}`,
       mimeType: file.type || "application/octet-stream",
       sizeBytes: file.size,
       uploadedAt: new Date().toISOString()
     };
-  }
-
-  if (process.env.VERCEL === "1") {
-    throw new Error("Configure Vercel Blob before uploading media in production.");
   }
 
   await mkdir(path.join(process.cwd(), "data", "uploads"), { recursive: true });

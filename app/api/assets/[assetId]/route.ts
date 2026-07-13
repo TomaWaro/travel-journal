@@ -21,6 +21,17 @@ export async function GET(_request: Request, { params }: RouteProps) {
     return NextResponse.redirect(asset.url);
   }
 
+  if (asset.storage === "database") {
+    const base64Data = asset.path.replace(/^data:[a-zA-Z0-9/\-+.]+;base64,/, "");
+    const bytes = Buffer.from(base64Data, "base64");
+    return new NextResponse(bytes, {
+      headers: {
+        "Content-Type": asset.mimeType,
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    });
+  }
+
   const bytes = await readFile(localAssetPath(asset));
   return new NextResponse(bytes, {
     headers: {

@@ -4,7 +4,7 @@ export type MapPrivacy = "delayed" | "completed-only";
 export type TravelMode = "driving" | "walking" | "transit" | "cycling";
 export type MomentType = "photo" | "video" | "audio" | "text";
 export type MomentStatus = "draft" | "published" | "private";
-export type StorageKind = "local" | "blob";
+export type StorageKind = "local" | "blob" | "database";
 export type TrackSessionStatus = "active" | "completed";
 
 export interface LatLng {
